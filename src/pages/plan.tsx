@@ -5,7 +5,7 @@ import { useTemplates } from '../hooks/useTemplates'
 import { supabase } from '../supabase/client'
 import { useNavigate } from 'react-router-dom'
 
-import Step2_ConfigureCircuit, { ConfiguredExercise } from '../components/PlanSession/Step2_ConfigureCircuit'
+import Step2ConfigureCircuit, { ConfiguredExercise } from '../components/PlanSession/Step2ConfigureCircuit'
 
 export default function PlanSession() {
   const { exercises, loading: loadingExercises, refetch } = useExercises()
@@ -193,7 +193,7 @@ export default function PlanSession() {
       )}
 
       {step === 2 && (
-        <Step2_ConfigureCircuit
+        <Step2ConfigureCircuit
           selectedExercises={selectedExercisesData}
 					onNext={() => {
 					  navigate('/')

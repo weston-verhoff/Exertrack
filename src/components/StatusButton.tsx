@@ -48,20 +48,6 @@ export default function StatusButton({
 
   const handleMouseLeave = handleMouseUp
 
-  const darken = (hex: string): string => {
-    // Simple darken by reducing brightness
-    try {
-      const amt = -30
-      const num = parseInt(hex.replace('#', ''), 16)
-      const r = Math.max(0, ((num >> 16) + amt))
-      const g = Math.max(0, (((num >> 8) & 0x00FF) + amt))
-      const b = Math.max(0, ((num & 0x0000FF) + amt))
-      return '#' + (r << 16 | g << 8 | b).toString(16).padStart(6, '0')
-    } catch {
-      return hex
-    }
-  }
-
   return (
     <button
       onClick={handleClick}

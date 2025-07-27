@@ -28,7 +28,6 @@ export default function WorkoutRecap() {
   const [workout, setWorkout] = useState<Workout | null>(null)
   const [editedExercises, setEditedExercises] = useState<WorkoutExercise[]>([])
   const [loading, setLoading] = useState(true)
-  const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved'>('idle')
 
   useEffect(() => {
     async function fetchWorkout() {
@@ -82,8 +81,6 @@ export default function WorkoutRecap() {
   }
 
   const saveUpdates = async (): Promise<void> => {
-    setSaveStatus('saving')
-
     try {
       for (let i = 0; i < editedExercises.length; i++) {
         const ex = editedExercises[i]
@@ -113,11 +110,8 @@ export default function WorkoutRecap() {
           throw new Error('Failed to update workout date')
         }
       }
-
-      setSaveStatus('saved')
     } catch (err) {
       alert('Something went wrong while saving.')
-      setSaveStatus('idle')
     }
   }
 
