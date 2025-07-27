@@ -45,7 +45,7 @@ export default function Dashboard() {
             exercise:exercise_id(name, target_muscle)
           )
         `)
-        .order('date', { ascending: false })
+        .order('date', { ascending: true }) // fetch ascending
 
       if (error) {
         console.error('Error fetching workouts:', error)
@@ -68,8 +68,6 @@ export default function Dashboard() {
         }
       })
 
-      console.log('Mapped workout_exercises:', cleaned.map(w => w.workout_exercises))
-
       setWorkouts(cleaned)
       setLoading(false)
     }
@@ -90,8 +88,16 @@ export default function Dashboard() {
   }
 
   const today = new Date().toISOString().split('T')[0]
-  const scheduledWorkouts = workouts.filter(w => w.status === 'scheduled')
-  const completedWorkouts = workouts.filter(w => w.status === 'completed')
+
+  const scheduledWorkouts = workouts
+    .filter(w => w.status === 'scheduled')
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // ascending
+
+  const completedWorkouts = workouts
+    .filter(w => w.status === 'completed')
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()) // ascending
+
+  const nextWorkoutId = scheduledWorkouts[0]?.id
 
   return (
     <div style={{ padding: '1rem' }}>
@@ -112,10 +118,22 @@ export default function Dashboard() {
             <section style={{ marginBottom: '2rem' }}>
               <h2>⏳ Scheduled Workouts</h2>
               {scheduledWorkouts.map(w => (
-                <div key={w.id} style={{ padding: '0.5rem', borderBottom: '1px solid #ccc' }}>
+                <div
+                  key={w.id}
+                  style={{
+                    padding: '0.5rem',
+                    borderBottom: '1px solid #ccc',
+                    backgroundColor: w.id === nextWorkoutId ? 'var(--highlight-color)' : undefined
+                  }}
+                >
                   <strong>{w.date}</strong>
                   {w.date === today && (
                     <span style={{ color: 'var(--accent-color)', marginLeft: '0.5rem' }}>← Today</span>
+                  )}
+                  {w.id === nextWorkoutId && (
+                    <span style={{ marginLeft: '0.5rem', color: 'var(--info-color)', fontWeight: 'bold' }}>
+                      🟢 Next Up
+                    </span>
                   )}
                   <ul>
                     {w.workout_exercises.map((we, i) => (

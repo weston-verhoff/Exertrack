@@ -1,6 +1,20 @@
 import React, { useState } from 'react'
 import { supabase } from '../../supabase/client'
 import { useNavigate } from 'react-router-dom'
+import {
+  DndContext,
+  closestCenter,
+  PointerSensor,
+  useSensor,
+  useSensors
+} from '@dnd-kit/core'
+import {
+  arrayMove,
+  SortableContext,
+  useSortable,
+  verticalListSortingStrategy
+} from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 export type ConfiguredExercise = ExerciseConfig
 
@@ -17,6 +31,61 @@ interface Step2Props {
   onNext: (configured: ExerciseConfig[]) => void
 }
 
+function SortableExercise({
+  ex,
+  index,
+  onChange
+}: {
+  ex: ExerciseConfig
+  index: number
+  onChange: (index: number, field: 'sets' | 'reps', value: number) => void
+}) {
+  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+    id: ex.exercise_id
+  })
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    padding: '0.5rem',
+    marginBottom: '1rem',
+    backgroundColor: 'var(--bg-20)',
+    border: '1px solid #3a4a55',
+    borderRadius: '4px',
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    color: 'white'
+  }
+
+  return (
+    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <span style={{ cursor: 'grab' }}>☰</span>
+      <input
+        type="text"
+        value={ex.name}
+        disabled
+        style={{ backgroundColor: '#3f4f5d', color: 'white', flex: 1 }}
+      />
+      <input
+        type="number"
+        placeholder="Sets"
+        value={ex.sets}
+        onChange={e => onChange(index, 'sets', parseInt(e.target.value))}
+        style={{ width: '60px' }}
+      />
+      <input
+        type="number"
+        placeholder="Reps"
+        value={ex.reps}
+        onChange={e => onChange(index, 'reps', parseInt(e.target.value))}
+        style={{ width: '60px' }}
+      />
+    </div>
+  )
+}
+
+
 export default function Step2_ConfigureCircuit({ selectedExercises, onNext }: Step2Props) {
   const [exercises, setExercises] = useState<ExerciseConfig[]>(
     selectedExercises.map((ex, i) => ({
@@ -32,6 +101,30 @@ export default function Step2_ConfigureCircuit({ selectedExercises, onNext }: St
   )
   const [saving, setSaving] = useState(false)
   const navigate = useNavigate()
+
+  const sensors = useSensors(useSensor(PointerSensor))
+
+  const handleDragEnd = (event: any) => {
+    const { active, over } = event
+    if (!over || active.id === over.id) return
+
+    const oldIndex = exercises.findIndex(e => e.exercise_id === active.id)
+    const newIndex = exercises.findIndex(e => e.exercise_id === over.id)
+
+    const reordered = arrayMove(exercises, oldIndex, newIndex).map((ex, i) => ({
+      ...ex,
+      order: i
+    }))
+
+    setExercises(reordered)
+  }
+
+	const handleChange = (index: number, field: 'sets' | 'reps', value: number) => {
+	  const updated = [...exercises]
+	  updated[index][field] = value
+	  setExercises(updated)
+	}
+
 
   const handleSaveWorkout = async () => {
     if (exercises.length === 0) {
@@ -102,38 +195,16 @@ export default function Step2_ConfigureCircuit({ selectedExercises, onNext }: St
       />
 
       <h2>📋 Exercises</h2>
-      {exercises.map((ex, i) => (
-        <div key={i} style={{ marginBottom: '1rem' }}>
-          <input
-            type="text"
-            value={ex.name}
-            disabled // 🔒 Prevent editing name to preserve exercise_id integrity
-            style={{ marginRight: '0.5rem', backgroundColor: '#eee' }}
-          />
-          <input
-            type="number"
-            placeholder="Sets"
-            value={ex.sets}
-            onChange={e => {
-              const updated = [...exercises]
-              updated[i].sets = parseInt(e.target.value)
-              setExercises(updated)
-            }}
-            style={{ width: '60px', marginRight: '0.5rem' }}
-          />
-          <input
-            type="number"
-            placeholder="Reps"
-            value={ex.reps}
-            onChange={e => {
-              const updated = [...exercises]
-              updated[i].reps = parseInt(e.target.value)
-              setExercises(updated)
-            }}
-            style={{ width: '60px' }}
-          />
-        </div>
-      ))}
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+        <SortableContext
+          items={exercises.map(e => e.exercise_id)}
+          strategy={verticalListSortingStrategy}
+        >
+          {exercises.map((ex, i) => (
+            <SortableExercise key={ex.exercise_id} ex={ex} index={i} onChange={handleChange} />
+          ))}
+        </SortableContext>
+      </DndContext>
 
       <br />
 
