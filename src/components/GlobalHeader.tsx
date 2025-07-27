@@ -7,7 +7,7 @@ export function GlobalHeader() {
 
   return (
     <header className="global-header">
-      <div className="logo">MyApp</div>
+      <div className="logo" style={{ fontStyle: 'italic' }}>EzEx</div>
 
 			<nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
 			  <Link to="/" onClick={() => setMenuOpen(false)}>Dashboard</Link>
