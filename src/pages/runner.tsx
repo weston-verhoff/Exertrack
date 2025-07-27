@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { WorkoutButton } from '../components/WorkoutButton'
+import { Layout } from '../components/Layout';
 
 type ExerciseProgress = {
   completed: number
@@ -173,11 +174,11 @@ export default function WorkoutRunner() {
   if (!exercises.length) return <p>No exercises found.</p>
   if (currentIndex >= exercises.length) {
     return (
-      <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-        <h1 style={{ fontFamily: 'var(--font-headline)' }}>Workout Runner</h1>
-        <p>✅ All exercises completed.</p>
-        <WorkoutButton label="End Workout →" onClick={finishWorkout} variant="info" />
-      </div>
+			<Layout padded maxWidth="md">
+			  <h1 className="headline">Workout Runner</h1>
+			  <p>✅ All exercises completed.</p>
+			  <WorkoutButton label="End Workout →" onClick={finishWorkout} variant="info" />
+			</Layout>
     )
   }
 
@@ -190,29 +191,25 @@ export default function WorkoutRunner() {
   const isLastSet = currentProgress.completed + currentProgress.skipped.length === totalSets
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '600px', margin: '0 auto' }}>
-      <h1 style={{ fontFamily: 'var(--font-headline)' }}>Workout Runner</h1>
+		<Layout padded maxWidth="md">
+		  <h1 className="headline">Workout Runner</h1>
 
-      <ExerciseHeader name={exerciseName} targetMuscle={targetMuscle} />
-      <SetProgress
-        current={currentSet}
-        total={totalSets}
-        skipped={currentProgress.skipped}
-      />
-      <SetEditor
-        weight={current.weight || 0}
-        reps={current.reps}
-        notes={current.notes || ''}
-        onChange={(field, value) => updateField(currentIndex, field, value)}
-      />
-      <ActionButtons
-        isLast={isLastExercise && isLastSet}
-        onNextSet={handleNextSet}
-        onSkipSet={handleSkipSet}
-        onFinish={finishWorkout}
-        onBackSet={handleBackSet}
-      />
-    </div>
+		  <ExerciseHeader name={exerciseName} targetMuscle={targetMuscle} />
+		  <SetProgress current={currentSet} total={totalSets} skipped={currentProgress.skipped} />
+		  <SetEditor
+		    weight={current.weight || 0}
+		    reps={current.reps}
+		    notes={current.notes || ''}
+		    onChange={(field, value) => updateField(currentIndex, field, value)}
+		  />
+		  <ActionButtons
+		    isLast={isLastExercise && isLastSet}
+		    onNextSet={handleNextSet}
+		    onSkipSet={handleSkipSet}
+		    onFinish={finishWorkout}
+		    onBackSet={handleBackSet}
+		  />
+		</Layout>
   )
 }
 function ExerciseHeader({ name, targetMuscle }: { name: string; targetMuscle: string }) {

@@ -6,6 +6,7 @@ import { supabase } from '../supabase/client'
 import { useNavigate } from 'react-router-dom'
 
 import Step2ConfigureCircuit, { ConfiguredExercise } from '../components/PlanSession/Step2ConfigureCircuit'
+import { Layout } from '../components/Layout';
 
 export default function PlanSession() {
   const { exercises, loading: loadingExercises, refetch } = useExercises()
@@ -85,7 +86,7 @@ export default function PlanSession() {
   }
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <Layout padded maxWidth="xl" scrollable>
       <h1 style={{ fontFamily: 'var(--font-headline)' }}>Plan Session</h1>
 
       {step === 1 && (
@@ -200,6 +201,6 @@ export default function PlanSession() {
 					}}
         />
       )}
-    </div>
+    </Layout>
   )
 }
