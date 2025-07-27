@@ -4,7 +4,6 @@ import { useNavigate } from 'react-router-dom'
 import { deleteWorkoutById } from '../utils/deleteWorkout'
 import { WorkoutButton } from '../components/WorkoutButton'
 
-
 interface WorkoutExercise {
   sets: number
   reps: number
@@ -27,9 +26,10 @@ export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
-  const today = new Date().toISOString().split('T')[0]
 
   useEffect(() => {
+    const today = new Date().toISOString().split('T')[0]
+
     async function fetchWorkouts() {
       const { data, error } = await supabase
         .from('workouts')
@@ -51,23 +51,24 @@ export default function Dashboard() {
         console.error('Error fetching workouts:', error)
         return
       }
-			//Mapping block according to CoPilot
-			const cleaned = (data ?? []).map((w: any) => {
-			  const workoutDate = w.date
-			  const isFutureOrToday = workoutDate >= today
 
-			  return {
-			    ...w,
-			    status: w.status ?? (isFutureOrToday ? 'scheduled' : 'completed'),
-			    workout_exercises: w.workout_exercises.map((we: any) => ({
-			      ...we,
-			      exercise: we.exercise && typeof we.exercise === 'object'
-			        ? Array.isArray(we.exercise) ? we.exercise[0] : we.exercise
-			        : null
-			    }))
-			  }
-			})
-			console.log('Mapped workout_exercises:', cleaned.map(w => w.workout_exercises))
+      const cleaned = (data ?? []).map((w: any) => {
+        const workoutDate = w.date
+        const isFutureOrToday = workoutDate >= today
+
+        return {
+          ...w,
+          status: w.status ?? (isFutureOrToday ? 'scheduled' : 'completed'),
+          workout_exercises: w.workout_exercises.map((we: any) => ({
+            ...we,
+            exercise: we.exercise && typeof we.exercise === 'object'
+              ? Array.isArray(we.exercise) ? we.exercise[0] : we.exercise
+              : null
+          }))
+        }
+      })
+
+      console.log('Mapped workout_exercises:', cleaned.map(w => w.workout_exercises))
 
       setWorkouts(cleaned)
       setLoading(false)
@@ -76,19 +77,19 @@ export default function Dashboard() {
     fetchWorkouts()
   }, [])
 
-	const deleteWorkout = async (id: string) => {
-	  if (!window.confirm('Delete this workout permanently?')) return
+  const deleteWorkout = async (id: string) => {
+    if (!window.confirm('Delete this workout permanently?')) return
 
-	  const success = await deleteWorkoutById(id)
+    const success = await deleteWorkoutById(id)
 
-	  if (!success) {
-	    alert('Unable to delete workout.')
-	  } else {
-	    setWorkouts(prev => prev.filter(w => w.id !== id))
-	  }
-	}
+    if (!success) {
+      alert('Unable to delete workout.')
+    } else {
+      setWorkouts(prev => prev.filter(w => w.id !== id))
+    }
+  }
 
-
+  const today = new Date().toISOString().split('T')[0]
   const scheduledWorkouts = workouts.filter(w => w.status === 'scheduled')
   const completedWorkouts = workouts.filter(w => w.status === 'completed')
 
@@ -96,12 +97,12 @@ export default function Dashboard() {
     <div style={{ padding: '1rem' }}>
       <h1 style={{ fontFamily: 'var(--font-headline)' }}>Dashboard</h1>
 
-			<WorkoutButton
-				label="Plan New Session"
-				icon="➕"
-				variant="info"
-				onClick={() => navigate('/plan')}
-				/>
+      <WorkoutButton
+        label="Plan New Session"
+        icon="➕"
+        variant="info"
+        onClick={() => navigate('/plan')}
+      />
 
       {loading ? (
         <p>Loading workouts...</p>
@@ -137,19 +138,19 @@ export default function Dashboard() {
                       }}
                     >
                       ▶️ Start Workout
-											</button>
-											<WorkoutButton
-											  label="View Details"
-											  icon="📄"
-											  variant="info"
-											  onClick={() => navigate(`/workout/${w.id}`)}
-											/>
-											<WorkoutButton
-											  label="Delete"
-											  icon="🗑"
-											  variant="accent"
-											  onClick={() => deleteWorkout(w.id)}
-											/>
+                    </button>
+                    <WorkoutButton
+                      label="View Details"
+                      icon="📄"
+                      variant="info"
+                      onClick={() => navigate(`/workout/${w.id}`)}
+                    />
+                    <WorkoutButton
+                      label="Delete"
+                      icon="🗑"
+                      variant="accent"
+                      onClick={() => deleteWorkout(w.id)}
+                    />
                   </div>
                 </div>
               ))}
@@ -176,18 +177,18 @@ export default function Dashboard() {
                         </li>
                       ))}
                   </ul>
-									<WorkoutButton
-									  label="View Details"
-									  icon="📄"
-									  variant="info"
-									  onClick={() => navigate(`/workout/${w.id}`)}
-									/>
-									<WorkoutButton
-									  label="Delete"
-									  icon="🗑"
-									  variant="accent"
-									  onClick={() => deleteWorkout(w.id)}
-									/>
+                  <WorkoutButton
+                    label="View Details"
+                    icon="📄"
+                    variant="info"
+                    onClick={() => navigate(`/workout/${w.id}`)}
+                  />
+                  <WorkoutButton
+                    label="Delete"
+                    icon="🗑"
+                    variant="accent"
+                    onClick={() => deleteWorkout(w.id)}
+                  />
                 </div>
               ))
             )}
