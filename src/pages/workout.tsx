@@ -18,7 +18,7 @@ interface WorkoutExercise {
   } | null
 }
 
-interface Workout {
+interface WorkoutData {
   id: string
   date: string
   status?: string
@@ -41,7 +41,7 @@ const listItemStyle: React.CSSProperties = {
 export default function Workout() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [workout, setWorkout] = useState<Workout | null>(null)
+  const [workout, setWorkout] = useState<WorkoutData | null>(null)
   const [editedExercises, setEditedExercises] = useState<WorkoutExercise[]>([])
   const [loading, setLoading] = useState(true)
 
