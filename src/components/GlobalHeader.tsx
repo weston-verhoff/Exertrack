@@ -1,16 +1,20 @@
 // src/components/GlobalHeader.tsx
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FaHome } from 'react-icons/fa';
 
 export function GlobalHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
     <header className="global-header">
-      <div className="logo" style={{ fontStyle: 'italic' }}>EzEx</div>
-
+			<Link className="logo"  to="/" onClick={() => setMenuOpen(false)}>
+				<div style={{ fontStyle: 'italic' }}>EzEx</div>
+			</Link>
 			<nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
-			  <Link to="/" onClick={() => setMenuOpen(false)}>Dashboard</Link>
+				<Link to="/" onClick={() => setMenuOpen(false)}>
+					<FaHome size={20} />
+				</Link>
 			  <Link to="/plan" onClick={() => setMenuOpen(false)}>Plan a Session</Link>
 			  <Link to="/past" onClick={() => setMenuOpen(false)}>Past Workouts</Link>
 			  <Link to="/templates" onClick={() => setMenuOpen(false)}>Templates</Link>

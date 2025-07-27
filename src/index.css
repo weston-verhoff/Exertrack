@@ -104,6 +104,11 @@ code {
 .global-header .logo {
   font-size: 1.2rem;
   font-weight: bold;
+	text-decoration: none;
+	color: var(--text-color);
+}
+.global-header .logo a {
+	text-decoration: none;
 }
 
 .global-header .nav-links {
