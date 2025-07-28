@@ -21,6 +21,7 @@ export default function PlanSession() {
   const [customMuscle, setCustomMuscle] = useState('')
   const [addingCustom, setAddingCustom] = useState(false)
   const [step, setStep] = useState(1)
+	const [searchQuery, setSearchQuery] = useState('')
 
   // ✅ Automatically import exercises from a selected template
   useEffect(() => {
@@ -84,7 +85,10 @@ export default function PlanSession() {
       await refetch()
     }
   }
-
+	const filteredExercises = exercises.filter(e =>
+		e.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+		e.target_muscle.toLowerCase().includes(searchQuery.toLowerCase())
+	)
   return (
     <Layout padded maxWidth="xl" scrollable>
       <h1 style={{ fontFamily: 'var(--font-headline)' }}>Plan Session</h1>
@@ -113,24 +117,35 @@ export default function PlanSession() {
 
           <section>
             <h2>Select Exercises</h2>
+						<input
+						  type="text"
+							className="exerciseSearch"
+						  placeholder="Search exercises..."
+						  value={searchQuery}
+						  onChange={e => setSearchQuery(e.target.value)}
+						  style={{
+
+						  }}
+						/>
+
             {loadingExercises ? (
               <p>Loading exercises...</p>
             ) : (
-              <ul>
-                {exercises.map(e => (
-                  <li key={e.id}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={selectedExerciseIds.includes(e.id)}
-                        onChange={() => toggleExercise(e.id)}
-                      />
-                      {e.name} ({e.target_muscle})
-                      {e.is_custom && <span style={{ color: '#888' }}> [Custom]</span>}
-                    </label>
-                  </li>
-                ))}
-              </ul>
+							<ul>
+							  {filteredExercises.map(e => (
+							    <li key={e.id}>
+							      <label>
+							        <input
+							          type="checkbox"
+							          checked={selectedExerciseIds.includes(e.id)}
+							          onChange={() => toggleExercise(e.id)}
+							        />
+							        {e.name} ({e.target_muscle})
+							        {e.is_custom && <span style={{ color: '#888' }}> [Custom]</span>}
+							      </label>
+							    </li>
+							  ))}
+							</ul>
             )}
           </section>
 

@@ -10,6 +10,7 @@ import Analytics from './pages/analytics';
 import PastDetail from './pages/past_detail';
 import WorkoutRecap from './pages/workout';
 import { GlobalHeader } from './components/GlobalHeader';
+import './index.css';
 
 function App() {
   return (

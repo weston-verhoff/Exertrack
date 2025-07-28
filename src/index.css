@@ -141,6 +141,13 @@ code {
   z-index: 90;
 }
 
+input.exerciseSearch{
+	margin-bottom: 1rem;
+	padding: 0.5rem;
+	width: 400px;
+	max-width: 95%;
+	font-size: 1rem
+}
 /* === MOBILE STYLES === */
 @media (max-width: 470px) {
   .global-header .nav-links {
