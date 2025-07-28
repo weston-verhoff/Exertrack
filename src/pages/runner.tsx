@@ -56,7 +56,7 @@ export default function WorkoutRunner() {
     fetchWorkoutExercises()
   }, [workoutId])
 
-  const updateField = (index: number, field: 'weight' | 'notes', value: any) => {
+  const updateField = (index: number, field: 'weight' | 'notes' | 'reps', value: any) => {
     const updated = [...exercises]
     updated[index][field] = value
     setExercises(updated)
@@ -109,15 +109,17 @@ export default function WorkoutRunner() {
     } else if (skipped.length > 0) {
       updated[currentId].skipped = skipped.slice(0, -1)
     } else if (currentIndex > 0) {
-      const prevExercise = exercises[currentIndex - 1]
-      const prevId = prevExercise.id
-      const prevProgress = progress[prevId]
-      const totalPrev = prevProgress.completed + prevProgress.skipped.length
+		  const prevIndex = currentIndex - 1
+		  const prevExercise = exercises[prevIndex]
+		  const prevId = prevExercise.id
+		  const prevProgress = updated[prevId]
+		  const totalPrev = prevProgress.completed + prevProgress.skipped.length
 
-      setCurrentIndex(currentIndex - 1)
-      setCurrentSet(totalPrev)
-      return
-    } else {
+		  setProgress(updated)
+		  setCurrentIndex(prevIndex)
+		  setCurrentSet(totalPrev)
+		  return
+		} else {
       return
     }
 
@@ -192,6 +194,7 @@ export default function WorkoutRunner() {
 
   return (
 		<Layout padded maxWidth="md">
+		<WorkoutProgressBar current={currentIndex} total={exercises.length} />
 		  <h1 className="headline">Workout Runner</h1>
 
 		  <ExerciseHeader name={exerciseName} targetMuscle={targetMuscle} />
@@ -268,7 +271,7 @@ function SetEditor({
   weight: number
   reps: number
   notes: string
-  onChange: (field: 'weight' | 'notes', value: any) => void
+  onChange: (field: 'weight' | 'notes' | 'reps', value: any) => void
 }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -284,7 +287,12 @@ function SetEditor({
 
       <label>
         Reps
-        <input type="number" value={reps} disabled style={{ width: '100%' }} />
+				<input
+				  type="number"
+				  value={reps}
+				  onChange={e => onChange('reps', parseInt(e.target.value))}
+				  style={{ width: '100%' }}
+				/>
       </label>
 
       <label>
@@ -324,6 +332,36 @@ function ActionButtons({
           <WorkoutButton label="Skipped →" onClick={onSkipSet} variant="accent" />
         </>
       )}
+    </div>
+  )
+}
+function WorkoutProgressBar({ current, total }: { current: number; total: number }) {
+  const percent = Math.round((current / total) * 100)
+
+  return (
+    <div style={{ marginBottom: '1rem', backgroundColor: 'var(--bg-30)', padding: '0.75rem', borderRadius: '0.5rem' }}>
+      <div
+        style={{
+          height: '16px',
+          width: '100%',
+          backgroundColor: '#eee',
+          borderRadius: '8px',
+          overflow: 'hidden'
+        }}
+      >
+        <div
+          style={{
+            height: '100%',
+            width: `${percent}%`,
+            backgroundColor: 'var(--info-color)',
+            transition: 'width 0.3s ease',
+						borderRadius: '8px'
+          }}
+        />
+      </div>
+			<div style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+        <strong>{total - current} workout{total - current !== 1 ? 's' : ''} left</strong>
+      </div>
     </div>
   )
 }

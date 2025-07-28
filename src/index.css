@@ -95,7 +95,7 @@ code {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: #222;
+  background-color: var(--bg-30);
   color: white;
   position: relative;
   z-index: 100;
