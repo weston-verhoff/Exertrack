@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { deleteWorkoutById } from '../utils/deleteWorkout'
+import { Layout } from '../components/Layout'
 
 
 export default function PastWorkouts() {
@@ -57,7 +58,7 @@ export default function PastWorkouts() {
 
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <Layout>
       <h1 style={{ fontFamily: 'var(--font-headline)' }}>Past Workouts</h1>
 
       {loading ? (
@@ -106,6 +107,6 @@ export default function PastWorkouts() {
           ))}
         </ul>
       )}
-    </div>
+    </Layout>
   )
 }

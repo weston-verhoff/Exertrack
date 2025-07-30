@@ -5,11 +5,15 @@
 /* === RESET & BASE === */
 body {
   margin: 0;
-  background: var(--bg-color);
   color: var(--text-color);
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+	/*Background texture*/
+  background: linear-gradient(135deg, #1f2a33, #141b21);
+	background-color: var(--bg-color);
+  background-image: url('gplay.png');
+  background-repeat: repeat;
 }
 
 code {
@@ -31,8 +35,13 @@ code {
   margin: 2rem auto;
   padding: 1.5rem;
   background-color: var(--bg-20);
+	background-image: url('gplay.png');
+	background-blend-mode: soft-light;
+  background-repeat: repeat;
+  opacity: 0.95;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+	border: 0.5rem solid var(--bg-color);
 }
 
 .layout.scrollable {
@@ -57,7 +66,10 @@ code {
 }
 
 .workout-card.highlight {
-  background-color: var(--bg-color);
+	background-image: url('gplay.png');
+	background-blend-mode: color-burn;
+  background-repeat: repeat;
+  background-color: var(--bg-20);
   border-radius: 0.5rem;
 }
 
@@ -95,7 +107,12 @@ code {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background-color: var(--bg-30);
+	background: linear-gradient(135deg, --bg-30, #141b21);
+	background-color: var(--bg-30);
+  background-image: url('gplay.png');
+	background-blend-mode: color-burn;
+  background-repeat: repeat;
+
   color: white;
   position: relative;
   z-index: 100;

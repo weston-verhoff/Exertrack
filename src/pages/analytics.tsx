@@ -11,6 +11,7 @@ import {
   Legend
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
+import { Layout } from '../components/Layout'
 
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
@@ -110,7 +111,7 @@ export default function AnalyticsPage() {
   )
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <Layout>
       <h1>📊 Training Analytics</h1>
 
       <label htmlFor="muscle-select">Filter by Muscle Group:</label>
@@ -131,6 +132,6 @@ export default function AnalyticsPage() {
       ) : (
         <Line data={chartData} />
       )}
-    </div>
+    </Layout>
   )
 }

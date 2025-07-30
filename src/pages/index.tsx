@@ -30,7 +30,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
 
     async function fetchWorkouts() {
       const { data, error } = await supabase
@@ -80,6 +80,31 @@ export default function Dashboard() {
     fetchWorkouts();
   }, []);
 
+	function formatDateCompact(dateStr: string) {
+	  const [year, month, day] = dateStr.split('-').map(Number);
+	  const date = new Date(year, month - 1, day); // month is 0-indexed
+
+	  const weekday = new Intl.DateTimeFormat('en-US', {
+	    weekday: 'long',
+	  }).format(date);
+
+	  const compactDate = new Intl.DateTimeFormat('en-US', {
+	    month: 'numeric',
+	    day: 'numeric',
+	    year: '2-digit',
+	  }).format(date);
+
+	  return `${weekday} ${compactDate}`;
+	}
+
+	function getLocalDateString() {
+	  const now = new Date();
+	  const year = now.getFullYear();
+	  const month = String(now.getMonth() + 1).padStart(2, '0');
+	  const day = String(now.getDate()).padStart(2, '0');
+	  return `${year}-${month}-${day}`; // e.g. "2025-07-29"
+	}
+
   const deleteWorkout = async (id: string) => {
     if (!window.confirm('Delete this workout permanently?')) return;
 
@@ -92,15 +117,15 @@ export default function Dashboard() {
     }
   };
 
-  const today = new Date().toISOString().split('T')[0];
+  const today = getLocalDateString();
 
   const scheduledWorkouts = workouts
     .filter((w) => w.status === 'scheduled')
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  const completedWorkouts = workouts
-    .filter((w) => w.status === 'completed')
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+	const completedWorkouts = workouts
+	  .filter((w) => w.status === 'completed')
+	  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // descending
 
   const nextWorkoutId = scheduledWorkouts[0]?.id;
 
@@ -127,7 +152,7 @@ export default function Dashboard() {
 	                key={w.id}
 	                className={`workout-card ${w.id === nextWorkoutId ? 'highlight' : ''}`}
 	              >
-	                <strong>{w.date}</strong>
+									<strong title={w.date}>{formatDateCompact(w.date)}</strong>
 	                {w.date === today && <span className="accent">← Today</span>}
 	                {w.id === nextWorkoutId && <span className="info">🟢 Next Up</span>}
 	                <ul>
@@ -170,7 +195,7 @@ export default function Dashboard() {
 	          ) : (
 	            completedWorkouts.map((w) => (
 	              <div key={w.id} className="workout-card">
-	                <strong>{w.date}</strong>
+	                <strong title={w.date}>{formatDateCompact(w.date)}</strong>
 	                {w.date === today && <span className="accent">← Today</span>}
 	                <ul>
 	                  {w.workout_exercises
