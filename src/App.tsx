@@ -20,6 +20,7 @@ function App() {
       <main style={{ padding: '1rem' }}>
         <Routes>
           <Route path="/" element={<Dashboard />} />
+          <Route path="/templates/:id/edit" element={<PlanSession />} />
           <Route path="/plan" element={<PlanSession />} />
           <Route path="/templates" element={<Templates />} />
           <Route path="/runner" element={<WorkoutRunner />} />

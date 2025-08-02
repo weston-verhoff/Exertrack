@@ -13,9 +13,10 @@ interface WorkoutExercise {
   weight: number
   order: number
   exercise: {
+		id: string;
     name: string
     target_muscle: string
-  } | null
+  } | null;
 }
 
 interface WorkoutData {
@@ -59,7 +60,7 @@ export default function Workout() {
             reps,
             weight,
             order,
-            exercise:exercise_id(name, target_muscle)
+						exercise:exercise_id(id, name, target_muscle)
           )
         `)
         .eq('id', id)
@@ -227,12 +228,63 @@ export default function Workout() {
           </li>
         ))}
       </ul>
+			<div style={{ display:'flex', flexDirection:'row', columnGap:'0.5rem'}}>
+			<WorkoutButton
+			  label="Create Template"
+			  icon="📦"
+			  variant="info"
+			  onClick={async () => {
+			    const name = window.prompt('Name your template:');
+			    if (!name || !workout) return;
+
+			    try {
+			      const { data: template, error } = await supabase
+			        .from('templates')
+			        .insert({
+			          name,
+			          source_workout_id: workout.id,
+			          created_at: new Date().toISOString()
+			        })
+			        .select()
+			        .single();
+
+			      if (error || !template) {
+			        console.error('Error creating template:', error);
+			        alert('Failed to create template.');
+			        return;
+			      }
+
+			      // Optionally insert exercises into a template_exercises table
+						for (const we of editedExercises) {
+						  const { data, error } = await supabase.from('template_exercises').insert({
+						    template_id: template.id,
+						    sets: we.sets,
+						    reps: we.reps,
+						    order: we.order,
+						    exercise_id: we.exercise?.id
+						  });
+
+						  if (error) {
+						    console.error('Insert failed:', error);
+						  } else {
+						    console.log('Inserted template exercise:', data);
+						  }
+						}
+			      navigate('/templates');
+			    } catch (err) {
+			      console.error('Unexpected error:', err);
+			      alert('Something went wrong.');
+			    }
+			  }}
+			/>
+
 			<WorkoutButton
 	      label="Back to Dashboard"
 	      icon="🏠"
 	      variant="info"
 	      onClick={() => navigate('/')}
 	    />
+			</div>
     </Layout>
   )
 }

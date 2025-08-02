@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
+import { Layout } from '../components/Layout';
+import { WorkoutButton } from '../components/WorkoutButton';
 
 interface TemplateExercise {
   id: string
@@ -53,8 +55,8 @@ export default function TemplatesPage() {
         }))
         setTemplates(cleaned)
       }
-
       setLoading(false)
+			console.log('Fetched templates:', data);
     }
 
     fetchTemplates()
@@ -76,36 +78,55 @@ export default function TemplatesPage() {
     }
   }
 
-  return (
-    <div style={{ padding: '1rem' }}>
-      <h1 style={{ fontFamily: 'var(--font-headline)' }}>Saved Templates</h1>
+	return (
+	  <Layout>
+	    <h1 style={{ fontFamily: 'var(--font-headline)' }}>Saved Templates</h1>
 
-      {loading ? (
-        <p>Loading templates...</p>
-      ) : templates.length === 0 ? (
-        <p>No templates found.</p>
-      ) : (
-        <ul>
-          {templates.map(t => (
-            <li key={t.id} style={{ marginBottom: '2rem' }}>
-              <strong>{t.name}</strong>
-              <ul>
-                {t.template_exercises
-                  .sort((a: TemplateExercise, b: TemplateExercise) => a.order - b.order)
-                  .map((te: TemplateExercise) => (
-                    <li key={te.id}>
-                      {te.exercise.name} ({te.exercise.target_muscle}) – {te.sets}×{te.reps}
-                    </li>
-                  ))}
-              </ul>
-              <button onClick={() => deleteTemplate(t.id)}>🗑 Delete</button>{' '}
-              <button onClick={() => navigate(`/plan?importTemplate=${t.id}`)}>➕ Use This</button>
-            </li>
-          ))}
-        </ul>
-      )}
+	    {loading ? (
+	      <p>Loading templates...</p>
+	    ) : templates.length === 0 ? (
+	      <p>No templates found.</p>
+	    ) : (
+	      <ul>
+	        {templates.map(t => (
+	          <li key={t.id} style={{ marginBottom: '2rem' }}>
+	            <strong>{t.name}</strong>
+	            <ul>
+	              {t.template_exercises
+	                .sort((a: TemplateExercise, b: TemplateExercise) => a.order - b.order)
+	                .map((te: TemplateExercise) => (
+	                  <li key={te.id}>
+	                    {te.exercise.name} ({te.exercise.target_muscle}) – {te.sets}×{te.reps}
+	                  </li>
+	                ))}
+	            </ul>
+							<div style={{ display: 'flex', flexDirection: 'row', columnGap:'0.5rem', paddingTop: '1rem', paddingBottom: '2rem' }}>
+							<WorkoutButton
+							  label="Delete Template"
+							  icon="🗑"
+							  variant="accent"
+							  onClick={() => deleteTemplate(t.id)}
+							/>
+							<WorkoutButton
+							  label="Use Template"
+							  icon="➕"
+							  variant="info"
+							  onClick={() => navigate(`/plan?importTemplate=${t.id}`)}
+							/>
 
-      <button onClick={() => navigate('/')}>🏠 Return to Dashboard</button>
-    </div>
-  )
+							<WorkoutButton
+							   label="Edit Template"
+							   icon="✏️"
+							   variant="info"
+							   onClick={() => navigate(`/templates/${t.id}/edit`)}
+							 />
+						</div>
+	          </li>
+	        ))}
+	      </ul>
+	    )}
+
+	    <button onClick={() => navigate('/')}>🏠 Return to Dashboard</button>
+	  </Layout>
+	);
 }
