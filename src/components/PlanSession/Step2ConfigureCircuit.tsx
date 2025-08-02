@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { supabase } from '../../supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { Layout } from '../Layout';
 import {
   DndContext,
   closestCenter,
@@ -15,6 +16,7 @@ import {
   verticalListSortingStrategy
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import { WorkoutButton } from '../../components/WorkoutButton';
 
 export type ConfiguredExercise = ExerciseConfig;
 
@@ -37,11 +39,13 @@ export interface Step2Props {
 function SortableExercise({
   ex,
   index,
-  onChange
+  onChange,
+  onRemove
 }: {
   ex: ExerciseConfig;
   index: number;
   onChange: (index: number, field: 'sets' | 'reps', value: number) => void;
+  onRemove: (exercise_id: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
     id: ex.exercise_id
@@ -58,35 +62,69 @@ function SortableExercise({
     display: 'flex',
     alignItems: 'center',
     gap: '0.5rem',
-    color: 'white'
+    color: 'white',
+		overflow: 'hidden',
   };
 
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <span style={{ cursor: 'grab' }}>☰</span>
-      <input
-        type="text"
-        value={ex.name}
-        disabled
-        style={{ backgroundColor: '#3f4f5d', color: 'white', flex: 1 }}
+		<div ref={setNodeRef} style={style}>
+		  <span
+		    style={{ cursor: 'grab' }}
+		    {...attributes}
+		    {...listeners}
+		  >
+		    ☰
+		  </span>
+      <WorkoutButton
+        label=""
+        icon="🗑"
+        variant="accent"
+        onClick={() => onRemove(ex.exercise_id)}
       />
-      <input
-        type="number"
-        placeholder="Sets"
-        value={ex.sets}
-        onChange={e => onChange(index, 'sets', parseInt(e.target.value))}
-        style={{ width: '60px' }}
-      />
-      <input
-        type="number"
-        placeholder="Reps"
-        value={ex.reps}
-        onChange={e => onChange(index, 'reps', parseInt(e.target.value))}
-        style={{ width: '60px' }}
-      />
+			<div
+  style={{
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: '0.5rem',
+    flex: 1,
+    minWidth: 0
+  }}
+>
+	  <input
+	    type="text"
+	    value={ex.name}
+	    disabled
+	    style={{
+	      backgroundColor: '#3f4f5d',
+	      color: 'white',
+	      flex: 1,
+	      minWidth: '120px'
+	    }}
+	  />
+	  <input
+	    type="number"
+	    placeholder="Sets"
+	    value={ex.sets}
+	    onChange={e => onChange(index, 'sets', parseInt(e.target.value))}
+	    style={{
+	      width: '40px'
+	    }}
+	  />
+	  <input
+	    type="number"
+	    placeholder="Reps"
+	    value={ex.reps}
+	    onChange={e => onChange(index, 'reps', parseInt(e.target.value))}
+	    style={{
+	      width: '40px'
+	    }}
+	  />
+	</div>
+
     </div>
   );
 }
+
 
 export default function Step2ConfigureCircuit({
   selectedExercises,
@@ -131,6 +169,17 @@ export default function Step2ConfigureCircuit({
     updated[index][field] = value;
     setExercises(updated);
   };
+
+	const handleRemoveExercise = (exercise_id: string) => {
+	  const updated = exercises
+	    .filter((e: ExerciseConfig) => e.exercise_id !== exercise_id)
+	    .map((e: ExerciseConfig, i: number) => ({
+	      ...e,
+	      order: i
+	    }));
+	  setExercises(updated);
+		console.log('Removed!');
+	};
 
   const handleSaveWorkout = async () => {
     if (exercises.length === 0) {
@@ -195,7 +244,7 @@ export default function Step2ConfigureCircuit({
   };
 
   return (
-    <div style={{ padding: '1rem' }}>
+    <div>
       <h1>🛠 Configure Circuit</h1>
 
       {!isEditingTemplate && (
@@ -206,7 +255,7 @@ export default function Step2ConfigureCircuit({
             id="workout-date"
             value={selectedDate}
             onChange={e => setSelectedDate(e.target.value)}
-            style={{ marginBottom: '1rem', padding: '0.4rem' }}
+            style={{ marginBottom: '1rem', marginLeft:'1rem', padding: '0.4rem' }}
           />
         </>
       )}
@@ -217,9 +266,15 @@ export default function Step2ConfigureCircuit({
           items={exercises.map(e => e.exercise_id)}
           strategy={verticalListSortingStrategy}
         >
-          {exercises.map((ex, i) => (
-            <SortableExercise key={ex.exercise_id} ex={ex} index={i} onChange={handleChange} />
-          ))}
+				{exercises.map((ex, i) => (
+					<SortableExercise
+						key={ex.exercise_id}
+						ex={ex}
+						index={i}
+						onChange={handleChange}
+						onRemove={handleRemoveExercise}
+					/>
+					))}
         </SortableContext>
       </DndContext>
 
