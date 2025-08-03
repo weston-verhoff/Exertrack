@@ -15,7 +15,6 @@
 .exercise-inputs {
   display: flex;
 	flex-direction: row;
-  flex-wrap: wrap; /* ✅ Allows wrapping */
   gap: 1rem;        /* Space between labels */
 }
 
