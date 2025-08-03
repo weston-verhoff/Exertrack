@@ -29,6 +29,7 @@ interface WorkoutData {
 // ✅ Reusable styles for summary lists
 const listContainerStyle: React.CSSProperties = {
   maxWidth: '600px',
+	marginBottom: '2rem',
 }
 
 const listItemStyle: React.CSSProperties = {
@@ -168,9 +169,9 @@ export default function Workout() {
       <p><strong>Status:</strong> {workout.status ?? 'completed'}</p>
 
       <h2>🏋️ Exercises</h2>
-      <ul style={listContainerStyle}>
+      <div style={listContainerStyle}>
         {editedExercises.map((we, i) => (
-          <li key={we.id} className="exercise-item">
+          <div key={we.id} className="exercise-item">
             <strong>{we.exercise?.name ?? 'Unknown'}</strong>
 						<div className="exercise-inputs">
             <label>
@@ -198,9 +199,9 @@ export default function Workout() {
               />
             </label>
 						</div>
-          </li>
+          </div>
         ))}
-      </ul>
+      </div>
 
       <StatusButton
         onClick={saveUpdates}
@@ -209,7 +210,7 @@ export default function Workout() {
         accentColor="#eee"
         successColor="#4CAF50"
       />
-
+			<hr style={{ marginTop:'2rem' }}/>
       <h2>📊 Volume Summary</h2>
       <ul style={listContainerStyle}>
         {volumeByExercise.map((ve, i) => (
