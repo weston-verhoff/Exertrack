@@ -91,22 +91,22 @@ export default function Dashboard() {
     }
   }, [workouts]);
 
-  function formatDateCompact(dateStr: string) {
-    const [year, month, day] = dateStr.split('-').map(Number);
-    const date = new Date(year, month - 1, day); // month is 0-indexed
-
-    const weekday = new Intl.DateTimeFormat('en-US', {
-      weekday: 'long',
-    }).format(date);
-
-    const compactDate = new Intl.DateTimeFormat('en-US', {
-      month: 'numeric',
-      day: 'numeric',
-      year: '2-digit',
-    }).format(date);
-
-    return `${weekday} ${compactDate}`;
-  }
+  // function formatDateCompact(dateStr: string) {
+  //   const [year, month, day] = dateStr.split('-').map(Number);
+  //   const date = new Date(year, month - 1, day); // month is 0-indexed
+	//
+  //   const weekday = new Intl.DateTimeFormat('en-US', {
+  //     weekday: 'long',
+  //   }).format(date);
+	//
+  //   const compactDate = new Intl.DateTimeFormat('en-US', {
+  //     month: 'numeric',
+  //     day: 'numeric',
+  //     year: '2-digit',
+  //   }).format(date);
+	//
+  //   return `${weekday} ${compactDate}`;
+  // }
 
   function getLocalDateString() {
     const now = new Date();
