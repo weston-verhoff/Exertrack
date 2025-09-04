@@ -17,7 +17,7 @@ function App() {
     <BrowserRouter>
       <GlobalHeader /> {}
 
-      <main style={{ padding: '1rem' }}>
+      <main>
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/templates/:id/edit" element={<PlanSession />} />

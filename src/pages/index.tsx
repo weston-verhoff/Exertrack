@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from '../supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { deleteWorkoutById } from '../utils/deleteWorkout';
 import { WorkoutButton } from '../components/WorkoutButton';
-import { Layout } from '../components/Layout';
-
+import { WorkoutCard } from '../components/WorkoutCard';
+import { motion } from 'framer-motion'; // ✅ Import motion
 
 interface WorkoutExercise {
   sets: number;
@@ -28,6 +28,8 @@ export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const futureRef = useRef<HTMLDivElement>(null);
+  const [constraints, setConstraints] = useState({ left: 0, right: 0 });
 
   useEffect(() => {
     const today = getLocalDateString();
@@ -80,30 +82,39 @@ export default function Dashboard() {
     fetchWorkouts();
   }, []);
 
-	function formatDateCompact(dateStr: string) {
-	  const [year, month, day] = dateStr.split('-').map(Number);
-	  const date = new Date(year, month - 1, day); // month is 0-indexed
+  // ✅ Dynamically calculate drag constraints when workouts change
+  useEffect(() => {
+    if (futureRef.current) {
+      const scrollWidth = futureRef.current.scrollWidth;
+      const clientWidth = futureRef.current.clientWidth;
+      setConstraints({ left: -(scrollWidth - clientWidth), right: 0 });
+    }
+  }, [workouts]);
 
-	  const weekday = new Intl.DateTimeFormat('en-US', {
-	    weekday: 'long',
-	  }).format(date);
+  function formatDateCompact(dateStr: string) {
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const date = new Date(year, month - 1, day); // month is 0-indexed
 
-	  const compactDate = new Intl.DateTimeFormat('en-US', {
-	    month: 'numeric',
-	    day: 'numeric',
-	    year: '2-digit',
-	  }).format(date);
+    const weekday = new Intl.DateTimeFormat('en-US', {
+      weekday: 'long',
+    }).format(date);
 
-	  return `${weekday} ${compactDate}`;
-	}
+    const compactDate = new Intl.DateTimeFormat('en-US', {
+      month: 'numeric',
+      day: 'numeric',
+      year: '2-digit',
+    }).format(date);
 
-	function getLocalDateString() {
-	  const now = new Date();
-	  const year = now.getFullYear();
-	  const month = String(now.getMonth() + 1).padStart(2, '0');
-	  const day = String(now.getDate()).padStart(2, '0');
-	  return `${year}-${month}-${day}`; // e.g. "2025-07-29"
-	}
+    return `${weekday} ${compactDate}`;
+  }
+
+  function getLocalDateString() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`; // e.g. "2025-07-29"
+  }
 
   const deleteWorkout = async (id: string) => {
     if (!window.confirm('Delete this workout permanently?')) return;
@@ -123,110 +134,85 @@ export default function Dashboard() {
     .filter((w) => w.status === 'scheduled')
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-	const completedWorkouts = workouts
-	  .filter((w) => w.status === 'completed')
-	  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // descending
+  const completedWorkouts = workouts
+    .filter((w) => w.status === 'completed')
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // descending
 
   const nextWorkoutId = scheduledWorkouts[0]?.id;
+	const nextWorkout = scheduledWorkouts[0];
 
-	return (
-	  <Layout padded maxWidth="xl" scrollable>
-	    <h1 className="headline">Dashboard</h1>
+  return (
+    <div>
+      <div className='dashboardHero'>
+				<div className="dash-content">
+        <h1 className="headline">Dashboard</h1>
+					<div className="dashboard-buttons">
+					{nextWorkoutId && (
+					  <WorkoutButton
+					    label="Start Next Workout"
+					    icon="▶️"
+					    variant="accent"
+					    onClick={() => navigate(`/runner/${nextWorkoutId}`)}
+					  />
+					)}
 
-	    <WorkoutButton
-	      label="Plan New Session"
-	      icon="➕"
-	      variant="info"
-	      onClick={() => navigate('/plan')}
-	    />
-
-	    {loading ? (
-	      <p>Loading workouts...</p>
-	    ) : (
-	      <>
-	        {scheduledWorkouts.length > 0 && (
-	          <section className="section">
-	            <h2>⏳ Scheduled Workouts</h2>
-	            {scheduledWorkouts.map((w) => (
-	              <div
-	                key={w.id}
-	                className={`workout-card ${w.id === nextWorkoutId ? 'highlight' : ''}`}
-	              >
-									<strong title={w.date}>{formatDateCompact(w.date)}</strong>
-	                {w.date === today && <span className="accent">← Today</span>}
-	                {w.id === nextWorkoutId && <span className="info">🟢 Next Up</span>}
-	                <ul>
-	                  {w.workout_exercises.map((we, i) => (
-	                    <li key={i}>
-	                      {we.exercise?.name ?? 'Unknown'} – {we.sets}×{we.reps}
-	                    </li>
-	                  ))}
-	                </ul>
-
-	                <div className="button-group">
-	                  <button
-	                    className="button"
-	                    onClick={() => navigate(`/runner/${w.id}`)}
-	                  >
-	                    ▶️ Start Workout
-	                  </button>
-	                  <WorkoutButton
-	                    label="View Details"
-	                    icon="📄"
-	                    variant="info"
-	                    onClick={() => navigate(`/workout/${w.id}`)}
-	                  />
-	                  <WorkoutButton
-	                    label="Delete"
-	                    icon="🗑"
-	                    variant="accent"
-	                    onClick={() => deleteWorkout(w.id)}
-	                  />
-	                </div>
-	              </div>
-	            ))}
-	          </section>
-	        )}
-
-	        <section className="section">
-	          <h2>📊 Finished Workouts</h2>
-	          {completedWorkouts.length === 0 ? (
-	            <p>No completed workouts yet.</p>
-	          ) : (
-	            completedWorkouts.map((w) => (
-	              <div key={w.id} className="workout-card">
-	                <strong title={w.date}>{formatDateCompact(w.date)}</strong>
-	                {w.date === today && <span className="accent">← Today</span>}
-	                <ul>
-	                  {w.workout_exercises
-	                    .sort((a, b) => a.order - b.order)
-	                    .map((we, i) => (
-	                      <li key={i}>
-	                        {we.exercise?.name ?? 'Unknown'} – {we.sets}×{we.reps} @{' '}
-	                        {we.weight ?? 0} lbs
-	                      </li>
-	                    ))}
-	                </ul>
-	                <div className="button-group">
-	                  <WorkoutButton
-	                    label="View Details"
-	                    icon="📄"
-	                    variant="info"
-	                    onClick={() => navigate(`/workout/${w.id}`)}
-	                  />
-	                  <WorkoutButton
-	                    label="Delete"
-	                    icon="🗑"
-	                    variant="accent"
-	                    onClick={() => deleteWorkout(w.id)}
-	                  />
-	                </div>
-	              </div>
-	            ))
-	          )}
-	        </section>
-	      </>
-	    )}
-	  </Layout>
-	);
+	        <WorkoutButton
+	          label="Plan New Session"
+	          icon="➕"
+	          variant="info"
+	          onClick={() => navigate('/plan')}
+	        />
+					</div>
+				</div>
+				{nextWorkout && (
+				  <WorkoutCard
+				    workout={nextWorkout}
+						onDelete={deleteWorkout}
+				  />
+				)}
+      </div>
+      {loading ? (
+        <p>Loading workouts...</p>
+      ) : (
+        <>
+          {/* FUTURE WORKOUTS with drag scrolling */}
+					<div className="future-workouts">
+          <motion.div
+            ref={futureRef}
+            className="drag-future-workouts"
+            drag="x"
+            dragConstraints={constraints}
+            dragElastic={0.05}
+          >
+            {scheduledWorkouts.map((w) => (
+              <WorkoutCard
+                key={w.id}
+                workout={w}
+                onDelete={deleteWorkout}
+              />
+            ))}
+          </motion.div>
+					</div>
+          {/* COMPLETED WORKOUTS */}
+          <section className="past-workout-container">
+            <h2>Finished Workouts</h2>
+            {completedWorkouts.length === 0 ? (
+              <p>No completed workouts yet.</p>
+            ) : (
+              <div className="past-workouts">
+                {completedWorkouts.map((w) => (
+                  <WorkoutCard
+                    key={w.id}
+                    workout={w}
+                    isToday={w.date === today}
+                    onDelete={deleteWorkout}
+                  />
+                ))}
+              </div>
+            )}
+          </section>
+        </>
+      )}
+    </div>
+  );
 }
