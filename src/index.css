@@ -245,13 +245,11 @@ input.exerciseSearch{
 	padding: 3rem;
 	display: flex;
 	gap: 1rem;
-	/* overflow-x:auto; */
 	scrollbar-width:none;
 	cursor: grab;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   user-select: none;
-	width:100%;
 }
 .future-workouts::-webkit-scrollbar{display:none;}
 .past-workouts {
