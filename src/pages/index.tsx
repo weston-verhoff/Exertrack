@@ -128,7 +128,7 @@ export default function Dashboard() {
     <div>
       <div className='dashboardHero'>
 				<div className="dash-content">
-        <h1 className="headline">Dashboard</h1>
+        <h1 className="headline">EzExTrack</h1>
 					<div className="dashboard-buttons">
 					{nextWorkoutId && (
 					  <WorkoutButton

@@ -15,6 +15,7 @@ body {
   background-repeat: no-repeat;
 	min-height: 100vh;
 	box-sizing: border-box;
+	overflow-x: hidden;
 }
 
 code {
@@ -172,45 +173,7 @@ input.exerciseSearch{
 	max-width: 95%;
 	font-size: 1rem
 }
-/* === MOBILE STYLES === */
-@media (max-width: 470px) {
-  .global-header .nav-links {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 200px;
-    background: #333;
-    flex-direction: column;
-    padding: 2rem 1rem;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    z-index: 101;
-  }
 
-  .global-header .nav-links.open {
-    transform: translateX(0);
-  }
-
-  .global-header .hamburger {
-    display: block;
-  }
-
-  .global-header .nav-links a,
-  .global-header .nav-links .active {
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    display: block;
-    transition: background 0.2s ease;
-  }
-
-  .global-header .nav-links a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
-}
 /* ====Dashboard==== */
 .dashboardHero {
 	display:flex;
@@ -222,6 +185,9 @@ input.exerciseSearch{
 	min-height: 350px;
 	height: 25vh;
 	padding:3rem 2rem;
+}
+.dashboardHero h1{
+		font-style: italic;
 }
 .dashboardHero .workout-card {
 	margin-left: 10rem;
@@ -265,4 +231,55 @@ input.exerciseSearch{
 .past-workout-container h2{
 	text-align: center;
 	font-size: 2rem;
+}
+/* === MOBILE STYLES === */
+@media (max-width: 470px) {
+  .global-header .nav-links {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 200px;
+    background: #333;
+    flex-direction: column;
+    padding: 2rem 1rem;
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 101;
+  }
+
+  .global-header .nav-links.open {
+    transform: translateX(0);
+  }
+
+  .global-header .hamburger {
+    display: block;
+  }
+
+  .global-header .nav-links a,
+  .global-header .nav-links .active {
+    text-decoration: none;
+    color: white;
+    font-weight: 500;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    display: block;
+    transition: background 0.2s ease;
+  }
+
+  .global-header .nav-links a:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
+}
+@media (max-width: 800px) {
+	.dashboardHero {
+		flex-direction: column;
+		height: auto;
+		text-align: center;
+	}
+	.dashboardHero .workout-card{
+		margin-left: 0;
+		margin-top: 3rem;
+		text-align: left;
+	}
 }

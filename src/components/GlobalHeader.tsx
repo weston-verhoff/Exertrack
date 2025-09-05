@@ -5,6 +5,8 @@ import { FaHome } from 'react-icons/fa';
 
 export function GlobalHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
+	const HomeIcon = FaHome as unknown as React.FC<{ size?: number }>;
+
 
   return (
     <header className="global-header">
@@ -13,7 +15,7 @@ export function GlobalHeader() {
 			</Link>
 			<nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
 				<Link to="/" onClick={() => setMenuOpen(false)}>
-					<FaHome size={20} />
+				<HomeIcon size={20} />
 				</Link>
 			  <Link to="/plan" onClick={() => setMenuOpen(false)}>Plan a Session</Link>
 			  <Link to="/past" onClick={() => setMenuOpen(false)}>Past Workouts</Link>
