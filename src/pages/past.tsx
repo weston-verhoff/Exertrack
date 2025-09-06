@@ -9,7 +9,6 @@ import { WorkoutCard } from '../components/WorkoutCard'
 export default function PastWorkouts() {
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true)
-  const navigate = useNavigate()
 
   useEffect(() => {
     async function fetchWorkouts() {
