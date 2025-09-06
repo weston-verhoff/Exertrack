@@ -200,6 +200,7 @@ input.exerciseSearch{
 /* ====Dashboard==== */
 .clearfix{
 	padding-top:1px;
+	overflow-x:hidden;
 }
 .dashboardHero {
 	display:flex;
