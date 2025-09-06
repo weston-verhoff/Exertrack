@@ -3,6 +3,10 @@
 @import './styles/variables.css';
 
 /* === RESET & BASE === */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   color: var(--text-color);
@@ -40,6 +44,15 @@ input {
 	font-size: 1rem;
 	border-radius: 2rem;
 }
+input[type='checkbox']{
+	height:auto;
+	margin-bottom:16px;
+	margin-right: 12px;
+}
+.session-planner-exercises{
+	list-style: none;
+	padding-left:0;
+}
 
 /* === CUSTOM PROPERTIES === */
 :root {
@@ -52,17 +65,21 @@ input {
 
 /* === LAYOUT === */
 .layout {
-  max-width: 800px;
+  max-width: 1000px;
   margin: 2rem auto;
   padding: 1.5rem;
-  background-color: var(--bg-20);
-	background-image: url('gplay.png');
+  background-color: rgba(219, 234, 254, 0.95);
 	background-blend-mode: soft-light;
   background-repeat: repeat;
-  opacity: 0.95;
   border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-	border: 0.5rem solid var(--bg-color);
+  box-shadow: 2px 2px 16px rgba(0, 0, 0, 0.5);
+	border: 1px solid #162456;
+	display: flex;
+	flex-direction:column;
+	align-items: center;
+}
+.layout * {
+	width:fit-content;
 }
 
 .layout.scrollable {
@@ -74,6 +91,9 @@ input {
   font-family: var(--font-headline);
   font-size: 2rem;
   margin-bottom: 1rem;
+}
+.font-white {
+	color:white;
 }
 
 /* === SECTIONS & CARDS === */
@@ -111,18 +131,18 @@ input {
 
 /* === GLOBAL HEADER === */
 .global-header {
+	position: fixed;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-	background: linear-gradient(135deg, --bg-30, #141b21);
-	background-color: var(--bg-30);
-  background-image: url('gplay.png');
+	background-color: rgba(14, 23, 55, 0.95);
+  /* background-image: url('gplay.png'); */
 	background-blend-mode: color-burn;
   background-repeat: repeat;
+	width:100%;
 
   color: white;
-  position: relative;
   z-index: 100;
 }
 
@@ -130,7 +150,6 @@ input {
   font-size: 1.2rem;
   font-weight: bold;
 	text-decoration: none;
-	color: var(--text-color);
 }
 .global-header .logo a {
 	text-decoration: none;
@@ -138,13 +157,16 @@ input {
 
 .global-header .nav-links {
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .global-header .nav-links a {
   text-decoration: none;
   color: white;
   font-weight: 500;
+	display:flex;
+	align-items:center;
+	gap:8px;
 }
 
 .global-header .hamburger {
@@ -175,6 +197,9 @@ input.exerciseSearch{
 }
 
 /* ====Dashboard==== */
+.clearfix{
+	padding-top:1px;
+}
 .dashboardHero {
 	display:flex;
 	align-items: center;
@@ -183,8 +208,9 @@ input.exerciseSearch{
 	background-image: url("darkblue-hero-bg.png");
 	background-size: cover;
 	min-height: 350px;
-	height: 25vh;
-	padding:3rem 2rem;
+	/* height: 25vh; */
+	padding:4rem 2rem;
+	margin-top:53px;
 }
 .dashboardHero h1{
 		font-style: italic;
@@ -206,9 +232,11 @@ input.exerciseSearch{
 .future-workouts {
 	background-image: url('orange-bg.png');
 	background-size:cover;
+	max-height: 375px;
 }
 .drag-future-workouts {
 	padding: 3rem;
+	padding-bottom: 0;
 	display: flex;
 	gap: 1rem;
 	scrollbar-width:none;
@@ -221,12 +249,14 @@ input.exerciseSearch{
 .past-workouts {
 	margin-top:1rem;
 	display: flex;
-	gap: 1rem;
+	column-gap: 1rem;
+	row-gap:2rem;
 	flex-wrap:wrap;
 	justify-content: center;
 }
 .past-workout-container {
 	padding: 2rem;
+	padding-top:8rem;
 }
 .past-workout-container h2{
 	text-align: center;
@@ -234,44 +264,45 @@ input.exerciseSearch{
 }
 /* === MOBILE STYLES === */
 @media (max-width: 470px) {
-  .global-header .nav-links {
-    position: fixed;
-    top: 0;
-    right: 0;
-    height: 100%;
-    width: 200px;
-    background: #333;
-    flex-direction: column;
-    padding: 2rem 1rem;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    z-index: 101;
-  }
 
-  .global-header .nav-links.open {
-    transform: translateX(0);
-  }
-
-  .global-header .hamburger {
-    display: block;
-  }
-
-  .global-header .nav-links a,
-  .global-header .nav-links .active {
-    text-decoration: none;
-    color: white;
-    font-weight: 500;
-    padding: 0.75rem 1rem;
-    border-radius: 4px;
-    display: block;
-    transition: background 0.2s ease;
-  }
-
-  .global-header .nav-links a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
 }
 @media (max-width: 800px) {
+	.global-header .nav-links {
+		position: fixed;
+		top: 0;
+		right: 0;
+		height: 100%;
+		width: 200px;
+		background: #333;
+		flex-direction: column;
+		padding: 2rem 1rem;
+		transform: translateX(100%);
+		transition: transform 0.3s ease;
+		z-index: 101;
+	}
+
+	.global-header .nav-links.open {
+		transform: translateX(0);
+	}
+
+	.global-header .hamburger {
+		display: block;
+	}
+
+	.global-header .nav-links a,
+	.global-header .nav-links .active {
+		text-decoration: none;
+		color: white;
+		font-weight: 500;
+		padding: 0.75rem 1rem;
+		border-radius: 4px;
+		display: block;
+		transition: background 0.2s ease;
+	}
+
+	.global-header .nav-links a:hover {
+		background-color: rgba(255, 255, 255, 0.1);
+	}
 	.dashboardHero {
 		flex-direction: column;
 		height: auto;

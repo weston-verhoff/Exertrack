@@ -131,6 +131,7 @@ export default function PlanSession() {
 
 	return (
   <Layout padded maxWidth="xl" scrollable>
+		<div>
     <h1 style={{ fontFamily: 'var(--font-headline)' }}>
       {isEditingTemplate ? 'Edit Template' : 'Plan Session'}
     </h1>
@@ -144,7 +145,7 @@ export default function PlanSession() {
             {loadingTemplates ? (
               <p>Loading templates...</p>
             ) : (
-              <ul>
+              <ul className="session-planner-exercises">
                 {templates.map(t => (
                   <li key={t.id}>
                     <button
@@ -174,7 +175,7 @@ export default function PlanSession() {
           {loadingExercises ? (
             <p>Loading exercises...</p>
           ) : (
-            <ul>
+            <ul className="session-planner-exercises">
               {filteredExercises.map(e => (
                 <li key={e.id}>
                   <label>
@@ -262,6 +263,7 @@ export default function PlanSession() {
         onSaveTemplate={handleSaveTemplate}
       />
     )}
+		</div>
   </Layout>
 );
 }

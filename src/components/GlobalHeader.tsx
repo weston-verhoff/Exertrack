@@ -10,12 +10,12 @@ export function GlobalHeader() {
 
   return (
     <header className="global-header">
-			<Link className="logo"  to="/" onClick={() => setMenuOpen(false)}>
+			<Link className="logo font-white"  to="/" onClick={() => setMenuOpen(false)}>
 				<div style={{ fontStyle: 'italic' }}>EzEx</div>
 			</Link>
 			<nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
 				<Link to="/" onClick={() => setMenuOpen(false)}>
-				<HomeIcon size={20} />
+				<HomeIcon size={20} /> Home
 				</Link>
 			  <Link to="/plan" onClick={() => setMenuOpen(false)}>Plan a Session</Link>
 			  <Link to="/past" onClick={() => setMenuOpen(false)}>Past Workouts</Link>

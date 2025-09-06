@@ -4,30 +4,32 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { deleteWorkoutById } from '../utils/deleteWorkout'
 import { Layout } from '../components/Layout'
-
+import { WorkoutCard } from '../components/WorkoutCard'
 
 export default function PastWorkouts() {
-  const [workouts, setWorkouts] = useState<any[]>([])
+  const [workouts, setWorkouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
 
   useEffect(() => {
     async function fetchWorkouts() {
-      const { data, error } = await supabase
-        .from('workouts')
-        .select(`
-          id,
-          date,
-          template:template_id(name),
-          workout_exercises (
-            id,
-            sets,
-            reps,
-            weight,
-            exercise:exercise_id(target_muscle)
-          )
-        `)
-        .order('date', { ascending: false })
+			const { data, error } = await supabase
+			  .from('workouts')
+			  .select(`
+			    id,
+			    date,
+			    status,
+			    template:template_id(name),
+			    workout_exercises (
+			      id,
+			      sets,
+			      reps,
+			      weight,
+			      exercise:exercise_id(name, target_muscle)
+			    )
+			  `)
+			  .order('date', { ascending: false });
+
 
       if (error) console.error('Error fetching workouts:', error)
       else setWorkouts(data || [])
@@ -56,9 +58,15 @@ export default function PastWorkouts() {
 	  }
 	}
 
+	const completedWorkouts = workouts
+	  .filter((w) => w.status === 'completed')
+	  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+
 
   return (
     <Layout>
+		<div>
       <h1 style={{ fontFamily: 'var(--font-headline)' }}>Past Workouts</h1>
 
       {loading ? (
@@ -66,47 +74,18 @@ export default function PastWorkouts() {
       ) : workouts.length === 0 ? (
         <p>No workouts found.</p>
       ) : (
-        <ul>
-          {workouts.map(w => (
-            <li key={w.id} style={{ marginBottom: '1rem' }}>
-              <strong>{w.date}</strong>{' '}
-              {w.template?.name ? `– ${w.template.name}` : ''}
-              <br />
-              Muscles: {getFocusMuscles(w.workout_exercises)}
-              <br />
-							<div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.5rem' }}>
-						  <button
-						    onClick={() => navigate(`/workout/${w.id}`)}
-						    style={{
-						      backgroundColor: '#2196f3',
-						      color: 'white',
-						      padding: '0.4rem 0.8rem',
-						      fontSize: '0.9rem',
-						      border: 'none',
-						      borderRadius: '4px'
-						    }}
-						  >
-						    📄 View Details
-						  </button>
-
-						  <button
-						    onClick={() => deleteWorkout(w.id)}
-						    style={{
-						      backgroundColor: '#f44336',
-						      color: 'white',
-						      padding: '0.4rem 0.8rem',
-						      fontSize: '0.9rem',
-						      border: 'none',
-						      borderRadius: '4px'
-						    }}
-						  >
-						    🗑 Delete
-						  </button>
-						</div>
-            </li>
-          ))}
-        </ul>
+				<div className="past-workouts">
+					{completedWorkouts.map((w) => (
+						<WorkoutCard
+							key={w.id}
+							workout={w}
+							onDelete={deleteWorkout}
+							variant="past-workout"
+						/>
+					))}
+				</div>
       )}
+			</div>
     </Layout>
   )
 }

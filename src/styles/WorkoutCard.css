@@ -1,4 +1,4 @@
-.workout-card{
+.workout-card {
   font-family: "inter", sans-serif;
   display: flex;
   flex-direction: column;
@@ -7,18 +7,34 @@
   border: 1px solid #441306;
   border-radius: 1rem;
   overflow: hidden;
-  background-color: #FFF7ED;
   min-height: 300px;
 }
-.workout-head{
+
+.future-workout{
+	  background-color: #FFF7ED;
+}
+.past-workout{
+	background-color: #EFF6FF;
+}
+
+.workout-head {
+	font-weight:bold;
+	text-transform: uppercase;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: 60px;
+	padding: 0px 16px 0px 16px;
+	width:100%;
+	box-sizing: border-box;
+}
+
+.future-workout .workout-head {
   background-color: #F54900;
-  font-weight:bold;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 60px;
-  padding: 0px 16px 0px 16px;
   color: white;
+}
+.past-workout .workout-head {
+	background-color: #BEDBFF;
 }
 .workout-head a{
   font-weight: 400;

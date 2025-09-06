@@ -125,10 +125,10 @@ export default function Dashboard() {
 	const nextWorkout = scheduledWorkouts[0];
 
   return (
-    <div>
+    <div className="clearfix">
       <div className='dashboardHero'>
 				<div className="dash-content">
-        <h1 className="headline">EzExTrack</h1>
+        <h1 className="headline font-white">EzExTrack</h1>
 					<div className="dashboard-buttons">
 					{nextWorkoutId && (
 					  <WorkoutButton
@@ -151,6 +151,7 @@ export default function Dashboard() {
 				  <WorkoutCard
 				    workout={nextWorkout}
 						onDelete={deleteWorkout}
+						variant="future-workout"
 				  />
 				)}
       </div>
@@ -172,13 +173,14 @@ export default function Dashboard() {
                 key={w.id}
                 workout={w}
                 onDelete={deleteWorkout}
+								variant="future-workout"
               />
             ))}
           </motion.div>
 					</div>
           {/* COMPLETED WORKOUTS */}
           <section className="past-workout-container">
-            <h2>Finished Workouts</h2>
+            <h2 className="font-white">Finished Workouts</h2>
             {completedWorkouts.length === 0 ? (
               <p>No completed workouts yet.</p>
             ) : (
@@ -189,6 +191,7 @@ export default function Dashboard() {
                     workout={w}
                     isToday={w.date === today}
                     onDelete={deleteWorkout}
+										variant="past-workout"
                   />
                 ))}
               </div>
