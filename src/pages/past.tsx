@@ -1,6 +1,5 @@
 // src/pages/past.tsx
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { deleteWorkoutById } from '../utils/deleteWorkout'
 import { Layout } from '../components/Layout'
@@ -39,11 +38,11 @@ export default function PastWorkouts() {
     fetchWorkouts()
   }, [])
 
-  const getFocusMuscles = (we: any[]) => {
-    const groups = new Set<string>()
-    we.forEach(e => groups.add(e.exercise.target_muscle))
-    return Array.from(groups).join(', ')
-  }
+  // const getFocusMuscles = (we: any[]) => {
+  //   const groups = new Set<string>()
+  //   we.forEach(e => groups.add(e.exercise.target_muscle))
+  //   return Array.from(groups).join(', ')
+  // }
 
 	const deleteWorkout = async (id: string) => {
 	  if (!window.confirm('Delete this workout?')) return
