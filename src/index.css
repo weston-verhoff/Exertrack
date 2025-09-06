@@ -234,13 +234,14 @@ input.exerciseSearch{
 	background-image: url('orange-bg.png');
 	background-size:cover;
 	max-height: 375px;
+	max-width:100%;
 }
 .drag-future-workouts {
 	padding: 3rem;
 	padding-bottom: 0;
 	display: flex;
 	gap: 1rem;
-	scrollbar-width:none;
+	scrollbar-width: 0;
 	cursor: grab;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
