@@ -28,8 +28,9 @@ interface WorkoutData {
 
 // ✅ Reusable styles for summary lists
 const listContainerStyle: React.CSSProperties = {
-  maxWidth: '600px',
+  width: '600px',
 	marginBottom: '2rem',
+	maxWidth: '100%',
 }
 
 const listItemStyle: React.CSSProperties = {
