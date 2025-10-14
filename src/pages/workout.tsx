@@ -280,6 +280,13 @@ export default function Workout() {
 			/>
 
 			<WorkoutButton
+			  label="Edit Workout"
+			  icon="✏️"
+			  variant="info"
+			  onClick={() => navigate(`/plan?importWorkout=${workout.id}`)}
+			/>
+
+			<WorkoutButton
 	      label="Back to Dashboard"
 	      icon="🏠"
 	      variant="info"

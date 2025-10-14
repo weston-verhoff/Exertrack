@@ -10,9 +10,12 @@ import { Layout } from '../components/Layout';
 export default function PlanSession() {
   const { id: routeTemplateId } = useParams();
   const isEditingTemplate = !!routeTemplateId;
-  const [searchParams] = useSearchParams();
-  const queryTemplateId = searchParams.get('importTemplate');
-  const templateId = routeTemplateId ?? queryTemplateId;
+	const [searchParams] = useSearchParams();
+	const queryTemplateId = searchParams.get('importTemplate');
+	const queryWorkoutId = searchParams.get('importWorkout'); // NEW
+	const templateId = routeTemplateId ?? queryTemplateId;
+	const importWorkoutId = queryWorkoutId ?? undefined;
+
 
   const { exercises, loading: loadingExercises, refetch } = useExercises();
   const { templates, loading: loadingTemplates } = useTemplates();
@@ -55,13 +58,77 @@ export default function PlanSession() {
         order: te.order ?? 0
       }));
 
+			setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
+			setSelectedExercisesData(cleaned);
+			// 👇 Only skip to step 2 when *importing* a template to plan a workout
+			if (queryTemplateId) {
+			  setStep(2);
+			}
+    }
+
+    fetchTemplate();
+  }, [templateId]);
+
+	useEffect(() => {
+  async function fetchImportedData() {
+    // Template import flow
+    if (queryTemplateId) {
+      const { data, error } = await supabase
+        .from('template_exercises')
+        .select(`
+          exercise_id,
+          sets,
+          reps,
+          order,
+          exercise:exercise_id(name, target_muscle)
+        `)
+        .eq('template_id', queryTemplateId)
+        .order('order', { ascending: true });
+
+      if (error) return console.error('Template import error:', error);
+
+      const cleaned = data.map((item: any) => ({
+        ...item,
+        exercise: Array.isArray(item.exercise) ? item.exercise[0] : item.exercise,
+      }));
+
       setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
       setSelectedExercisesData(cleaned);
       setStep(2);
     }
 
-    fetchTemplate();
-  }, [templateId]);
+    // Workout import flow (🆕)
+    else if (queryWorkoutId) {
+      const { data, error } = await supabase
+        .from('workout_exercises')
+        .select(`
+          exercise_id,
+          sets,
+          reps,
+          weight,
+          order,
+          exercise:exercise_id(name, target_muscle)
+        `)
+        .eq('workout_id', queryWorkoutId)
+        .order('order', { ascending: true });
+
+      if (error) return console.error('Workout import error:', error);
+
+      const cleaned = data.map((item: any) => ({
+        ...item,
+        exercise: Array.isArray(item.exercise) ? item.exercise[0] : item.exercise,
+      }));
+
+      setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
+      setSelectedExercisesData(cleaned);
+
+      // ⬇️ Key difference: start at step 1 so they can add/remove exercises
+      setStep(1);
+    }
+  }
+
+  fetchImportedData();
+}, [queryTemplateId, queryWorkoutId]);
 
   const toggleExercise = (id: string) => {
     setSelectedExerciseIds(prev =>
@@ -254,15 +321,17 @@ export default function PlanSession() {
       </>
     )}
 
-    {step === 2 && (
-      <Step2ConfigureCircuit
-        selectedExercises={selectedExercisesData}
-        onNext={() => navigate('/')}
-        isEditingTemplate={isEditingTemplate}
-        templateId={routeTemplateId}
-        onSaveTemplate={handleSaveTemplate}
-      />
-    )}
+		{step === 2 && (
+			<Step2ConfigureCircuit
+				selectedExercises={selectedExercisesData}
+				onNext={() => navigate('/')}
+				isEditingTemplate={isEditingTemplate}
+				templateId={routeTemplateId}
+				onSaveTemplate={handleSaveTemplate}
+				isEditingWorkout={!!importWorkoutId}
+				editingWorkoutId={importWorkoutId}
+			/>
+		)}
 		</div>
   </Layout>
 );

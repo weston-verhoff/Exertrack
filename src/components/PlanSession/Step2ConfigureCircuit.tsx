@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { supabase } from '../../supabase/client';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -27,12 +27,16 @@ interface ExerciseConfig {
   order: number;
 }
 
+// --- Update Step2Props to include editingWorkout args ---
 export interface Step2Props {
   selectedExercises: ConfiguredExercise[];
   onNext: (configured?: ConfiguredExercise[]) => void | Promise<void>;
   isEditingTemplate?: boolean;
   templateId?: string;
   onSaveTemplate?: (configured: ConfiguredExercise[]) => Promise<void>;
+  // NEW props for editing an existing workout
+  isEditingWorkout?: boolean;
+  editingWorkoutId?: string;
 }
 
 function SortableExercise({
@@ -129,7 +133,9 @@ export default function Step2ConfigureCircuit({
   selectedExercises,
   onNext,
   isEditingTemplate,
-  onSaveTemplate
+  onSaveTemplate,
+  isEditingWorkout,
+  editingWorkoutId
 }: Step2Props) {
   const [exercises, setExercises] = useState<ExerciseConfig[]>(
     selectedExercises.map((ex, i) => ({
@@ -180,60 +186,129 @@ export default function Step2ConfigureCircuit({
 		console.log('Removed!');
 	};
 
-  const handleSaveWorkout = async () => {
-    if (exercises.length === 0) {
-      alert('Add at least one exercise.');
-      return;
-    }
+	const handleSaveWorkout = async () => {
+		if (exercises.length === 0) {
+			alert('Add at least one exercise.');
+			return;
+		}
 
-    const validExercises = exercises.filter(e => !!e.exercise_id);
-    const skipped = exercises.filter(e => !e.exercise_id);
+		const validExercises = exercises.filter(e => !!e.exercise_id);
+		const skipped = exercises.filter(e => !e.exercise_id);
 
-    if (skipped.length > 0) {
-      console.warn('Skipped exercises with missing IDs:', skipped);
-      alert('Some exercises were skipped due to missing IDs.');
-    }
+		if (skipped.length > 0) {
+			console.warn('Skipped exercises with missing IDs:', skipped);
+			alert('Some exercises were skipped due to missing IDs.');
+		}
 
-    setSaving(true);
+		setSaving(true);
 
-    const { data: workoutData, error: workoutError } = await supabase
-      .from('workouts')
-      .insert([{ date: selectedDate, status: 'scheduled' }])
-      .select()
-      .single();
+		try {
+			if (isEditingWorkout && editingWorkoutId) {
+				// -----------------------
+				// EDIT EXISTING WORKOUT
+				// -----------------------
+				// 1) Update the workouts row (date & status if needed)
+				const { error: updateWorkoutError } = await supabase
+					.from('workouts')
+					.update({ date: selectedDate, status: 'scheduled' })
+					.eq('id', editingWorkoutId);
 
-    if (workoutError || !workoutData) {
-      console.error('Error creating workout:', workoutError);
-      alert('Failed to create workout.');
-      setSaving(false);
-      return;
-    }
+				if (updateWorkoutError) {
+					console.error('Error updating workout:', updateWorkoutError);
+					alert('Failed to update workout.');
+					setSaving(false);
+					return;
+				}
 
-    const workoutId = workoutData.id;
+				// 2) Delete existing workout_exercises for that workout
+				const { error: deleteError } = await supabase
+					.from('workout_exercises')
+					.delete()
+					.eq('workout_id', editingWorkoutId);
 
-    const inserts = validExercises.map(ex => ({
-      workout_id: workoutId,
-      exercise_id: ex.exercise_id,
-      sets: ex.sets,
-      reps: ex.reps,
-      weight: 0,
-      order: ex.order
-    }));
+				if (deleteError) {
+					console.error('Error deleting existing workout exercises:', deleteError);
+					alert('Failed to update exercises.');
+					setSaving(false);
+					return;
+				}
 
-    const { error: insertError } = await supabase
-      .from('workout_exercises')
-      .insert(inserts);
+				// 3) Insert the new set of workout_exercises
+				const inserts = validExercises.map(ex => ({
+					workout_id: editingWorkoutId,
+					exercise_id: ex.exercise_id,
+					sets: ex.sets,
+					reps: ex.reps,
+					weight: 0,
+					order: ex.order
+				}));
 
-    if (insertError) {
-      console.error('Error saving exercises:', insertError);
-      alert('Failed to save exercises.');
-      setSaving(false);
-      return;
-    }
+				const { error: insertError } = await supabase
+					.from('workout_exercises')
+					.insert(inserts);
 
-    onNext(validExercises);
-    navigate(`/workout/${workoutId}`);
-  };
+				if (insertError) {
+					console.error('Error inserting updated exercises:', insertError);
+					alert('Failed to save updated exercises.');
+					setSaving(false);
+					return;
+				}
+
+				// Done — navigate back to the existing workout recap
+				onNext(validExercises);
+				navigate(`/workout/${editingWorkoutId}`);
+				setSaving(false);
+				return;
+			}
+
+			// -----------------------
+			// CREATE NEW WORKOUT (existing logic)
+			// -----------------------
+			const { data: workoutData, error: workoutError } = await supabase
+				.from('workouts')
+				.insert([{ date: selectedDate, status: 'scheduled' }])
+				.select()
+				.single();
+
+			if (workoutError || !workoutData) {
+				console.error('Error creating workout:', workoutError);
+				alert('Failed to create workout.');
+				setSaving(false);
+				return;
+			}
+
+			const workoutId = workoutData.id;
+
+			const inserts = validExercises.map(ex => ({
+				workout_id: workoutId,
+				exercise_id: ex.exercise_id,
+				sets: ex.sets,
+				reps: ex.reps,
+				weight: 0,
+				order: ex.order
+			}));
+
+			const { error: insertError } = await supabase
+				.from('workout_exercises')
+				.insert(inserts);
+
+			if (insertError) {
+				console.error('Error saving exercises:', insertError);
+				alert('Failed to save exercises.');
+				setSaving(false);
+				return;
+			}
+
+			onNext(validExercises);
+			navigate(`/workout/${workoutId}`);
+			setSaving(false);
+		} catch (err) {
+			console.error('Unexpected error saving workout:', err);
+			alert('Something went wrong while saving.');
+			setSaving(false);
+		}
+	};
+
 
   const handleSaveTemplate = async () => {
     if (!onSaveTemplate) return;
