@@ -67,7 +67,7 @@ export default function PlanSession() {
     }
 
     fetchTemplate();
-  }, [templateId]);
+  }, [queryTemplateId, templateId]);
 
 	useEffect(() => {
   async function fetchImportedData() {
