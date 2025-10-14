@@ -48,8 +48,8 @@ export function WorkoutCard({
         <span>{formattedDate}</span>
         <WorkoutButton
           label="Details"
-          icon="📄"
-          variant="info"
+          icon=""
+          variant={variant == 'future-workout' ? 'whiteText' : 'blackText'}
           onClick={() => navigate(`/workout/${workout.id}`)}
         />
       </div>

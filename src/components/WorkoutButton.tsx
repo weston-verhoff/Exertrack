@@ -4,7 +4,7 @@ interface WorkoutButtonProps {
   label: string
   icon?: string
   onClick: () => void
-  variant?: 'accent' | 'info'
+  variant?: 'accent' | 'info' | 'blackText' | 'whiteText'
 }
 
 const variantStyles: Record<string, React.CSSProperties> = {
@@ -15,7 +15,19 @@ const variantStyles: Record<string, React.CSSProperties> = {
   info: {
     backgroundColor: 'var(--info-color)',
     color: 'white'
-  }
+  },
+	blackText: {
+		backgroundColor: 'transparent',
+		color:'black',
+		textDecoration: 'underline',
+		boxShadow: 'none'
+	},
+	whiteText: {
+		backgroundColor: 'transparent',
+		color:'white',
+		textDecoration: 'underline',
+		boxShadow: 'none'
+	}
 }
 
 export function WorkoutButton({ label, icon, onClick, variant = 'accent' }: WorkoutButtonProps) {
