@@ -20,13 +20,11 @@ const variantStyles: Record<string, React.CSSProperties> = {
 		backgroundColor: 'transparent',
 		color:'black',
 		textDecoration: 'underline',
-		boxShadow: 'none'
 	},
 	whiteText: {
 		backgroundColor: 'transparent',
 		color:'white',
 		textDecoration: 'underline',
-		boxShadow: 'none'
 	}
 }
 
@@ -39,9 +37,7 @@ export function WorkoutButton({ label, icon, onClick, variant = 'accent' }: Work
     fontSize: '0.9rem',
     border: 'none',
     borderRadius: '4px',
-    boxShadow: isPressed
-      ? 'inset 0 0px 8px rgba(0, 0, 0, 0.8)'
-      : '0 2px 4px rgba(0, 0, 0, 0.15)',
+    boxShadow: variant=='whiteText'||variant=='blackText'? 'none' : (isPressed ? 'inset 0 0px 8px rgba(0, 0, 0, 0.8)' : 'inset -2px -2px rgba(0,0,0,0.25)'),
     transition: 'box-shadow 0.1s ease'
   }
 
