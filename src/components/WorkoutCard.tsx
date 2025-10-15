@@ -69,7 +69,7 @@ export function WorkoutCard({
       </div>
 
       <div className="workout-btns">
-        {variant === 'future-workout' || variant === 'highlighted' && (
+        {variant !== 'past-workout'  && (
           <button
             className="start-btn btn"
             onClick={() => navigate(`/runner/${workout.id}`)}
