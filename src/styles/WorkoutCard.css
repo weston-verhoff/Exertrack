@@ -4,7 +4,6 @@
   flex-direction: column;
   min-width: 300px;
 	max-width: 300px;
-  border: 1px solid #441306;
   border-radius: 1rem;
   overflow: hidden;
   min-height: 300px;
@@ -12,9 +11,15 @@
 
 .future-workout{
 	  background-color: #FFF7ED;
+		border: 1px solid #441306;
 }
 .past-workout{
 	background-color: #EFF6FF;
+	border: 1px solid #060a44;
+}
+.highlighted{
+	background-color: #afc9fa;
+	border: 1px solid #060a44;
 }
 
 .workout-head {
@@ -35,6 +40,10 @@
 }
 .past-workout .workout-head {
 	background-color: #BEDBFF;
+}
+.highlighted .workout-head {
+	background-color: #1446de;
+	color: white;
 }
 .workout-head a{
   font-weight: 400;

@@ -151,7 +151,7 @@ export default function Dashboard() {
 				  <WorkoutCard
 				    workout={nextWorkout}
 						onDelete={deleteWorkout}
-						variant="future-workout"
+						variant="highlighted"
 				  />
 				)}
       </div>

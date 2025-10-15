@@ -20,7 +20,7 @@ interface Workout {
   workout_exercises: WorkoutExercise[];
 }
 
-type WorkoutCardVariant = 'future-workout' | 'past-workout';
+type WorkoutCardVariant = 'future-workout' | 'past-workout' | 'highlighted';
 
 interface Props {
   workout: Workout;
@@ -49,7 +49,7 @@ export function WorkoutCard({
         <WorkoutButton
           label="Details"
           icon=""
-          variant={variant === 'future-workout' ? 'whiteText' : 'blackText'}
+          variant={variant !== 'past-workout' ? 'whiteText' : 'blackText'}
           onClick={() => navigate(`/workout/${workout.id}`)}
         />
       </div>
@@ -69,7 +69,7 @@ export function WorkoutCard({
       </div>
 
       <div className="workout-btns">
-        {variant === 'future-workout' && (
+        {variant === 'future-workout' || variant === 'highlighted' && (
           <button
             className="start-btn btn"
             onClick={() => navigate(`/runner/${workout.id}`)}
