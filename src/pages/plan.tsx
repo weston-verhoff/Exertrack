@@ -10,7 +10,8 @@ export default function PlanSession() {
   const [searchParams] = useSearchParams();
   const queryTemplateId = searchParams.get('importTemplate');
   const queryWorkoutId = searchParams.get('importWorkout');
-  const isEditingTemplate = !!queryTemplateId;
+	const isEditingTemplate = searchParams.get('editTemplate') !== null;
+	const importingTemplate = searchParams.get('importTemplate') !== null;
   const importWorkoutId = queryWorkoutId ?? undefined;
 
   const { exercises, loading: loadingExercises, refetch } = useExercises();
@@ -26,9 +27,17 @@ export default function PlanSession() {
   const [searchQuery, setSearchQuery] = useState('');
 
   // Fetch template or workout if query param exists
-  useEffect(() => {
-    async function fetchImportedData() {
-      if (queryTemplateId) {
+	const [hasImported, setHasImported] = useState(false);
+
+useEffect(() => {
+  if (hasImported) return; // do not re-import after first time
+
+  async function fetchImportedData() {
+    try {
+      let cleaned: ConfiguredExercise[] = [];
+
+      // Import template for a new workout
+      if (importingTemplate && queryTemplateId) {
         const { data, error } = await supabase
           .from('template_exercises')
           .select(`
@@ -43,20 +52,46 @@ export default function PlanSession() {
 
         if (error) return console.error('Template import error:', error);
 
-        const cleaned = data.map((item: any) => ({
+        cleaned = data.map((item: any, i: number) => ({
           exercise_id: item.exercise_id,
           name: item.exercise?.name ?? '',
           target_muscle: item.exercise?.target_muscle ?? '',
           sets: item.sets ?? 3,
           reps: item.reps ?? 8,
-					weight: item.weight ?? 0,
-          order: item.order ?? 0
+          weight: item.weight ?? 0,
+          order: item.order ?? i,
         }));
 
-        setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
-        setSelectedExercisesData(cleaned);
+        setStep(1); // allow editing before scheduling
 
-      } else if (queryWorkoutId) {
+      // Edit template workflow
+      } else if (isEditingTemplate && queryTemplateId) {
+        const { data, error } = await supabase
+          .from('template_exercises')
+          .select(`
+            exercise_id,
+            sets,
+            reps,
+            order,
+            exercise:exercise_id(name, target_muscle)
+          `)
+          .eq('template_id', queryTemplateId)
+          .order('order', { ascending: true });
+
+        if (error) return console.error('Template fetch error:', error);
+
+        cleaned = data.map((item: any, i: number) => ({
+          exercise_id: item.exercise_id,
+          name: item.exercise?.name ?? '',
+          target_muscle: item.exercise?.target_muscle ?? '',
+          sets: item.sets ?? 3,
+          reps: item.reps ?? 8,
+          weight: item.weight ?? 0,
+          order: item.order ?? i,
+        }));
+
+      // Import existing workout
+      } else if (importWorkoutId) {
         const { data, error } = await supabase
           .from('workout_exercises')
           .select(`
@@ -67,29 +102,39 @@ export default function PlanSession() {
             order,
             exercise:exercise_id(name, target_muscle)
           `)
-          .eq('workout_id', queryWorkoutId)
+          .eq('workout_id', importWorkoutId)
           .order('order', { ascending: true });
 
         if (error) return console.error('Workout import error:', error);
 
-				const cleaned = data.map((item: any) => ({
-				  exercise_id: item.exercise_id,
-				  name: item.exercise?.name ?? '',
-				  target_muscle: item.exercise?.target_muscle ?? '',
-				  sets: item.sets ?? 3,
-				  reps: item.reps ?? 8,
-				  weight: item.weight ?? 0,    // <-- preserve weight from DB
-				  order: item.order ?? 0
-				}));
+        cleaned = data.map((item: any, i: number) => ({
+          exercise_id: item.exercise_id,
+          name: item.exercise?.name ?? '',
+          target_muscle: item.exercise?.target_muscle ?? '',
+          sets: item.sets ?? 3,
+          reps: item.reps ?? 8,
+          weight: item.weight ?? 0,
+          order: item.order ?? i,
+        }));
 
+        setStep(1); // allow editing
+      }
+
+      if (cleaned.length > 0) {
         setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
         setSelectedExercisesData(cleaned);
-        setStep(1); // stay in Step 1 so user can modify workout
+        setHasImported(true); // mark as imported to prevent overwriting
       }
-    }
 
-    fetchImportedData();
-  }, [queryTemplateId, queryWorkoutId]);
+    } catch (err) {
+      console.error('Error fetching imported data:', err);
+    }
+  }
+
+  fetchImportedData();
+}, [importingTemplate, isEditingTemplate, importWorkoutId, queryTemplateId]);
+
+
 
   const toggleExercise = (id: string) => {
     setSelectedExerciseIds(prev =>
@@ -249,9 +294,9 @@ export default function PlanSession() {
 						            exercise_id: e.id,
 						            name: e.name,
 						            target_muscle: e.target_muscle,
-						            sets: 3,
-						            reps: 10,
-						            weight: 0,
+						            sets: e.sets ?? 3,
+						            reps: e.reps ?? 8,
+						            weight: e.weight ?? 0,
 						            order: i,
 						          }));
 
@@ -265,17 +310,17 @@ export default function PlanSession() {
         </>
       )}
 
-      {step === 2 && (
-        <Step2ConfigureCircuit
-          selectedExercises={selectedExercisesData}
-          onNext={() => navigate('/')}
-          isEditingTemplate={isEditingTemplate}
-          templateId={queryTemplateId ?? undefined}
-          onSaveTemplate={handleSaveTemplate}
-          isEditingWorkout={!!importWorkoutId}
-          editingWorkoutId={importWorkoutId}
-        />
-      )}
+			{step === 2 && (
+			  <Step2ConfigureCircuit
+			    selectedExercises={selectedExercisesData}
+			    onNext={() => navigate('/')}
+			    isEditingTemplate={isEditingTemplate} // true only if editing
+			    templateId={isEditingTemplate ? queryTemplateId ?? undefined : undefined}
+			    onSaveTemplate={isEditingTemplate ? handleSaveTemplate : undefined}
+			    isEditingWorkout={importingTemplate || importWorkoutId ? true : false}
+			    editingWorkoutId={importWorkoutId}
+			  />
+			)}
     </Layout>
   );
 }

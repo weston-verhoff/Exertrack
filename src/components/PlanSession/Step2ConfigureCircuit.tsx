@@ -130,18 +130,6 @@ function SortableExercise({
             width: '56px'
           }}
         />
-        {/* If editing workouts you might want to show weight input too.
-            You can uncomment this if you want weight editable in Step 2:
-        <input
-          type="number"
-          placeholder="Weight"
-          value={ex.weight ?? 0}
-          onChange={e => {
-            const v = Number(e.target.value);
-            // if you add weight change handler, pass it to props
-          }}
-          style={{ width: '70px' }}
-        /> */}
       </div>
     </div>
   );
@@ -156,7 +144,18 @@ export default function Step2ConfigureCircuit({
   editingWorkoutId
 }: Step2Props) {
   // initialize as empty, then sync from prop
-  const [exercises, setExercises] = useState<ExerciseConfig[]>([]);
+	const [exercises, setExercises] = useState<ExerciseConfig[]>(() =>
+	  Array.isArray(selectedExercises)
+	    ? selectedExercises.map((ex, i) => ({
+	        exercise_id: ex.exercise_id,
+	        name: ex.name ?? '',
+	        sets: typeof ex.sets === 'number' ? ex.sets : 3,
+	        reps: typeof ex.reps === 'number' ? ex.reps : 8,
+	        weight: typeof ex.weight === 'number' ? ex.weight : (ex as any).weight ?? 0,
+	        order: typeof ex.order === 'number' ? ex.order : i
+	      }))
+	    : []
+	);
   const [selectedDate, setSelectedDate] = useState(() =>
     new Date().toISOString().split('T')[0]
   );

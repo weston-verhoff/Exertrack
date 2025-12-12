@@ -59,13 +59,13 @@ export function TemplateCard({ template, onRename, onDelete, onUse }: Props) {
           label="Use Template"
           icon=""
           variant="info"
-          onClick={() => onUse(template.id)}
+          onClick={() => navigate(`/plan?importTemplate=${template.id}`)}
         />
 				<WorkoutButton
 				  label="Edit Template"
 				  icon=""
 				  variant="info"
-				  onClick={() => navigate(`/plan?importTemplate=${template.id}`)}
+				  onClick={() => navigate(`/plan?editTemplate=${template.id}`)}
 				/>
         <WorkoutButton
           label="Delete"
