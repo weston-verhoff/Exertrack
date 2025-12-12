@@ -172,8 +172,6 @@ export default function Step2ConfigureCircuit({
       return;
     }
 
-		console.log("Mapped exercises:", exercises);
-
 
     const synced = selectedExercises.map((ex, i) => ({
       exercise_id: ex.exercise_id,
