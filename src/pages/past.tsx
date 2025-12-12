@@ -38,12 +38,6 @@ export default function PastWorkouts() {
     fetchWorkouts()
   }, [])
 
-  // const getFocusMuscles = (we: any[]) => {
-  //   const groups = new Set<string>()
-  //   we.forEach(e => groups.add(e.exercise.target_muscle))
-  //   return Array.from(groups).join(', ')
-  // }
-
 	const deleteWorkout = async (id: string) => {
 	  if (!window.confirm('Delete this workout?')) return
 
@@ -59,18 +53,37 @@ export default function PastWorkouts() {
 	const completedWorkouts = workouts
 	  .filter((w) => w.status === 'completed')
 	  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+	const scheduledWorkouts = workouts
+	    .filter((w) => w.status === 'scheduled')
+	    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
 
 
   return (
     <Layout>
-		<div>
-      <h1 style={{ fontFamily: 'var(--font-headline)' }}>Past Workouts</h1>
-
+		<div style={{display:'flex', flexDirection:'column'}}>
+			<h2 style={{textAlign:'center'}}>Future Workouts</h2>
+			{loading ? (
+        <p>Loading...</p>
+      ) : workouts.length === 0 ? (
+        <p>No past workouts found.</p>
+      ) : (
+				<div className="past-workouts" style={{marginBottom:"4rem"}}>
+					{scheduledWorkouts.map((w) => (
+						<WorkoutCard
+							key={w.id}
+							workout={w}
+							onDelete={deleteWorkout}
+							variant="future-workout"
+						/>
+					))}
+				</div>
+      )}
+			<h2 style={{textAlign:'center'}}>Past Workouts</h2>
       {loading ? (
         <p>Loading...</p>
       ) : workouts.length === 0 ? (
-        <p>No workouts found.</p>
+        <p>No past workouts found.</p>
       ) : (
 				<div className="past-workouts">
 					{completedWorkouts.map((w) => (

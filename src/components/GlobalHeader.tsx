@@ -18,7 +18,7 @@ export function GlobalHeader() {
 				<HomeIcon size={20} /> Home
 				</Link>
 			  <Link to="/plan" onClick={() => setMenuOpen(false)}>Plan a Session</Link>
-			  <Link to="/past" onClick={() => setMenuOpen(false)}>Past Workouts</Link>
+			  <Link to="/past" onClick={() => setMenuOpen(false)}>Workouts</Link>
 			  <Link to="/templates" onClick={() => setMenuOpen(false)}>Templates</Link>
 			  <Link to="/analytics" onClick={() => setMenuOpen(false)}>Analytics</Link>
 			</nav>
