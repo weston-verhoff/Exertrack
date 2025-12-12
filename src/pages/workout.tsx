@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
+import { deleteWorkoutById } from '../utils/deleteWorkout';
 import StatusButton from '../components/StatusButton'
 import { WorkoutButton } from '../components/WorkoutButton'
 import '../styles/workout.css' // ✅ Import your CSS file
@@ -230,7 +231,40 @@ export default function Workout() {
           </li>
         ))}
       </ul>
-			<div style={{ display:'flex', flexDirection:'row', columnGap:'0.5rem'}}>
+			<div style={{ display:'flex', flexDirection:'row', columnGap:'0.5rem', flexWrap:'wrap', rowGap:'0.5rem', justifyContent:'center'}}>
+			{workout.status !== 'Completed' && (
+				<>
+				<WorkoutButton
+				  label="Start Workout"
+				  icon=""
+				  variant="info"
+				  onClick={() => navigate(`/runner/${workout.id}`)}
+				/>
+			  <WorkoutButton
+			    label="Mark Completed"
+			    icon="✅"
+			    variant="info"
+			    onClick={async () => {
+			      if (!workout) return;
+
+			      const { error } = await supabase
+			        .from('workouts')
+			        .update({ status: 'completed' })
+			        .eq('id', workout.id);
+
+			      if (error) {
+			        console.error('Error marking completed:', error);
+			        return;
+			      }
+
+			      // Update UI instantly without refetching
+			      setWorkout(prev =>
+			        prev ? { ...prev, status: 'Completed' } : prev
+			      );
+			    }}
+			  />
+				</>
+			)}
 			<WorkoutButton
 			  label="Create Template"
 			  icon="📦"
@@ -255,7 +289,6 @@ export default function Workout() {
 			        alert('Failed to create template.');
 			        return;
 			      }
-
 			      // Optionally insert exercises into a template_exercises table
 						for (const we of editedExercises) {
 						  const { data, error } = await supabase.from('template_exercises').insert({
@@ -279,7 +312,6 @@ export default function Workout() {
 			    }
 			  }}
 			/>
-
 			<WorkoutButton
 			  label="Edit Workout"
 			  icon="✏️"
@@ -293,6 +325,15 @@ export default function Workout() {
 	      variant="info"
 	      onClick={() => navigate('/')}
 	    />
+			<WorkoutButton
+			  label="Delete Workout"
+			  icon="X"
+			  variant="accent"
+			  onClick={async () => {
+			    await deleteWorkoutById(workout.id);
+			    navigate('/');
+			  }}
+			/>
 			</div>
     </Layout>
   )
