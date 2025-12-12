@@ -65,6 +65,7 @@ export default function Workout() {
           )
         `)
         .eq('id', id)
+				.order('order', { foreignTable: 'workout_exercises', ascending: true })
         .single()
 
       if (error || !data) {
