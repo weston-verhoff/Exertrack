@@ -17,6 +17,10 @@
 	background-color: #EFF6FF;
 	border: 1px solid #060a44;
 }
+.template-workout{
+	background-color: #EFF6FF;
+	border: 1px solid #060a44;
+}
 .highlighted{
 	background-color: #afc9fa;
 	border: 1px solid #060a44;
@@ -41,6 +45,21 @@
 .past-workout .workout-head {
 	background-color: #BEDBFF;
 }
+
+.template-workout .workout-head {
+	background-color: #BEDBFF;
+
+	font-weight:bold;
+	text-transform: capitalize;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	height: auto;
+	padding: 16px;
+	width:100%;
+	box-sizing: border-box;
+}
+
 .highlighted .workout-head {
 	background-color: #1446de;
 	color: white;

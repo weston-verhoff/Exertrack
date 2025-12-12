@@ -1,21 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { useExercises } from '../hooks/useExercises';
 import { useTemplates } from '../hooks/useTemplates';
 import { supabase } from '../supabase/client';
-
 import Step2ConfigureCircuit, { ConfiguredExercise } from '../components/PlanSession/Step2ConfigureCircuit';
 import { Layout } from '../components/Layout';
 
 export default function PlanSession() {
-  const { id: routeTemplateId } = useParams();
-  const isEditingTemplate = !!routeTemplateId;
-	const [searchParams] = useSearchParams();
-	const queryTemplateId = searchParams.get('importTemplate');
-	const queryWorkoutId = searchParams.get('importWorkout'); // NEW
-	const templateId = routeTemplateId ?? queryTemplateId;
-	const importWorkoutId = queryWorkoutId ?? undefined;
-
+  const [searchParams] = useSearchParams();
+  const queryTemplateId = searchParams.get('importTemplate');
+  const queryWorkoutId = searchParams.get('importWorkout');
+  const isEditingTemplate = !!queryTemplateId;
+  const importWorkoutId = queryWorkoutId ?? undefined;
 
   const { exercises, loading: loadingExercises, refetch } = useExercises();
   const { templates, loading: loadingTemplates } = useTemplates();
@@ -29,106 +25,71 @@ export default function PlanSession() {
   const [step, setStep] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
 
+  // Fetch template or workout if query param exists
   useEffect(() => {
-    async function fetchTemplate() {
-      if (!templateId) return;
+    async function fetchImportedData() {
+      if (queryTemplateId) {
+        const { data, error } = await supabase
+          .from('template_exercises')
+          .select(`
+            exercise_id,
+            sets,
+            reps,
+            order,
+            exercise:exercise_id(name, target_muscle)
+          `)
+          .eq('template_id', queryTemplateId)
+          .order('order', { ascending: true });
 
-      const { data, error } = await supabase
-        .from('template_exercises')
-        .select(`
-          sets,
-          reps,
-          order,
-          exercise:exercise_id(id, name, target_muscle)
-        `)
-        .eq('template_id', templateId)
-        .order('order', { ascending: true });
+        if (error) return console.error('Template import error:', error);
 
-      if (error || !data) {
-        console.error('Error importing template:', error);
-        return;
+        const cleaned = data.map((item: any) => ({
+          exercise_id: item.exercise_id,
+          name: item.exercise?.name ?? '',
+          target_muscle: item.exercise?.target_muscle ?? '',
+          sets: item.sets ?? 3,
+          reps: item.reps ?? 8,
+					weight: item.weight ?? 0,
+          order: item.order ?? 0
+        }));
+
+        setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
+        setSelectedExercisesData(cleaned);
+
+      } else if (queryWorkoutId) {
+        const { data, error } = await supabase
+          .from('workout_exercises')
+          .select(`
+            exercise_id,
+            sets,
+            reps,
+            weight,
+            order,
+            exercise:exercise_id(name, target_muscle)
+          `)
+          .eq('workout_id', queryWorkoutId)
+          .order('order', { ascending: true });
+
+        if (error) return console.error('Workout import error:', error);
+
+				const cleaned = data.map((item: any) => ({
+				  exercise_id: item.exercise_id,
+				  name: item.exercise?.name ?? '',
+				  target_muscle: item.exercise?.target_muscle ?? '',
+				  sets: item.sets ?? 3,
+				  reps: item.reps ?? 8,
+				  weight: item.weight ?? 0,    // <-- preserve weight from DB
+				  order: item.order ?? 0
+				}));
+
+        setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
+        setSelectedExercisesData(cleaned);
+        setStep(1); // stay in Step 1 so user can modify workout
       }
-
-      const cleaned = data.map((te: any) => ({
-        exercise_id: te.exercise.id,
-        name: te.exercise.name,
-        target_muscle: te.exercise.target_muscle,
-        sets: te.sets,
-        reps: te.reps,
-        order: te.order ?? 0
-      }));
-
-			setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
-			setSelectedExercisesData(cleaned);
-			// 👇 Only skip to step 2 when *importing* a template to plan a workout
-			if (queryTemplateId) {
-			  setStep(2);
-			}
     }
 
-    fetchTemplate();
-  }, [queryTemplateId, templateId]);
-
-	useEffect(() => {
-  async function fetchImportedData() {
-    // Template import flow
-    if (queryTemplateId) {
-      const { data, error } = await supabase
-        .from('template_exercises')
-        .select(`
-          exercise_id,
-          sets,
-          reps,
-          order,
-          exercise:exercise_id(name, target_muscle)
-        `)
-        .eq('template_id', queryTemplateId)
-        .order('order', { ascending: true });
-
-      if (error) return console.error('Template import error:', error);
-
-      const cleaned = data.map((item: any) => ({
-        ...item,
-        exercise: Array.isArray(item.exercise) ? item.exercise[0] : item.exercise,
-      }));
-
-      setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
-      setSelectedExercisesData(cleaned);
-      setStep(2);
-    }
-
-    // Workout import flow (🆕)
-    else if (queryWorkoutId) {
-      const { data, error } = await supabase
-        .from('workout_exercises')
-        .select(`
-          exercise_id,
-          sets,
-          reps,
-          weight,
-          order,
-          exercise:exercise_id(name, target_muscle)
-        `)
-        .eq('workout_id', queryWorkoutId)
-        .order('order', { ascending: true });
-
-      if (error) return console.error('Workout import error:', error);
-
-      const cleaned = data.map((item: any) => ({
-        ...item,
-        exercise: Array.isArray(item.exercise) ? item.exercise[0] : item.exercise,
-      }));
-
-      setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
-      setSelectedExercisesData(cleaned);
-
-      // ⬇️ Key difference: start at step 1 so they can add/remove exercises
-      setStep(1);
-    }
-  }
-
-  fetchImportedData();
-}, [queryTemplateId, queryWorkoutId]);
+    fetchImportedData();
+  }, [queryTemplateId, queryWorkoutId]);
 
   const toggleExercise = (id: string) => {
     setSelectedExerciseIds(prev =>
@@ -156,12 +117,12 @@ export default function PlanSession() {
   };
 
   const handleSaveTemplate = async (configured: ConfiguredExercise[]) => {
-    if (!routeTemplateId) return;
+    if (!queryTemplateId) return;
 
     const { error: deleteError } = await supabase
       .from('template_exercises')
       .delete()
-      .eq('template_id', routeTemplateId);
+      .eq('template_id', queryTemplateId);
 
     if (deleteError) {
       console.error('Error deleting old template exercises:', deleteError);
@@ -170,7 +131,7 @@ export default function PlanSession() {
     }
 
     const inserts = configured.map((ex, i) => ({
-      template_id: routeTemplateId,
+      template_id: queryTemplateId,
       exercise_id: ex.exercise_id,
       sets: ex.sets,
       reps: ex.reps,
@@ -187,7 +148,7 @@ export default function PlanSession() {
       return;
     }
 
-    alert('✅ Template updated!');
+    // alert('✅ Template updated!');
     navigate('/templates');
   };
 
@@ -196,143 +157,125 @@ export default function PlanSession() {
     e.target_muscle.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
-	return (
-  <Layout padded maxWidth="xl" scrollable>
-		<div>
-    <h1 style={{ fontFamily: 'var(--font-headline)' }}>
-      {isEditingTemplate ? 'Edit Template' : 'Plan Session'}
-    </h1>
+  return (
+    <Layout padded maxWidth="xl" scrollable>
+      <h1 style={{ fontFamily: 'var(--font-headline)' }}>
+        {isEditingTemplate ? 'Edit Template' : 'Plan Session'}
+      </h1>
 
-    {step === 1 && (
-      <>
-        {/* 🧠 Import from Template */}
-        {!isEditingTemplate && (
+      {step === 1 && (
+        <>
+          {/* Import Templates only if NOT editing */}
+          {!isEditingTemplate && (
+            <section>
+              <h2>Import from Template</h2>
+              {loadingTemplates ? (
+                <p>Loading templates...</p>
+              ) : (
+                <ul className="session-planner-exercises">
+                  {templates.map(t => (
+                    <li key={t.id}>
+                      <button
+                        onClick={() => navigate(`/plan?importTemplate=${t.id}`)}
+                      >
+                        Import "{t.name}"
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </section>
+          )}
+
+          {/* Select Exercises */}
           <section>
-            <h2>Import from Template</h2>
-            {loadingTemplates ? (
-              <p>Loading templates...</p>
+            <h2>Select Exercises</h2>
+            <input
+              type="text"
+              placeholder="Search exercises..."
+              value={searchQuery}
+              onChange={e => setSearchQuery(e.target.value)}
+            />
+            {loadingExercises ? (
+              <p>Loading exercises...</p>
             ) : (
               <ul className="session-planner-exercises">
-                {templates.map(t => (
-                  <li key={t.id}>
-                    <button
-                      style={{ marginBottom: '0.5rem' }}
-                      onClick={() => navigate(`/plan?importTemplate=${t.id}`)}
-                    >
-                      Import "{t.name}"
-                    </button>
+                {filteredExercises.map(e => (
+                  <li key={e.id}>
+                    <label>
+                      <input
+                        type="checkbox"
+                        checked={selectedExerciseIds.includes(e.id)}
+                        onChange={() => toggleExercise(e.id)}
+                      />
+                      {e.name} ({e.target_muscle})
+                    </label>
                   </li>
                 ))}
               </ul>
             )}
           </section>
-        )}
 
-        {/* 🏋️ Select Exercises */}
-        <section>
-          <h2>Select Exercises</h2>
-          <input
-            type="text"
-            className="exerciseSearch"
-            placeholder="Search exercises..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
+          {/* Add Custom */}
+          <section className = "planning-buttons">
+            {addingCustom ? (
+              <div>
+                <input
+                  type="text"
+                  placeholder="Exercise name"
+                  value={customName}
+                  onChange={e => setCustomName(e.target.value)}
+                />
+                <input
+                  type="text"
+                  placeholder="Target muscle"
+                  value={customMuscle}
+                  onChange={e => setCustomMuscle(e.target.value)}
+                />
+                <button onClick={addCustomExercise}>Add</button>
+                <button onClick={() => setAddingCustom(false)}>Cancel</button>
+              </div>
+            ) : (
+              <button onClick={() => setAddingCustom(true)}>Add Custom Movement</button>
+            )}
+						<button
+						  onClick={() => {
 
-          {loadingExercises ? (
-            <p>Loading exercises...</p>
-          ) : (
-            <ul className="session-planner-exercises">
-              {filteredExercises.map(e => (
-                <li key={e.id}>
-                  <label>
-                    <input
-                      type="checkbox"
-                      checked={selectedExerciseIds.includes(e.id)}
-                      onChange={() => toggleExercise(e.id)}
-                    />
-                    {e.name} ({e.target_muscle})
-                    {e.is_custom && <span style={{ color: '#888' }}> [Custom]</span>}
-                  </label>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
+						    const selected = (isEditingTemplate || importWorkoutId)
+						      ? selectedExercisesData // keep DB-loaded sets/reps/weight
+						      : exercises
+						          .filter(e => selectedExerciseIds.includes(e.id))
+						          .map((e, i) => ({
+						            exercise_id: e.id,
+						            name: e.name,
+						            target_muscle: e.target_muscle,
+						            sets: 3,
+						            reps: 10,
+						            weight: 0,
+						            order: i,
+						          }));
 
-        {/* ✏️ Add Custom Movement */}
-        <section>
-          <h2>Add Custom Movement</h2>
-          {addingCustom ? (
-            <div>
-              <input
-                type="text"
-                placeholder="Exercise name"
-                value={customName}
-                onChange={e => setCustomName(e.target.value)}
-                style={{ marginRight: '0.5rem' }}
-              />
-              <input
-                type="text"
-                placeholder="Target muscle"
-                value={customMuscle}
-                onChange={e => setCustomMuscle(e.target.value)}
-                style={{ marginRight: '0.5rem' }}
-              />
-              <button onClick={addCustomExercise}>Add</button>
-              <button onClick={() => setAddingCustom(false)} style={{ marginLeft: '0.5rem' }}>
-                Cancel
-              </button>
-            </div>
-          ) : (
-            <button onClick={() => setAddingCustom(true)}>Add Custom Movement</button>
-          )}
-        </section>
+						    setSelectedExercisesData(selected);
+						    setStep(2);
+						  }}
+						>
+						  Next →
+						</button>
+          </section>
+        </>
+      )}
 
-        {/* ➡️ Proceed to Step 2 */}
-        <section style={{ marginTop: '2rem' }}>
-          <button
-            style={{
-              backgroundColor: 'var(--accent-color)',
-              color: 'white',
-              padding: '0.5rem 1rem',
-              fontSize: '1rem',
-              border: 'none',
-              borderRadius: '4px'
-            }}
-            onClick={() => {
-              const selected = exercises
-                .filter(e => selectedExerciseIds.includes(e.id))
-                .map((e, i) => ({
-                  exercise_id: e.id,
-                  name: e.name,
-                  target_muscle: e.target_muscle,
-                  sets: 3,
-                  reps: 8,
-                  order: i
-                }));
-              setSelectedExercisesData(selected);
-              setStep(2);
-            }}
-          >
-            Next →
-          </button>
-        </section>
-      </>
-    )}
-
-		{step === 2 && (
-			<Step2ConfigureCircuit
-				selectedExercises={selectedExercisesData}
-				onNext={() => navigate('/')}
-				isEditingTemplate={isEditingTemplate}
-				templateId={routeTemplateId}
-				onSaveTemplate={handleSaveTemplate}
-				isEditingWorkout={!!importWorkoutId}
-				editingWorkoutId={importWorkoutId}
-			/>
-		)}
-		</div>
-  </Layout>
-);
+      {step === 2 && (
+        <Step2ConfigureCircuit
+          selectedExercises={selectedExercisesData}
+          onNext={() => navigate('/')}
+          isEditingTemplate={isEditingTemplate}
+          templateId={queryTemplateId ?? undefined}
+          onSaveTemplate={handleSaveTemplate}
+          isEditingWorkout={!!importWorkoutId}
+          editingWorkoutId={importWorkoutId}
+        />
+      )}
+    </Layout>
+  );
 }
