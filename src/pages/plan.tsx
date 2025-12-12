@@ -132,7 +132,7 @@ useEffect(() => {
   }
 
   fetchImportedData();
-}, [importingTemplate, isEditingTemplate, importWorkoutId, queryTemplateId]);
+}, [importingTemplate, isEditingTemplate, importWorkoutId, queryTemplateId, hasImported]);
 
 
 
