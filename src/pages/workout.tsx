@@ -330,6 +330,12 @@ export default function Workout() {
 			  icon="X"
 			  variant="accent"
 			  onClick={async () => {
+			    const confirmed = window.confirm(
+			      'Are you sure you want to delete this workout? This action cannot be undone.'
+			    );
+
+			    if (!confirmed) return;
+
 			    await deleteWorkoutById(workout.id);
 			    navigate('/');
 			  }}
