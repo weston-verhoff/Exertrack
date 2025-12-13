@@ -6,19 +6,9 @@ import StatusButton from '../components/StatusButton'
 import { WorkoutButton } from '../components/WorkoutButton'
 import '../styles/workout.css' // ✅ Import your CSS file
 import { Layout } from '../components/Layout';
-
-interface WorkoutExercise {
-  id: string
-  sets: number
-  reps: number
-  weight: number
-  order: number
-  exercise: {
-		id: string;
-    name: string
-    target_muscle: string
-  } | null;
-}
+import { Workout as WorkoutType, WorkoutExercise, WorkoutSet } from '../types/workout';
+import { WorkoutDetails } from '../components/WorkoutDetails'
+import { saveWorkout } from '../services/workoutService';
 
 interface WorkoutData {
   id: string
@@ -50,24 +40,33 @@ export default function Workout() {
 
   useEffect(() => {
     async function fetchWorkout() {
-      const { data, error } = await supabase
-        .from('workouts')
-        .select(`
-          id,
-          date,
-          status,
-          workout_exercises (
-            id,
-            sets,
-            reps,
-            weight,
-            order,
-						exercise:exercise_id(id, name, target_muscle)
-          )
-        `)
-        .eq('id', id)
-				.order('order', { foreignTable: 'workout_exercises', ascending: true })
-        .single()
+			const { data, error } = await supabase
+			  .from('workouts')
+			  .select(`
+			    id,
+			    date,
+			    status,
+			    workout_exercises (
+			      id,
+			      order,
+			      exercise:exercise_id (
+			        id,
+			        name,
+			        target_muscle
+			      ),
+			      workout_sets (
+			        id,
+			        set_number,
+			        reps,
+			        weight,
+			        intensity_type,
+			        notes
+			      )
+			    )
+			  `)
+			  .eq('id', id)
+			  .order('order', { foreignTable: 'workout_exercises', ascending: true })
+			  .single()
 
       if (error || !data) {
         console.error('Error fetching workout:', error)
@@ -76,15 +75,19 @@ export default function Workout() {
         return
       }
 
-      const cleaned = {
-        ...data,
-        workout_exercises: data.workout_exercises.map((we: any) => ({
-          ...we,
-          exercise: we.exercise && typeof we.exercise === 'object'
-            ? Array.isArray(we.exercise) ? we.exercise[0] : we.exercise
-            : null
-        }))
-      }
+			const cleaned = {
+			  ...data,
+			  workout_exercises: data.workout_exercises.map((we: any) => ({
+			    ...we,
+			    exercise:
+			      we.exercise && typeof we.exercise === 'object'
+			        ? Array.isArray(we.exercise)
+			          ? we.exercise[0]
+			          : we.exercise
+			        : null,
+			    workout_sets: we.workout_sets ?? []
+			  }))
+			}
 
       setWorkout(cleaned)
       setEditedExercises(cleaned.workout_exercises)
@@ -94,253 +97,104 @@ export default function Workout() {
     fetchWorkout()
   }, [id])
 
-  const updateField = (index: number, field: 'sets' | 'reps' | 'weight', value: number) => {
-    const updated = [...editedExercises]
-    updated[index][field] = value
-    setEditedExercises(updated)
-  }
+	const saveUpdates = async (): Promise<void> => {
+  try {
+    // 1️⃣ Update workout date (if changed)
+    if (workout?.date) {
+      const { error: dateError } = await supabase
+        .from('workouts')
+        .update({ date: workout.date })
+        .eq('id', workout.id);
 
-  const saveUpdates = async (): Promise<void> => {
-    try {
-      for (let i = 0; i < editedExercises.length; i++) {
-        const ex = editedExercises[i]
-        const { error } = await supabase
-          .from('workout_exercises')
-          .update({
-            sets: ex.sets,
-            reps: ex.reps,
-            weight: ex.weight
-          })
-          .eq('id', ex.id)
-
-        if (error) {
-          console.error('Error updating workout exercise:', error)
-          throw new Error('Failed to update')
-        }
-      }
-
-      if (workout?.date) {
-        const { error: dateError } = await supabase
-          .from('workouts')
-          .update({ date: workout.date })
-          .eq('id', workout.id)
-
-        if (dateError) {
-          console.error('Error updating workout date:', dateError)
-          throw new Error('Failed to update workout date')
-        }
-      }
-    } catch (err) {
-      alert('Something went wrong while saving.')
+      if (dateError) throw dateError;
     }
+
+    // 2️⃣ Update each workout_set
+    for (const ex of editedExercises) {
+      for (const set of ex.workout_sets) {
+        // If set has an ID, update it
+        if (set.id) {
+          const { error } = await supabase
+            .from('workout_sets')
+            .update({
+              reps: set.reps,
+              weight: set.weight,
+              intensity_type: set.intensity_type ?? 'normal',
+              notes: set.notes ?? null,
+            })
+            .eq('id', set.id);
+
+          if (error) throw error;
+        }
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Something went wrong while saving.');
+    return;
   }
+};
 
   if (loading) return <p>Loading recap...</p>
   if (!workout) return <p>Workout not found.</p>
 
-  const volumeByExercise = editedExercises.map(we => ({
-    name: we.exercise?.name ?? 'Unknown',
-    sets: we.sets,
-    reps: we.reps,
-    weight: we.weight,
-    volume: we.sets * we.reps * (we.weight ?? 0)
-  }))
+	const volumeByExercise = editedExercises.map(we => {
+	  const totalVolume = we.workout_sets.reduce(
+	    (sum: number, s: WorkoutSet) => sum + s.reps * s.weight,
+	    0
+	  );
 
-  const muscleSummary: Record<string, number> = {}
-  editedExercises.forEach(we => {
-    const key = we.exercise?.target_muscle ?? 'Unknown'
-    const vol = we.sets * we.reps * (we.weight ?? 0)
-    muscleSummary[key] = (muscleSummary[key] || 0) + vol
-  })
+	  return {
+	    name: we.exercise?.name ?? 'Unknown',
+	    sets: we.workout_sets.length,
+	    volume: totalVolume,
+	  };
+	});
+
+	const muscleSummary: Record<string, number> = {};
+
+	editedExercises.forEach(we => {
+	  const muscle = we.exercise?.target_muscle ?? 'Unknown';
+
+	  const volume = we.workout_sets.reduce(
+	    (sum: number, s: WorkoutSet) => sum + s.reps * s.weight,
+	    0
+	  );
+
+	  muscleSummary[muscle] = (muscleSummary[muscle] || 0) + volume;
+	});
+	const handleDeleteWorkout = async () => {
+	  if (!workout) return;
+
+	  const success = await deleteWorkoutById(workout.id);
+
+	  if (!success) {
+	    alert('Failed to delete workout.');
+	    return;
+	  }
+
+	  navigate('/'); // or '/dashboard' if that’s your route
+	};
 
   return (
     <Layout padded maxWidth="xl" scrollable>
-      <h1>📈 Workout Recap</h1>
+		<h1>📈 Workout Recap</h1>
 
-      <label style={{ display: 'block', marginBottom: '1rem' }}>
-        <strong>Date:</strong>{' '}
-        <input
-          type="date"
-          value={workout.date}
-          onChange={e =>
-            setWorkout(prev => prev ? { ...prev, date: e.target.value } : prev)
-          }
-          style={{ padding: '0.25rem', fontSize: '1rem' }}
-        />
-      </label>
-
-      <p><strong>Status:</strong> {workout.status ?? 'completed'}</p>
-
-      <h2>🏋️ Exercises</h2>
-      <div style={listContainerStyle}>
-        {editedExercises.map((we, i) => (
-          <div key={we.id} className="exercise-item">
-            <strong>{we.exercise?.name ?? 'Unknown'}</strong>
-						<div className="exercise-inputs">
-            <label>
-              Sets:
-              <input
-                type="number"
-                value={we.sets}
-                onChange={e => updateField(i, 'sets', parseInt(e.target.value))}
-              />
-            </label>
-            <label>
-              Reps:
-              <input
-                type="number"
-                value={we.reps}
-                onChange={e => updateField(i, 'reps', parseInt(e.target.value))}
-              />
-            </label>
-            <label>
-              Weight:
-              <input
-                type="number"
-                value={we.weight}
-                onChange={e => updateField(i, 'weight', parseFloat(e.target.value))}
-              />
-            </label>
-						</div>
-          </div>
-        ))}
-      </div>
-
-      <StatusButton
-        onClick={saveUpdates}
-        idleLabel="💾 Save Changes"
-        successLabel="✅ Workout Saved!"
-        accentColor="#eee"
-        successColor="#4CAF50"
-      />
-			<hr style={{ marginTop:'2rem' }}/>
-      <h2>📊 Volume Summary</h2>
-      <ul style={listContainerStyle}>
-        {volumeByExercise.map((ve, i) => (
-          <li key={i} style={listItemStyle}>
-            {ve.name}: {ve.sets}×{ve.reps} @ {ve.weight ?? 0} lbs → Volume: {ve.volume}
-          </li>
-        ))}
-      </ul>
-
-      <h2>🧠 Muscle Volume Breakdown</h2>
-      <ul style={listContainerStyle}>
-        {Object.entries(muscleSummary).map(([muscle, vol], i) => (
-          <li key={i} style={listItemStyle}>
-            {muscle}: {vol}
-          </li>
-        ))}
-      </ul>
-			<div style={{ display:'flex', flexDirection:'row', columnGap:'0.5rem', flexWrap:'wrap', rowGap:'0.5rem', justifyContent:'center'}}>
-			{workout.status !== 'Completed' && (
-				<>
-				<WorkoutButton
-				  label="Start Workout"
-				  icon=""
-				  variant="info"
-				  onClick={() => navigate(`/runner/${workout.id}`)}
-				/>
-			  <WorkoutButton
-			    label="Mark Completed"
-			    icon="✅"
-			    variant="info"
-			    onClick={async () => {
-			      if (!workout) return;
-
-			      const { error } = await supabase
-			        .from('workouts')
-			        .update({ status: 'completed' })
-			        .eq('id', workout.id);
-
-			      if (error) {
-			        console.error('Error marking completed:', error);
-			        return;
-			      }
-
-			      // Update UI instantly without refetching
-			      setWorkout(prev =>
-			        prev ? { ...prev, status: 'Completed' } : prev
-			      );
-			    }}
-			  />
-				</>
-			)}
-			<WorkoutButton
-			  label="Create Template"
-			  icon="📦"
-			  variant="info"
-			  onClick={async () => {
-			    const name = window.prompt('Name your template:');
-			    if (!name || !workout) return;
-
-			    try {
-			      const { data: template, error } = await supabase
-			        .from('templates')
-			        .insert({
-			          name,
-			          source_workout_id: workout.id,
-			          created_at: new Date().toISOString()
-			        })
-			        .select()
-			        .single();
-
-			      if (error || !template) {
-			        console.error('Error creating template:', error);
-			        alert('Failed to create template.');
-			        return;
-			      }
-			      // Optionally insert exercises into a template_exercises table
-						for (const we of editedExercises) {
-						  const { data, error } = await supabase.from('template_exercises').insert({
-						    template_id: template.id,
-						    sets: we.sets,
-						    reps: we.reps,
-						    order: we.order,
-						    exercise_id: we.exercise?.id
-						  });
-
-						  if (error) {
-						    console.error('Insert failed:', error);
-						  } else {
-						    console.log('Inserted template exercise:', data);
-						  }
-						}
-			      navigate('/templates');
-			    } catch (err) {
-			      console.error('Unexpected error:', err);
-			      alert('Something went wrong.');
-			    }
-			  }}
-			/>
-			<WorkoutButton
-			  label="Edit Workout"
-			  icon="✏️"
-			  variant="info"
-			  onClick={() => navigate(`/plan?importWorkout=${workout.id}`)}
-			/>
-
-			<WorkoutButton
-	      label="Back to Dashboard"
-	      icon="🏠"
-	      variant="info"
-	      onClick={() => navigate('/')}
-	    />
-			<WorkoutButton
-			  label="Delete Workout"
-			  icon="X"
-			  variant="accent"
-			  onClick={async () => {
-			    const confirmed = window.confirm(
-			      'Are you sure you want to delete this workout? This action cannot be undone.'
-			    );
-
-			    if (!confirmed) return;
-
-			    await deleteWorkoutById(workout.id);
-			    navigate('/');
-			  }}
-			/>
-			</div>
+<WorkoutDetails
+	workoutId={workout.id}
+	date={workout.date}
+	status={workout.status}
+	exercises={editedExercises}
+	onDateChange={date =>
+		setWorkout(prev => prev ? { ...prev, date } : prev)
+	}
+	onSave={saveUpdates}
+	onStatusChange={status =>
+    setWorkout(prev => prev ? { ...prev, status } : prev)
+  }
+	onDelete={handleDeleteWorkout}
+	onExercisesChange={setEditedExercises}
+/>
     </Layout>
   )
 }

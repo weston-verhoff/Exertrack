@@ -5,24 +5,7 @@ import { deleteWorkoutById } from '../utils/deleteWorkout';
 import { WorkoutButton } from '../components/WorkoutButton';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { motion } from 'framer-motion'; // ✅ Import motion
-
-interface WorkoutExercise {
-  sets: number;
-  reps: number;
-  weight: number;
-  order: number;
-  exercise: {
-    name: string;
-    target_muscle: string;
-  };
-}
-
-interface Workout {
-  id: string;
-  date: string;
-  status?: string;
-  workout_exercises: WorkoutExercise[];
-}
+import { Workout } from '../types/workout';
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -30,26 +13,43 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const futureRef = useRef<HTMLDivElement>(null);
   const [constraints, setConstraints] = useState({ left: 0, right: 0 });
+	const [drawerOpen, setDrawerOpen] = useState(false);
+
+	const handleStatusChange = (id: string, status: string) => {
+	  setWorkouts(prev =>
+	    prev.map(w =>
+	      w.id === id ? { ...w, status } : w
+	    )
+	  );
+	};
 
   useEffect(() => {
     const today = getLocalDateString();
 
     async function fetchWorkouts() {
-      const { data, error } = await supabase
-        .from('workouts')
-        .select(`
-          id,
-          date,
-          status,
-          workout_exercises (
-            sets,
-            reps,
-            weight,
-            order,
-            exercise:exercise_id(name, target_muscle)
-          )
-        `)
-        .order('date', { ascending: true });
+			const { data, error } = await supabase
+		  .from('workouts')
+		  .select(`
+		    id,
+		    date,
+		    status,
+		    workout_exercises (
+		      id,
+		      order,
+		      exercise:exercise_id (
+		        name,
+		        target_muscle
+		      ),
+		      workout_sets (
+						id,
+		        set_number,
+		        reps,
+		        weight,
+		        intensity_type
+		      )
+		    )
+		  `)
+		  .order('date', { ascending: true });
 
       if (error) {
         console.error('Error fetching workouts:', error);
@@ -71,6 +71,7 @@ export default function Dashboard() {
                   ? we.exercise[0]
                   : we.exercise
                 : null,
+								workout_sets: we.workout_sets ?? [],
           })),
         };
       });
@@ -152,6 +153,14 @@ export default function Dashboard() {
 				    workout={nextWorkout}
 						onDelete={deleteWorkout}
 						variant="highlighted"
+						onStatusChange={handleStatusChange}
+						onWorkoutUpdated={updatedWorkout => {
+				    setWorkouts(prev =>
+				      prev.map(w =>
+				        w.id === updatedWorkout.id ? updatedWorkout : w
+				      )
+				    );
+				  }}
 				  />
 				)}
       </div>
@@ -161,19 +170,33 @@ export default function Dashboard() {
         <>
           {/* FUTURE WORKOUTS with drag scrolling */}
 					<div className="future-workouts">
-          <motion.div
-            ref={futureRef}
-            className="drag-future-workouts"
-            drag="x"
-            dragConstraints={constraints}
-            dragElastic={0.05}
-          >
+					<motion.div
+					  ref={futureRef}
+					  className="drag-future-workouts"
+					  drag={drawerOpen ? false : "x"}
+					  dragConstraints={constraints}
+					  dragElastic={0.05}
+					  style={{
+					    pointerEvents: drawerOpen ? "none" : "auto",
+					  }}
+					>
+
             {scheduledWorkouts.map((w) => (
               <WorkoutCard
                 key={w.id}
                 workout={w}
                 onDelete={deleteWorkout}
 								variant="future-workout"
+								onStatusChange={handleStatusChange}
+								onDrawerOpen={() => setDrawerOpen(true)}
+							  onDrawerClose={() => setDrawerOpen(false)}
+								onWorkoutUpdated={updatedWorkout => {
+						    setWorkouts(prev =>
+						      prev.map(w =>
+						        w.id === updatedWorkout.id ? updatedWorkout : w
+						      )
+						    );
+						  }}
               />
             ))}
           </motion.div>
@@ -192,6 +215,14 @@ export default function Dashboard() {
                     isToday={w.date === today}
                     onDelete={deleteWorkout}
 										variant="past-workout"
+										onStatusChange={handleStatusChange}
+										onWorkoutUpdated={updatedWorkout => {
+								    setWorkouts(prev =>
+								      prev.map(w =>
+								        w.id === updatedWorkout.id ? updatedWorkout : w
+								      )
+								    );
+								  }}
                   />
                 ))}
               </div>

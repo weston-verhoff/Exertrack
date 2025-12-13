@@ -22,13 +22,18 @@ export type ConfiguredExercise = ExerciseConfig;
 export interface ExerciseConfig {
   exercise_id: string;
   name: string;
-  sets: number;
-  reps: number;
-  weight?: number;
+  sets: WorkoutSet[];
   order: number;
 }
 
-// --- Update Step2Props to include editingWorkout args ---
+export interface WorkoutSet {
+  set_number: number;
+  reps: number;
+  weight: number;
+  intensity_type?: string;
+  notes?: string;
+}
+
 export interface Step2Props {
   selectedExercises: ConfiguredExercise[];
   onNext: (configured?: ConfiguredExercise[]) => void | Promise<void>;
@@ -106,30 +111,26 @@ function SortableExercise({
             minWidth: '120px'
           }}
         />
-        <input
-          type="number"
-          placeholder="Sets"
-          value={ex.sets}
-          onChange={e => {
-            const v = Number(e.target.value);
-            onChange(index, 'sets', Number.isNaN(v) ? 0 : Math.max(0, Math.floor(v)));
-          }}
-          style={{
-            width: '56px'
-          }}
-        />
-        <input
-          type="number"
-          placeholder="Reps"
-          value={ex.reps}
-          onChange={e => {
-            const v = Number(e.target.value);
-            onChange(index, 'reps', Number.isNaN(v) ? 0 : Math.max(0, Math.floor(v)));
-          }}
-          style={{
-            width: '56px'
-          }}
-        />
+				<input
+				  type="number"
+				  placeholder="Sets"
+				  value={ex.sets.length}
+				  onChange={e => {
+				    const count = Math.max(0, Number(e.target.value));
+				    onChange(index, 'sets', count);
+				  }}
+				  style={{ width: '56px' }}
+				/>
+				<input
+				  type="number"
+				  placeholder="Reps"
+				  value={ex.sets[0]?.reps ?? 0}
+				  onChange={e => {
+				    const reps = Math.max(0, Number(e.target.value));
+				    onChange(index, 'reps', reps);
+				  }}
+				  style={{ width: '56px' }}
+				/>
       </div>
     </div>
   );
@@ -149,10 +150,17 @@ export default function Step2ConfigureCircuit({
 	    ? selectedExercises.map((ex, i) => ({
 	        exercise_id: ex.exercise_id,
 	        name: ex.name ?? '',
-	        sets: typeof ex.sets === 'number' ? ex.sets : 3,
-	        reps: typeof ex.reps === 'number' ? ex.reps : 8,
-	        weight: typeof ex.weight === 'number' ? ex.weight : (ex as any).weight ?? 0,
-	        order: typeof ex.order === 'number' ? ex.order : i
+	        order: typeof ex.order === 'number' ? ex.order : i,
+	        sets: Array.isArray(ex.sets)
+	          ? ex.sets
+	          : [
+	              {
+	                set_number: 1,
+	                reps: 8,
+	                weight: 0,
+	                intensity_type: 'normal',
+	              },
+	            ],
 	      }))
 	    : []
 	);
@@ -172,14 +180,21 @@ export default function Step2ConfigureCircuit({
     }
 
 
-    const synced = selectedExercises.map((ex, i) => ({
-      exercise_id: ex.exercise_id,
-      name: ex.name ?? '',
-      sets: typeof ex.sets === 'number' ? ex.sets : 3,
-      reps: typeof ex.reps === 'number' ? ex.reps : 8,
-      weight: typeof ex.weight === 'number' ? ex.weight : (ex as any).weight ?? 0,
-      order: typeof ex.order === 'number' ? ex.order : i
-    }));
+		const synced: ExerciseConfig[] = selectedExercises.map((ex, i) => ({
+		  exercise_id: ex.exercise_id,
+		  name: ex.name ?? '',
+		  order: typeof ex.order === 'number' ? ex.order : i,
+		  sets: Array.isArray(ex.sets)
+		    ? ex.sets
+		    : [
+		        {
+		          set_number: 1,
+		          reps: 8,
+		          weight: 0,
+		          intensity_type: 'normal',
+		        },
+		      ],
+		}));
 
     setExercises(synced);
   }, [selectedExercises]);
@@ -201,11 +216,37 @@ export default function Step2ConfigureCircuit({
     setExercises(reordered);
   };
 
-  const handleChange = (index: number, field: 'sets' | 'reps', value: number) => {
-    const updated = [...exercises];
-    updated[index] = { ...updated[index], [field]: value };
-    setExercises(updated);
-  };
+	const handleChange = (
+	  index: number,
+	  field: 'sets' | 'reps',
+	  value: number
+	) => {
+	  const updated = [...exercises];
+	  const ex = updated[index];
+
+	  if (field === 'sets') {
+	    const current = ex.sets.length;
+
+	    if (value > current) {
+	      ex.sets.push(
+	        ...Array.from({ length: value - current }, (_, i) => ({
+	          set_number: current + i + 1,
+	          reps: ex.sets[0]?.reps ?? 8,
+	          weight: ex.sets[0]?.weight ?? 0,
+	          intensity_type: 'normal',
+	        }))
+	      );
+	    } else {
+	      ex.sets = ex.sets.slice(0, value);
+	    }
+	  }
+
+	  if (field === 'reps') {
+	    ex.sets = ex.sets.map(s => ({ ...s, reps: value }));
+	  }
+
+	  setExercises(updated);
+	};
 
   const handleRemoveExercise = (exercise_id: string) => {
     const updated = exercises
@@ -232,57 +273,56 @@ export default function Step2ConfigureCircuit({
 
     try {
       if (isEditingWorkout && editingWorkoutId) {
-        // Update workout row
-        const { error: updateWorkoutError } = await supabase
-          .from('workouts')
-          .update({ date: selectedDate, status: 'scheduled' })
-          .eq('id', editingWorkoutId);
+				// 1️⃣ Delete existing exercises (sets will cascade if FK is set)
+				await supabase
+				  .from('workout_exercises')
+				  .delete()
+				  .eq('workout_id', editingWorkoutId);
 
-        if (updateWorkoutError) {
-          console.error('Error updating workout:', updateWorkoutError);
-          alert('Failed to update workout.');
-          setSaving(false);
-          return;
-        }
+				// 2️⃣ Recreate exercises + sets
+				for (const ex of validExercises) {
+				  // Create workout_exercise
+				  const { data: we, error: weError } = await supabase
+				    .from('workout_exercises')
+						.insert({
+						  workout_id: editingWorkoutId,
+						  exercise_id: ex.exercise_id,
+						  order: ex.order,
+						  sets: ex.sets.length,
+						  reps: ex.sets[0]?.reps ?? 0,
+						  weight: ex.sets[0]?.weight ?? 0,
+						})
+				    .select()
+				    .single();
 
-        // Delete existing workout_exercises
-        const { error: deleteError } = await supabase
-          .from('workout_exercises')
-          .delete()
-          .eq('workout_id', editingWorkoutId);
+				  if (weError || !we) {
+				    console.error(weError);
+				    throw weError;
+				  }
 
-        if (deleteError) {
-          console.error('Error deleting existing workout exercises:', deleteError);
-          alert('Failed to update exercises.');
-          setSaving(false);
-          return;
-        }
+				  // Create workout_sets
+				  const setRows = ex.sets.map(set => ({
+				    workout_exercise_id: we.id,
+				    set_number: set.set_number,
+				    reps: set.reps,
+				    weight: set.weight,
+				    intensity_type: set.intensity_type ?? 'normal',
+				    notes: set.notes ?? null,
+				  }));
 
-        // Insert with preserved weight
-        const inserts = validExercises.map(ex => ({
-          workout_id: editingWorkoutId,
-          exercise_id: ex.exercise_id,
-          sets: ex.sets,
-          reps: ex.reps,
-          weight: typeof ex.weight === 'number' ? ex.weight : 0,
-          order: ex.order
-        }));
+				  const { error: setsError } = await supabase
+				    .from('workout_sets')
+				    .insert(setRows);
 
-        const { error: insertError } = await supabase
-          .from('workout_exercises')
-          .insert(inserts);
+				  if (setsError) {
+				    console.error(setsError);
+				    throw setsError;
+				  }
+				}
 
-        if (insertError) {
-          console.error('Error inserting updated exercises:', insertError);
-          alert('Failed to save updated exercises.');
-          setSaving(false);
-          return;
-        }
-
-        onNext(validExercises);
-        navigate(`/workout/${editingWorkoutId}`);
-        setSaving(false);
-        return;
+				navigate(`/workout/${editingWorkoutId}`);
+				setSaving(false);
+				return;
       }
 
       // Create new workout
@@ -301,29 +341,47 @@ export default function Step2ConfigureCircuit({
 
       const workoutId = workoutData.id;
 
-      const inserts = validExercises.map(ex => ({
-        workout_id: workoutId,
-        exercise_id: ex.exercise_id,
-        sets: ex.sets,
-        reps: ex.reps,
-        weight: typeof ex.weight === 'number' ? ex.weight : 0,
-        order: ex.order
-      }));
+			for (const ex of validExercises) {
+			  const { data: we, error: weError } = await supabase
+			    .from('workout_exercises')
+					.insert({
+					  workout_id: workoutId,
+					  exercise_id: ex.exercise_id,
+					  order: ex.order,
+					  sets: ex.sets.length,
+					  reps: ex.sets[0]?.reps ?? 0,
+					  weight: ex.sets[0]?.weight ?? 0,
+					})
+			    .select()
+			    .single();
 
-      const { error: insertError } = await supabase
-        .from('workout_exercises')
-        .insert(inserts);
+			  if (weError || !we) {
+			    console.error(weError);
+			    throw weError;
+			  }
 
-      if (insertError) {
-        console.error('Error saving exercises:', insertError);
-        alert('Failed to save exercises.');
-        setSaving(false);
-        return;
-      }
+			  const setRows = ex.sets.map(set => ({
+			    workout_exercise_id: we.id,
+			    set_number: set.set_number,
+			    reps: set.reps,
+			    weight: set.weight,
+			    intensity_type: set.intensity_type ?? 'normal',
+			    notes: set.notes ?? null,
+			  }));
 
-      onNext(validExercises);
-      navigate(`/workout/${workoutId}`);
-      setSaving(false);
+			  const { error: setsError } = await supabase
+			    .from('workout_sets')
+			    .insert(setRows);
+
+			  if (setsError) {
+			    console.error(setsError);
+			    throw setsError;
+			  }
+			}
+
+			navigate(`/workout/${workoutId}`);
+			setSaving(false);
+
     } catch (err) {
       console.error('Unexpected error saving workout:', err);
       alert('Something went wrong while saving.');

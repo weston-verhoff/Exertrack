@@ -8,6 +8,13 @@ import { WorkoutCard } from '../components/WorkoutCard'
 export default function PastWorkouts() {
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true)
+	const handleStatusChange = (id: string, status: string) => {
+	  setWorkouts(prev =>
+	    prev.map(w =>
+	      w.id === id ? { ...w, status } : w
+	    )
+	  );
+	};
 
   useEffect(() => {
     async function fetchWorkouts() {
@@ -20,14 +27,32 @@ export default function PastWorkouts() {
 			    template:template_id(name),
 			    workout_exercises (
 			      id,
-			      sets,
-			      reps,
-			      weight,
-			      exercise:exercise_id(name, target_muscle)
+			      order,
+			      exercise:exercise_id (
+			        id,
+			        name,
+			        target_muscle
+			      ),
+			      workout_sets (
+			        id,
+			        set_number,
+			        reps,
+			        weight,
+			        intensity_type
+			      )
 			    )
 			  `)
 			  .order('date', { ascending: false });
+				const cleaned = (data ?? []).map(w => ({
+				  ...w,
+				  workout_exercises: w.workout_exercises.map(we => ({
+				    ...we,
+				    exercise: Array.isArray(we.exercise) ? we.exercise[0] : we.exercise,
+				    workout_sets: we.workout_sets ?? [],
+				  })),
+				}));
 
+				setWorkouts(cleaned);
 
       if (error) console.error('Error fetching workouts:', error)
       else setWorkouts(data || [])
@@ -75,6 +100,14 @@ export default function PastWorkouts() {
 							workout={w}
 							onDelete={deleteWorkout}
 							variant="future-workout"
+							onStatusChange={handleStatusChange}
+							onWorkoutUpdated={updatedWorkout => {
+				    setWorkouts(prev =>
+				      prev.map(w =>
+				        w.id === updatedWorkout.id ? updatedWorkout : w
+				      )
+				    );
+				  }}
 						/>
 					))}
 				</div>
@@ -92,6 +125,14 @@ export default function PastWorkouts() {
 							workout={w}
 							onDelete={deleteWorkout}
 							variant="past-workout"
+							onStatusChange={handleStatusChange}
+							onWorkoutUpdated={updatedWorkout => {
+					    setWorkouts(prev =>
+					      prev.map(w =>
+					        w.id === updatedWorkout.id ? updatedWorkout : w
+					      )
+					    );
+					  }}
 						/>
 					))}
 				</div>

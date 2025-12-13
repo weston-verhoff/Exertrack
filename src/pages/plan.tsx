@@ -56,15 +56,17 @@ useEffect(() => {
 
         if (error) return console.error('Template import error:', error);
 
-        cleaned = data.map((item: any, i: number) => ({
-          exercise_id: item.exercise_id,
-          name: item.exercise?.name ?? '',
-          target_muscle: item.exercise?.target_muscle ?? '',
-          sets: item.sets ?? 3,
-          reps: item.reps ?? 8,
-          weight: item.weight ?? 0,
-          order: item.order ?? i,
-        }));
+				cleaned = data.map((item: any, i: number) => ({
+				  exercise_id: item.exercise_id,
+				  name: item.exercise?.name ?? '',
+				  order: item.order ?? i,
+				  sets: Array.from({ length: item.sets ?? 3 }, (_, idx) => ({
+				    set_number: idx + 1,
+				    reps: item.reps ?? 8,
+				    weight: 0,
+				    intensity_type: 'normal',
+				  })),
+				}));
 
         setStep(1); // allow editing before scheduling
 
@@ -84,45 +86,56 @@ useEffect(() => {
 
         if (error) return console.error('Template fetch error:', error);
 
-        cleaned = data.map((item: any, i: number) => ({
-          exercise_id: item.exercise_id,
-          name: item.exercise?.name ?? '',
-          target_muscle: item.exercise?.target_muscle ?? '',
-          sets: item.sets ?? 3,
-          reps: item.reps ?? 8,
-          weight: item.weight ?? 0,
-          order: item.order ?? i,
-        }));
+				cleaned = data.map((item: any, i: number) => ({
+				  exercise_id: item.exercise_id,
+				  name: item.exercise?.name ?? '',
+				  order: item.order ?? i,
+				  sets: Array.from({ length: item.sets ?? 3 }, (_, idx) => ({
+				    set_number: idx + 1,
+				    reps: item.reps ?? 8,
+				    weight: 0,
+				    intensity_type: 'normal',
+				  })),
+				}));
 
       // Import existing workout
-      } else if (importWorkoutId) {
-        const { data, error } = await supabase
-          .from('workout_exercises')
-          .select(`
-            exercise_id,
-            sets,
-            reps,
-            weight,
-            order,
-            exercise:exercise_id(name, target_muscle)
-          `)
-          .eq('workout_id', importWorkoutId)
-          .order('order', { ascending: true });
+		} else if (importWorkoutId) {
+			const { data, error } = await supabase
+				.from('workout_exercises')
+				.select(`
+					exercise_id,
+					order,
+					exercise:exercise_id(name, target_muscle),
+					workout_sets (
+						set_number,
+						reps,
+						weight,
+						intensity_type
+					)
+				`)
+				.eq('workout_id', importWorkoutId)
+				.order('order', { ascending: true });
 
-        if (error) return console.error('Workout import error:', error);
+			if (error) return console.error('Workout import error:', error);
 
-        cleaned = data.map((item: any, i: number) => ({
-          exercise_id: item.exercise_id,
-          name: item.exercise?.name ?? '',
-          target_muscle: item.exercise?.target_muscle ?? '',
-          sets: item.sets ?? 3,
-          reps: item.reps ?? 8,
-          weight: item.weight ?? 0,
-          order: item.order ?? i,
-        }));
+			cleaned = data.map((item: any, i: number) => ({
+				exercise_id: item.exercise_id,
+				name: item.exercise?.name ?? '',
+				order: item.order ?? i,
+				sets: item.workout_sets.length
+					? item.workout_sets
+					: [
+							{
+								set_number: 1,
+								reps: 8,
+								weight: 0,
+								intensity_type: 'normal',
+							},
+						],
+			}));
 
-        setStep(1); // allow editing
-      }
+			setStep(1);
+			}
 
       if (cleaned.length > 0) {
         setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
@@ -179,13 +192,13 @@ useEffect(() => {
       return;
     }
 
-    const inserts = configured.map((ex, i) => ({
-      template_id: activeTemplateId,
-      exercise_id: ex.exercise_id,
-      sets: ex.sets,
-      reps: ex.reps,
-      order: i
-    }));
+		const inserts = configured.map((ex, i) => ({
+		  template_id: activeTemplateId,
+		  exercise_id: ex.exercise_id,
+		  sets: ex.sets.length,
+		  reps: ex.sets[0]?.reps ?? 8,
+		  order: i,
+		}));
 
     const { error: insertError } = await supabase
       .from('template_exercises')
@@ -289,20 +302,53 @@ useEffect(() => {
             )}
 						<button
 						  onClick={() => {
+						    let selected: ConfiguredExercise[] = [];
 
-						    const selected = (isEditingTemplate || importingTemplate || importWorkoutId)
-						      ? selectedExercisesData // keep DB-loaded sets/reps/weight
-						      : exercises
-						          .filter(e => selectedExerciseIds.includes(e.id))
-						          .map((e, i) => ({
-						            exercise_id: e.id,
-						            name: e.name,
-						            target_muscle: e.target_muscle,
-						            sets: e.sets ?? 3,
-						            reps: e.reps ?? 8,
-						            weight: e.weight ?? 0,
-						            order: i,
-						          }));
+						    if (isEditingTemplate) {
+						      // 1️⃣ Start with existing template exercises
+						      const existing = selectedExercisesData;
+
+						      // 2️⃣ Find newly checked exercises not already in template
+						      const existingIds = new Set(existing.map(e => e.exercise_id));
+
+						      const additions = exercises
+						        .filter(
+						          e =>
+						            selectedExerciseIds.includes(e.id) &&
+						            !existingIds.has(e.id)
+						        )
+						        .map((e, i) => ({
+						          exercise_id: e.id,
+						          name: e.name,
+						          order: existing.length + i,
+						          sets: Array.from({ length: 3 }, (_, idx) => ({
+						            set_number: idx + 1,
+						            reps: 8,
+						            weight: 0,
+						            intensity_type: 'normal',
+						          })),
+						        }));
+
+						      selected = [...existing, ...additions];
+						    } else if (importingTemplate || importWorkoutId) {
+						      // Preserve imported data exactly
+						      selected = selectedExercisesData;
+						    } else {
+						      // Fresh manual planning
+						      selected = exercises
+						        .filter(e => selectedExerciseIds.includes(e.id))
+						        .map((e, i) => ({
+						          exercise_id: e.id,
+						          name: e.name,
+						          order: i,
+						          sets: Array.from({ length: 3 }, (_, idx) => ({
+						            set_number: idx + 1,
+						            reps: 8,
+						            weight: 0,
+						            intensity_type: 'normal',
+						          })),
+						        }));
+						    }
 
 						    setSelectedExercisesData(selected);
 						    setStep(2);

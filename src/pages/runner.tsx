@@ -3,21 +3,20 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { WorkoutButton } from '../components/WorkoutButton'
 import { Layout } from '../components/Layout';
-
-type ExerciseProgress = {
-  completed: number
-  skipped: number[]
-}
+import { WorkoutExercise, WorkoutSet } from '../types/workout';
 
 export default function WorkoutRunner() {
   const { id: workoutId } = useParams()
   const navigate = useNavigate()
 
-  const [exercises, setExercises] = useState<any[]>([])
-  const [progress, setProgress] = useState<Record<number, ExerciseProgress>>({})
+	const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0)
-  const [currentSet, setCurrentSet] = useState(1)
+	const [currentSetIndex, setCurrentSetIndex] = useState(0);
   const [loading, setLoading] = useState(true)
+
+	const currentExercise = exercises[currentIndex];
+	const currentSet = currentExercise?.workout_sets[currentSetIndex];
+
 
   useEffect(() => {
     async function fetchWorkoutExercises() {
@@ -27,150 +26,127 @@ export default function WorkoutRunner() {
         return
       }
 
-      const { data, error } = await supabase
-        .from('workout_exercises')
-        .select('*, exercise:exercise_id(name, target_muscle)')
-        .eq('workout_id', workoutId)
-        .order('order', { ascending: true })
+			const { data, error } = await supabase
+			  .from('workouts')
+			  .select(`
+			    id,
+			    workout_exercises (
+			      id,
+			      order,
+						exercise:exercise_id (
+						  id,
+						  name,
+						  target_muscle
+						),
+			      workout_sets (
+			        id,
+			        set_number,
+			        reps,
+			        weight,
+			        notes,
+			        intensity_type
+			      )
+			    )
+			  `)
+			  .eq('id', workoutId)
+			  .single();
 
-      if (error) {
-        console.error('Error fetching workout exercises:', error)
-      }
-
-      const cleaned = (data ?? []).map((we: any) => ({
-        ...we,
-        exercise: we.exercise && typeof we.exercise === 'object'
-          ? Array.isArray(we.exercise) ? we.exercise[0] : we.exercise
-          : null
-      }))
-
-      const initialProgress = Object.fromEntries(
-        cleaned.map(e => [e.id, { completed: 0, skipped: [] }])
-      )
+				if (error || !data) {
+				  console.error(error);
+				  setLoading(false);
+				  return;
+				}
+				const cleaned: WorkoutExercise[] = data.workout_exercises
+				  .slice()
+				  .sort((a, b) => a.order - b.order)
+				  .map(we => ({
+				    ...we,
+				    exercise: Array.isArray(we.exercise) ? we.exercise[0] : we.exercise,
+				    workout_sets: we.workout_sets
+				      .slice()
+				      .sort((a, b) => a.set_number - b.set_number),
+				  }));
 
       setExercises(cleaned)
-      setProgress(initialProgress)
       setLoading(false)
     }
 
     fetchWorkoutExercises()
   }, [workoutId])
 
-  const updateField = (index: number, field: 'weight' | 'notes' | 'reps', value: any) => {
-    const updated = [...exercises]
-    updated[index][field] = value
-    setExercises(updated)
-  }
+  const updateCurrentSet = (field: 'weight' | 'reps' | 'notes', value: any) => {
+	  setExercises(prev =>
+	    prev.map((ex, exIdx) =>
+	      exIdx !== currentIndex
+	        ? ex
+	        : {
+	            ...ex,
+	            workout_sets: ex.workout_sets.map((set: WorkoutSet, setIdx: number) =>
+	              setIdx !== currentSetIndex
+	                ? set
+	                : { ...set, [field]: value }
+	            ),
+	          }
+	    )
+	  );
+	};
 
-  const advanceSet = () => {
-    const currentExercise = exercises[currentIndex]
-    const { completed, skipped } = progress[currentExercise.id]
-    const totalDone = completed + skipped.length
-    const totalSets = currentExercise.sets
+	const handleNextSet = () => {
+	  const isLastSet =
+	    currentSetIndex === currentExercise.workout_sets.length - 1;
 
-    const isLastExercise = currentIndex === exercises.length - 1
-    const isExerciseComplete = totalDone === totalSets
+	  if (!isLastSet) {
+	    setCurrentSetIndex(i => i + 1);
+	  } else if (currentIndex < exercises.length - 1) {
+	    setCurrentIndex(i => i + 1);
+	    setCurrentSetIndex(0);
+	  } else {
+	    finishWorkout();
+	  }
+	};
 
-    if (!isExerciseComplete) {
-      setCurrentSet(totalDone + 1)
-    } else if (isLastExercise) {
-      finishWorkout()
-    } else {
-      setCurrentIndex(currentIndex + 1)
-      setCurrentSet(1)
-    }
-  }
+	const handleBackSet = () => {
+	  if (currentSetIndex > 0) {
+	    setCurrentSetIndex(i => i - 1);
+	  } else if (currentIndex > 0) {
+	    const prevExercise = exercises[currentIndex - 1];
+	    setCurrentIndex(i => i - 1);
+	    setCurrentSetIndex(prevExercise.workout_sets.length - 1);
+	  }
+	};
 
-  const handleNextSet = () => {
-    const currentId = exercises[currentIndex].id
-    const updated = { ...progress }
-    updated[currentId].completed += 1
-    setProgress(updated)
-    advanceSet()
-  }
+	const finishWorkout = async () => {
+		const updates = exercises.flatMap(ex =>
+		  ex.workout_sets.map(set => ({
+		    id: set.id,
+		    set_number: set.set_number, // 🔑 REQUIRED
+		    reps: set.reps,
+		    weight: set.weight,
+		    notes: set.notes ?? null,
+		    intensity_type: set.intensity_type ?? 'normal',
+		  }))
+		);
 
-  const handleSkipSet = () => {
-    const currentId = exercises[currentIndex].id
-    const updated = { ...progress }
-    updated[currentId].skipped = [...updated[currentId].skipped, currentSet]
-    setProgress(updated)
-    advanceSet()
-  }
+	  const { error } = await supabase
+	    .from('workout_sets')
+			.upsert(updates, {
+		    onConflict: 'id',
+		  });
 
-  const handleBackSet = () => {
-    const currentExercise = exercises[currentIndex]
-    const currentId = currentExercise.id
-    const { completed, skipped } = progress[currentId]
+	  if (error) {
+	    console.error(error);
+	    alert('Failed to save workout.');
+	    return;
+	  }
 
-    const updated = { ...progress }
+	  await supabase
+	    .from('workouts')
+	    .update({ status: 'completed' })
+	    .eq('id', workoutId);
 
-    if (completed > 0) {
-      updated[currentId].completed -= 1
-    } else if (skipped.length > 0) {
-      updated[currentId].skipped = skipped.slice(0, -1)
-    } else if (currentIndex > 0) {
-		  const prevIndex = currentIndex - 1
-		  const prevExercise = exercises[prevIndex]
-		  const prevId = prevExercise.id
-		  const prevProgress = updated[prevId]
-		  const totalPrev = prevProgress.completed + prevProgress.skipped.length
+	  navigate(`/workout/${workoutId}`);
+	};
 
-		  setProgress(updated)
-		  setCurrentIndex(prevIndex)
-		  setCurrentSet(totalPrev)
-		  return
-		} else {
-      return
-    }
-
-    setProgress(updated)
-    const totalDone = updated[currentId].completed + updated[currentId].skipped.length
-    setCurrentSet(totalDone + 1)
-  }
-
-  const finishWorkout = async () => {
-    if (!workoutId) {
-      alert('Workout ID missing. Cannot navigate to recap.')
-      return
-    }
-
-    const updates = exercises.map((e, index) => {
-      const { skipped = [] } = progress[e.id] || {}
-      return {
-        id: e.id,
-        workout_id: workoutId,
-        exercise_id: e.exercise_id,
-        sets: Math.max(0, e.sets - skipped.length),
-        reps: e.reps,
-        order: e.order ?? index,
-        weight: e.weight || 0,
-        notes: e.notes || ''
-      }
-    })
-
-    const { error: exerciseError } = await supabase
-      .from('workout_exercises')
-      .upsert(updates)
-
-    if (exerciseError) {
-      console.error('Error updating workout exercises:', exerciseError)
-      alert('Something went wrong while saving your workout.')
-      return
-    }
-
-    const { error: statusError } = await supabase
-      .from('workouts')
-      .update({ status: 'completed' })
-      .eq('id', workoutId)
-
-    if (statusError) {
-      console.error('Error updating workout status:', statusError)
-      alert('Workout saved, but status update failed.')
-      return
-    }
-
-    navigate(`/workout/${workoutId}`)
-  }
 
   if (loading) return <p>Loading workout...</p>
   if (!exercises.length) return <p>No exercises found.</p>
@@ -185,30 +161,32 @@ export default function WorkoutRunner() {
   }
 
   const current = exercises[currentIndex]
-  const currentProgress = progress[current.id] || { completed: 0, skipped: [] }
   const exerciseName = current.exercise?.name ?? 'Unknown'
   const targetMuscle = current.exercise?.target_muscle ?? 'Unknown'
-  const totalSets = current.sets || 1
-  const isLastExercise = currentIndex === exercises.length - 1
-  const isLastSet = currentProgress.completed + currentProgress.skipped.length === totalSets
-
+	if (!currentExercise || !currentSet) {
+	  return <p>Loading workout...</p>;
+	}
+	const isLastExercise = currentIndex === exercises.length - 1;
+	const isLastSet = currentSetIndex === currentExercise.workout_sets.length - 1;
   return (
 		<Layout padded maxWidth="md">
 		<WorkoutProgressBar current={currentIndex} total={exercises.length} />
 		  <h1 className="headline">Workout Runner</h1>
 
 		  <ExerciseHeader name={exerciseName} targetMuscle={targetMuscle} />
-		  <SetProgress current={currentSet} total={totalSets} skipped={currentProgress.skipped} />
-		  <SetEditor
-		    weight={current.weight || 0}
-		    reps={current.reps}
-		    notes={current.notes || ''}
-		    onChange={(field, value) => updateField(currentIndex, field, value)}
-		  />
+			<SetProgress
+			  current={currentSetIndex + 1}
+			  total={currentExercise.workout_sets.length}
+			/>
+			<SetEditor
+			  weight={currentSet.weight ?? 0}
+			  reps={currentSet.reps}
+			  notes={currentSet.notes ?? ''}
+			  onChange={updateCurrentSet}
+			/>
 		  <ActionButtons
 		    isLast={isLastExercise && isLastSet}
 		    onNextSet={handleNextSet}
-		    onSkipSet={handleSkipSet}
 		    onFinish={finishWorkout}
 		    onBackSet={handleBackSet}
 		  />
@@ -226,24 +204,20 @@ function ExerciseHeader({ name, targetMuscle }: { name: string; targetMuscle: st
 
 function SetProgress({
   current,
-  total,
-  skipped
+  total
 }: {
   current: number
   total: number
-  skipped: number[]
 }) {
   return (
     <div style={{ display: 'flex', gap: '0.75rem', marginBottom: '1rem' }}>
       {Array.from({ length: total }).map((_, i) => {
         const setNumber = i + 1
-        const isSkipped = skipped.includes(setNumber)
-        const isCompleted = setNumber < current && !isSkipped
+        const isCompleted = setNumber < current
         const isCurrent = setNumber === current
 
         let color = '#ccc'
-        if (isSkipped) color = 'red'
-        else if (isCompleted) color = '#2196f3'
+        if (isCompleted) color = '#2196f3'
         else if (isCurrent) color = '#4CAF50'
 
         return (
@@ -311,13 +285,11 @@ function SetEditor({
 function ActionButtons({
   isLast,
   onNextSet,
-  onSkipSet,
   onFinish,
   onBackSet
 }: {
   isLast: boolean
   onNextSet: () => void
-  onSkipSet: () => void
   onFinish: () => void
   onBackSet: () => void
 }) {
@@ -329,7 +301,6 @@ function ActionButtons({
       ) : (
         <>
           <WorkoutButton label="Next Set →" onClick={onNextSet} variant="info" />
-          <WorkoutButton label="Skipped →" onClick={onSkipSet} variant="accent" />
         </>
       )}
     </div>
