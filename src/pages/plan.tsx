@@ -13,6 +13,10 @@ export default function PlanSession() {
 	const isEditingTemplate = searchParams.get('editTemplate') !== null;
 	const importingTemplate = searchParams.get('importTemplate') !== null;
   const importWorkoutId = queryWorkoutId ?? undefined;
+	const editTemplateId = searchParams.get('editTemplate');
+	const activeTemplateId =
+	  editTemplateId ?? queryTemplateId ?? undefined;
+
 
   const { exercises, loading: loadingExercises, refetch } = useExercises();
   const { templates, loading: loadingTemplates } = useTemplates();
@@ -37,7 +41,7 @@ useEffect(() => {
       let cleaned: ConfiguredExercise[] = [];
 
       // Import template for a new workout
-      if (importingTemplate && queryTemplateId) {
+      if (importingTemplate && activeTemplateId) {
         const { data, error } = await supabase
           .from('template_exercises')
           .select(`
@@ -47,7 +51,7 @@ useEffect(() => {
             order,
             exercise:exercise_id(name, target_muscle)
           `)
-          .eq('template_id', queryTemplateId)
+          .eq('template_id', activeTemplateId)
           .order('order', { ascending: true });
 
         if (error) return console.error('Template import error:', error);
@@ -65,7 +69,7 @@ useEffect(() => {
         setStep(1); // allow editing before scheduling
 
       // Edit template workflow
-      } else if (isEditingTemplate && queryTemplateId) {
+      } else if (isEditingTemplate && activeTemplateId) {
         const { data, error } = await supabase
           .from('template_exercises')
           .select(`
@@ -75,7 +79,7 @@ useEffect(() => {
             order,
             exercise:exercise_id(name, target_muscle)
           `)
-          .eq('template_id', queryTemplateId)
+          .eq('template_id', activeTemplateId)
           .order('order', { ascending: true });
 
         if (error) return console.error('Template fetch error:', error);
@@ -132,7 +136,7 @@ useEffect(() => {
   }
 
   fetchImportedData();
-}, [importingTemplate, isEditingTemplate, importWorkoutId, queryTemplateId, hasImported]);
+}, [importingTemplate, isEditingTemplate, importWorkoutId, activeTemplateId, hasImported]);
 
 
 
@@ -162,12 +166,12 @@ useEffect(() => {
   };
 
   const handleSaveTemplate = async (configured: ConfiguredExercise[]) => {
-    if (!queryTemplateId) return;
+    if (!activeTemplateId) return;
 
     const { error: deleteError } = await supabase
       .from('template_exercises')
       .delete()
-      .eq('template_id', queryTemplateId);
+      .eq('template_id', activeTemplateId);
 
     if (deleteError) {
       console.error('Error deleting old template exercises:', deleteError);
@@ -176,7 +180,7 @@ useEffect(() => {
     }
 
     const inserts = configured.map((ex, i) => ({
-      template_id: queryTemplateId,
+      template_id: activeTemplateId,
       exercise_id: ex.exercise_id,
       sets: ex.sets,
       reps: ex.reps,
@@ -286,7 +290,7 @@ useEffect(() => {
 						<button
 						  onClick={() => {
 
-						    const selected = (isEditingTemplate || importWorkoutId)
+						    const selected = (isEditingTemplate || importingTemplate || importWorkoutId)
 						      ? selectedExercisesData // keep DB-loaded sets/reps/weight
 						      : exercises
 						          .filter(e => selectedExerciseIds.includes(e.id))
@@ -315,7 +319,7 @@ useEffect(() => {
 			    selectedExercises={selectedExercisesData}
 			    onNext={() => navigate('/')}
 			    isEditingTemplate={isEditingTemplate} // true only if editing
-			    templateId={isEditingTemplate ? queryTemplateId ?? undefined : undefined}
+			    templateId={isEditingTemplate ? activeTemplateId ?? undefined : undefined}
 			    onSaveTemplate={isEditingTemplate ? handleSaveTemplate : undefined}
 			    isEditingWorkout={importingTemplate || importWorkoutId ? true : false}
 			    editingWorkoutId={importWorkoutId}
