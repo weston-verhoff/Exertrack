@@ -1,7 +1,5 @@
-import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase/client';
-import { deleteWorkoutById } from '../utils/deleteWorkout';
 import { WorkoutButton } from './WorkoutButton';
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
 
@@ -265,7 +263,6 @@ export function WorkoutDetails({
           icon="X"
           variant="accent"
           onClick={async () => {
-            if (!window.confirm('Delete this workout?')) return;
             onDelete();
           }}
         />

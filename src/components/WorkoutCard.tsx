@@ -84,6 +84,10 @@ const closeDrawer = () => {
   setDrawerOpen(false);
   onDrawerClose?.();
 };
+const closeDrawerAfterSave = () => {
+  setDrawerOpen(false); // ✅ do NOT reset
+  onDrawerClose?.();
+};
 
   return (
     <div className={variantClass}>
@@ -160,7 +164,7 @@ const closeDrawer = () => {
 					    status: localStatus,
 					    workout_exercises: editedExercises,
 					  });
-				    closeDrawer();
+				    closeDrawerAfterSave();
 				  }}
 					onDelete={async () => {
 				    // 🔑 1. Tell parent to delete

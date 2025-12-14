@@ -2,39 +2,30 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { deleteWorkoutById } from '../utils/deleteWorkout';
-import StatusButton from '../components/StatusButton'
-import { WorkoutButton } from '../components/WorkoutButton'
 import '../styles/workout.css' // ✅ Import your CSS file
 import { Layout } from '../components/Layout';
-import { Workout as WorkoutType, WorkoutExercise, WorkoutSet } from '../types/workout';
+import { Workout, WorkoutExercise, WorkoutSet } from '../types/workout';
 import { WorkoutDetails } from '../components/WorkoutDetails'
-import { saveWorkout } from '../services/workoutService';
+// import { saveWorkout } from '../services/workoutService';
 
-interface WorkoutData {
-  id: string
-  date: string
-  status?: string
-  workout_exercises: WorkoutExercise[]
-}
+// // ✅ Reusable styles for summary lists
+// const listContainerStyle: React.CSSProperties = {
+//   width: '600px',
+// 	marginBottom: '2rem',
+// 	maxWidth: '100%',
+// }
 
-// ✅ Reusable styles for summary lists
-const listContainerStyle: React.CSSProperties = {
-  width: '600px',
-	marginBottom: '2rem',
-	maxWidth: '100%',
-}
+// const listItemStyle: React.CSSProperties = {
+//   marginBottom: '1rem',
+//   wordWrap: 'break-word',
+//   overflowWrap: 'break-word',
+//   lineHeight: '1.5'
+// }
 
-const listItemStyle: React.CSSProperties = {
-  marginBottom: '1rem',
-  wordWrap: 'break-word',
-  overflowWrap: 'break-word',
-  lineHeight: '1.5'
-}
-
-export default function Workout() {
+export default function WorkoutRecap() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const [workout, setWorkout] = useState<WorkoutData | null>(null)
+  const [workout, setWorkout] = useState<Workout | null>(null)
   const [editedExercises, setEditedExercises] = useState<WorkoutExercise[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -137,19 +128,6 @@ export default function Workout() {
 
   if (loading) return <p>Loading recap...</p>
   if (!workout) return <p>Workout not found.</p>
-
-	const volumeByExercise = editedExercises.map(we => {
-	  const totalVolume = we.workout_sets.reduce(
-	    (sum: number, s: WorkoutSet) => sum + s.reps * s.weight,
-	    0
-	  );
-
-	  return {
-	    name: we.exercise?.name ?? 'Unknown',
-	    sets: we.workout_sets.length,
-	    volume: totalVolume,
-	  };
-	});
 
 	const muscleSummary: Record<string, number> = {};
 
