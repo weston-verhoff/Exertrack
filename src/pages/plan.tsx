@@ -33,7 +33,6 @@ export default function PlanSession() {
 	  searchParams.get('importTemplate') ??
 	  searchParams.get('editTemplate');
 	const workoutParam = searchParams.get('importWorkout');
-	const editTemplateParam = searchParams.get('editTemplate');
 
   // Fetch template or workout if query param exists
 	const [lastImportedKey, setLastImportedKey] = useState<string | null>(null);
@@ -47,8 +46,6 @@ export default function PlanSession() {
 		useEffect(() => {
   if (!importKey) return;
   if (lastImportedKey === importKey) return;
-
-  console.log('[IMPORT] Running import for:', importKey);
 
   async function fetchImportedData() {
     try {
@@ -139,8 +136,6 @@ export default function PlanSession() {
         setLastImportedKey(importKey);
         setStep(1);
       }
-			console.log(exercises[0]?.id);
-			console.log(cleaned[0]?.exercise_id);
     } catch (err) {
       console.error('[IMPORT] Failed:', err);
     }

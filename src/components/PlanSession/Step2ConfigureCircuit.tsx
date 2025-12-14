@@ -175,33 +175,30 @@ export default function Step2ConfigureCircuit({
   const sensors = useSensors(useSensor(PointerSensor));
 
   // Sync prop -> internal state whenever selectedExercises changes
-  useEffect(() => {
-		console.log('[STEP2] exercises:', exercises);
-    if (!Array.isArray(selectedExercises)) {
-      setExercises([]);
-      return;
-    }
+	useEffect(() => {
+	  if (!Array.isArray(selectedExercises)) {
+	    setExercises([]);
+	    return;
+	  }
 
+	  const synced: ExerciseConfig[] = selectedExercises.map((ex, i) => ({
+	    id: ex.id,
+	    exercise_id: ex.exercise_id,
+	    name: ex.name ?? '',
+	    order: typeof ex.order === 'number' ? ex.order : i,
+	    sets: Array.isArray(ex.sets)
+	      ? ex.sets
+	      : [{
+	          set_number: 1,
+	          reps: 8,
+	          weight: 0,
+	          intensity_type: 'normal',
+	        }],
+	  }));
 
-		const synced: ExerciseConfig[] = selectedExercises.map((ex, i) => ({
-			id: ex.id,
-		  exercise_id: ex.exercise_id,
-		  name: ex.name ?? '',
-		  order: typeof ex.order === 'number' ? ex.order : i,
-		  sets: Array.isArray(ex.sets)
-		    ? ex.sets
-		    : [
-		        {
-		          set_number: 1,
-		          reps: 8,
-		          weight: 0,
-		          intensity_type: 'normal',
-		        },
-		      ],
-		}));
+	  setExercises(synced);
+	}, [selectedExercises]);
 
-    setExercises(synced);
-  }, [selectedExercises]);
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
