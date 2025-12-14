@@ -145,6 +145,7 @@ const closeDrawerAfterSave = () => {
 			    date={editedDate}
 			    status={localStatus}
 			    exercises={editedExercises}
+					onClose={closeDrawer}
 			    onDateChange={setEditedDate}   // optional: wire if you want editing here
 					onStatusChange={status => {
 				    setLocalStatus(status);                // immediate UI

@@ -37,6 +37,7 @@ export default function Dashboard() {
 		      id,
 		      order,
 		      exercise:exercise_id (
+						id,
 		        name,
 		        target_muscle
 		      ),

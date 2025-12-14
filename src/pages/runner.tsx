@@ -28,26 +28,27 @@ export default function WorkoutRunner() {
 
 			const { data, error } = await supabase
 			  .from('workouts')
-			  .select(`
-			    id,
-			    workout_exercises (
-			      id,
-			      order,
-						exercise:exercise_id (
-						  id,
-						  name,
-						  target_muscle
-						),
-			      workout_sets (
-			        id,
-			        set_number,
-			        reps,
-			        weight,
-			        notes,
-			        intensity_type
-			      )
-			    )
-			  `)
+				.select(`
+				  id,
+				  workout_exercises (
+				    id,
+				    exercise_id,
+				    order,
+				    exercise:exercise_id (
+				      id,
+				      name,
+				      target_muscle
+				    ),
+				    workout_sets (
+				      id,
+				      set_number,
+				      reps,
+				      weight,
+				      notes,
+				      intensity_type
+				    )
+				  )
+				`)
 			  .eq('id', workoutId)
 			  .single();
 

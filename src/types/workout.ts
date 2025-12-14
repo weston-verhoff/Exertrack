@@ -10,15 +10,20 @@ export interface WorkoutSet {
 }
 
 export interface WorkoutExercise {
-  id: string;                 // ✅ REQUIRED
+  id: string;                 // workout_exercises.id
+  exercise_id: string;        // 🔑 CANONICAL FK (required)
   order: number;
+
+  // Optional joined data
   exercise: {
-    id: string;               // ✅ REQUIRED
+    id: string;
     name: string;
     target_muscle: string;
   } | null;
+
   workout_sets: WorkoutSet[];
 }
+
 
 export interface Workout {
   id: string;

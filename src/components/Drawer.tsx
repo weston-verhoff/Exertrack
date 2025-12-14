@@ -1,5 +1,5 @@
-import React, { ReactNode, useEffect } from 'react';
-import { createPortal } from 'react-dom'; // ⭐ NEW: portal support
+import React, { ReactNode, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import '../styles/drawer.css';
 
 interface DrawerProps {
@@ -15,58 +15,65 @@ export function Drawer({
   width = 420,
   children,
 }: DrawerProps) {
+  const [shouldRender, setShouldRender] = useState(isOpen);
 
-  // Close on Escape (unchanged)
+  // Mount when opened
   useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-
-    window.addEventListener('keydown', handleKey);
-    return () => window.removeEventListener('keydown', handleKey);
-  }, [isOpen, onClose]);
-
-  // ⭐ NEW: prevent body scroll while drawer is open
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-
-    return () => {
-      document.body.style.overflow = prevOverflow;
-    };
+    if (isOpen) setShouldRender(true);
   }, [isOpen]);
 
-  if (!isOpen) return null;
+  // Unmount AFTER close animation
+  const handleAnimationEnd = () => {
+    if (!isOpen) setShouldRender(false);
+  };
 
-  // ⭐ NEW: move JSX into a variable
-  const drawerUI = (
+  // Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handler = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isOpen, onClose]);
+
+  // Scroll lock
+	useEffect(() => {
+	  if (!isOpen) return;
+
+	  const scrollbarWidth =
+	    window.innerWidth - document.documentElement.clientWidth;
+
+	  const prevOverflow = document.body.style.overflow;
+	  const prevPaddingRight = document.body.style.paddingRight;
+
+	  document.body.style.overflow = 'hidden';
+	  document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+	  return () => {
+	    document.body.style.overflow = prevOverflow;
+	    document.body.style.paddingRight = prevPaddingRight;
+	  };
+	}, [isOpen]);
+
+  if (!shouldRender) return null;
+
+  return createPortal(
     <>
-      {/* Backdrop */}
-      <div className="drawer-backdrop" onClick={onClose} />
+      <div
+        className="drawer-backdrop"
+        onClick={onClose}
+        style={{ opacity: isOpen ? 1 : 0 }}
+      />
 
-      {/* Drawer panel */}
       <aside
-        className="drawer-panel"
+        className={`drawer-panel ${isOpen ? 'open' : 'closed'}`}
         style={{ width }}
-        role="dialog"
-        aria-modal="true"
-        onClick={(e) => e.stopPropagation()} // ⭐ prevent bubbling
+        onAnimationEnd={handleAnimationEnd}
+        onClick={e => e.stopPropagation()}
       >
-        <button className="drawer-close" onClick={onClose}>
-          ✕
-        </button>
-
-        <div className="drawer-content">
-          {children}
-        </div>
+        <button className="drawer-close" onClick={onClose}>✕</button>
+        <div className="drawer-content">{children}</div>
       </aside>
-    </>
+    </>,
+    document.body
   );
-
-  // ⭐ NEW: render drawer at document.body level
-  return createPortal(drawerUI, document.body);
 }

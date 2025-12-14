@@ -29,36 +29,54 @@ export default function PlanSession() {
   const [addingCustom, setAddingCustom] = useState(false);
   const [step, setStep] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
+	const templateParam =
+	  searchParams.get('importTemplate') ??
+	  searchParams.get('editTemplate');
+	const workoutParam = searchParams.get('importWorkout');
+	const editTemplateParam = searchParams.get('editTemplate');
 
   // Fetch template or workout if query param exists
-	const [hasImported, setHasImported] = useState(false);
+	const [lastImportedKey, setLastImportedKey] = useState<string | null>(null);
+	const importKey =
+  templateParam
+    ? `template:${templateParam}`
+    : workoutParam
+    ? `workout:${workoutParam}`
+    : null;
 
-useEffect(() => {
-  if (hasImported) return; // do not re-import after first time
+		useEffect(() => {
+  if (!importKey) return;
+  if (lastImportedKey === importKey) return;
+
+  console.log('[IMPORT] Running import for:', importKey);
 
   async function fetchImportedData() {
     try {
       let cleaned: ConfiguredExercise[] = [];
 
-      // Import template for a new workout
-      if (importingTemplate && activeTemplateId) {
-        const { data, error } = await supabase
-          .from('template_exercises')
-          .select(`
-            exercise_id,
-            sets,
-            reps,
-            order,
-            exercise:exercise_id(name, target_muscle)
-          `)
-          .eq('template_id', activeTemplateId)
-          .order('order', { ascending: true });
+      if (templateParam) {
+				const { data, error } = await supabase
+				  .from('template_exercises')
+				  .select(`
+				    exercise_id,
+				    sets,
+				    reps,
+				    order,
+				    exercise:exercises!template_exercises_exercise_id_fkey (
+				      id,
+				      name,
+				      target_muscle
+				    )
+				  `)
+				  .eq('template_id', templateParam)
+				  .order('order', { ascending: true });
 
-        if (error) return console.error('Template import error:', error);
+        if (error) throw error;
 
-				cleaned = data.map((item: any, i: number) => ({
+				cleaned = (data ?? []).map((item: any, i: number) => ({
+				  id: `template-${templateParam}-${item.exercise_id}`, // 🔑
 				  exercise_id: item.exercise_id,
-				  name: item.exercise?.name ?? '',
+					name: item.exercise?.name ?? '',
 				  order: item.order ?? i,
 				  sets: Array.from({ length: item.sets ?? 3 }, (_, idx) => ({
 				    set_number: idx + 1,
@@ -68,88 +86,76 @@ useEffect(() => {
 				  })),
 				}));
 
-        setStep(1); // allow editing before scheduling
+      }
+			const invalid = cleaned.filter(e => !e.exercise_id);
 
-      // Edit template workflow
-      } else if (isEditingTemplate && activeTemplateId) {
-        const { data, error } = await supabase
-          .from('template_exercises')
-          .select(`
-            exercise_id,
-            sets,
-            reps,
-            order,
-            exercise:exercise_id(name, target_muscle)
-          `)
-          .eq('template_id', activeTemplateId)
-          .order('order', { ascending: true });
-
-        if (error) return console.error('Template fetch error:', error);
-
-				cleaned = data.map((item: any, i: number) => ({
-				  exercise_id: item.exercise_id,
-				  name: item.exercise?.name ?? '',
-				  order: item.order ?? i,
-				  sets: Array.from({ length: item.sets ?? 3 }, (_, idx) => ({
-				    set_number: idx + 1,
-				    reps: item.reps ?? 8,
-				    weight: 0,
-				    intensity_type: 'normal',
-				  })),
-				}));
-
-      // Import existing workout
-		} else if (importWorkoutId) {
-			const { data, error } = await supabase
-				.from('workout_exercises')
-				.select(`
-					exercise_id,
-					order,
-					exercise:exercise_id(name, target_muscle),
-					workout_sets (
-						set_number,
-						reps,
-						weight,
-						intensity_type
-					)
-				`)
-				.eq('workout_id', importWorkoutId)
-				.order('order', { ascending: true });
-
-			if (error) return console.error('Workout import error:', error);
-
-			cleaned = data.map((item: any, i: number) => ({
-				exercise_id: item.exercise_id,
-				name: item.exercise?.name ?? '',
-				order: item.order ?? i,
-				sets: item.workout_sets.length
-					? item.workout_sets
-					: [
-							{
-								set_number: 1,
-								reps: 8,
-								weight: 0,
-								intensity_type: 'normal',
-							},
-						],
-			}));
-
-			setStep(1);
+			if (invalid.length > 0) {
+			  console.error('[IMPORT] Invalid exercises detected:', invalid);
+			  throw new Error('Template contains exercises without valid exercise_id');
 			}
+      else if (workoutParam) {
+        const { data, error } = await supabase
+          .from('workout_exercises')
+          .select(`
+            exercise_id,
+            order,
+            exercise:exercise_id (
+              id,
+              name,
+              target_muscle
+            ),
+            workout_sets (
+              set_number,
+              reps,
+              weight,
+              intensity_type
+            )
+          `)
+          .eq('workout_id', workoutParam)
+          .order('order', { ascending: true });
+
+        if (error) throw error;
+
+				cleaned = (data ?? []).map((item: any, i: number) => ({
+				  id: `workout-${workoutParam}-${item.exercise_id}`, // 🔑
+				  exercise_id: item.exercise_id,
+				  name: item.exercise?.name ?? '',
+				  order: item.order ?? i,
+				  sets: item.workout_sets?.length
+				    ? item.workout_sets
+				    : [{
+				        set_number: 1,
+				        reps: 8,
+				        weight: 0,
+				        intensity_type: 'normal',
+				      }],
+				}));
+
+      }
 
       if (cleaned.length > 0) {
         setSelectedExerciseIds(cleaned.map(e => e.exercise_id));
         setSelectedExercisesData(cleaned);
-        setHasImported(true); // mark as imported to prevent overwriting
+        setLastImportedKey(importKey);
+        setStep(1);
       }
-
+			console.log(exercises[0]?.id);
+			console.log(cleaned[0]?.exercise_id);
     } catch (err) {
-      console.error('Error fetching imported data:', err);
+      console.error('[IMPORT] Failed:', err);
     }
   }
 
   fetchImportedData();
-}, [importingTemplate, isEditingTemplate, importWorkoutId, activeTemplateId, hasImported]);
+}, [
+  templateParam,
+  workoutParam,
+  importKey,
+  lastImportedKey,
+]);
+
+
+
 
 
 
@@ -262,18 +268,18 @@ useEffect(() => {
               <p>Loading exercises...</p>
             ) : (
               <ul className="session-planner-exercises">
-                {filteredExercises.map(e => (
-                  <li key={e.id}>
-                    <label>
-                      <input
-                        type="checkbox"
-                        checked={selectedExerciseIds.includes(e.id)}
-                        onChange={() => toggleExercise(e.id)}
-                      />
-                      {e.name} ({e.target_muscle})
-                    </label>
-                  </li>
-                ))}
+							{filteredExercises.map(e => (
+								<li key={e.id}>
+									<label>
+										<input
+											type="checkbox"
+											checked={selectedExerciseIds.includes(e.id)}
+											onChange={() => toggleExercise(e.id)}
+										/>
+										{e.name} ({e.target_muscle})
+									</label>
+								</li>
+								))}
               </ul>
             )}
           </section>
@@ -304,23 +310,68 @@ useEffect(() => {
 						  onClick={() => {
 						    let selected: ConfiguredExercise[] = [];
 
-						    if (isEditingTemplate) {
-						      // 1️⃣ Start with existing template exercises
+								if (isEditingTemplate) {
+								  // ✏️ Editing template: sync to checkboxes (add + remove)
+								  const existing = selectedExercisesData;
+
+								  // 1️⃣ Keep only exercises that are still checked
+								  const kept = existing.filter(ex =>
+								    selectedExerciseIds.includes(ex.exercise_id)
+								  );
+
+								  const keptIds = new Set(kept.map(e => e.exercise_id));
+
+								  // 2️⃣ Add newly checked exercises
+								  const additions = exercises
+								    .filter(
+								      e =>
+								        selectedExerciseIds.includes(e.id) &&
+								        !keptIds.has(e.id)
+								    )
+								    .map((e, i) => ({
+								      id: `manual-${e.id}-${Date.now()}`,
+								      exercise_id: e.id,
+								      name: e.name,
+								      order: kept.length + i,
+								      sets: Array.from({ length: 3 }, (_, idx) => ({
+								        set_number: idx + 1,
+								        reps: 8,
+								        weight: 0,
+								        intensity_type: 'normal',
+								      })),
+								    }));
+
+								  // 3️⃣ Combine + normalize order
+								  selected = [...kept, ...additions].map((ex, i) => ({
+								    ...ex,
+								    order: i,
+								  }));
+								}
+								 else if (importingTemplate) {
+						      // 📦 Importing template: preserve exactly
+						      selected = selectedExercisesData;
+
+						    } else if (importWorkoutId) {
+						      // ✏️ Editing workout: sync to checkboxes (add + remove)
 						      const existing = selectedExercisesData;
 
-						      // 2️⃣ Find newly checked exercises not already in template
-						      const existingIds = new Set(existing.map(e => e.exercise_id));
+						      const kept = existing.filter(ex =>
+						        selectedExerciseIds.includes(ex.exercise_id)
+						      );
+
+						      const keptIds = new Set(kept.map(e => e.exercise_id));
 
 						      const additions = exercises
 						        .filter(
 						          e =>
 						            selectedExerciseIds.includes(e.id) &&
-						            !existingIds.has(e.id)
+						            !keptIds.has(e.id)
 						        )
 						        .map((e, i) => ({
+						          id: `manual-${e.id}-${Date.now()}`,
 						          exercise_id: e.id,
 						          name: e.name,
-						          order: existing.length + i,
+						          order: kept.length + i,
 						          sets: Array.from({ length: 3 }, (_, idx) => ({
 						            set_number: idx + 1,
 						            reps: 8,
@@ -329,15 +380,17 @@ useEffect(() => {
 						          })),
 						        }));
 
-						      selected = [...existing, ...additions];
-						    } else if (importingTemplate || importWorkoutId) {
-						      // Preserve imported data exactly
-						      selected = selectedExercisesData;
+						      selected = [...kept, ...additions].map((ex, i) => ({
+						        ...ex,
+						        order: i,
+						      }));
+
 						    } else {
-						      // Fresh manual planning
+						      // 🆕 NEW WORKOUT FROM SCRATCH (THIS WAS MISSING)
 						      selected = exercises
 						        .filter(e => selectedExerciseIds.includes(e.id))
 						        .map((e, i) => ({
+						          id: `manual-${e.id}-${Date.now()}`,
 						          exercise_id: e.id,
 						          name: e.name,
 						          order: i,
@@ -356,6 +409,7 @@ useEffect(() => {
 						>
 						  Next →
 						</button>
+
           </section>
         </>
       )}

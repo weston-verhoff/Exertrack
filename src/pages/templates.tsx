@@ -38,7 +38,7 @@ export default function TemplatesPage() {
             sets,
             reps,
             order,
-            exercise:exercise_id(name, target_muscle)
+            exercise:exercise_id(id, name, target_muscle)
           )
         `)
         .order('name', { ascending: true })

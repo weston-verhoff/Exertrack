@@ -144,6 +144,12 @@ export default function WorkoutRecap() {
 	const handleDeleteWorkout = async () => {
 	  if (!workout) return;
 
+		const confirmed = window.confirm(
+			'Delete workout? Cannot be undone.'
+		);
+
+		if (!confirmed) return;
+
 	  const success = await deleteWorkoutById(workout.id);
 
 	  if (!success) {

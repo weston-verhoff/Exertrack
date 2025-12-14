@@ -20,6 +20,7 @@ import { WorkoutButton } from '../../components/WorkoutButton';
 export type ConfiguredExercise = ExerciseConfig;
 
 export interface ExerciseConfig {
+	id:string;
   exercise_id: string;
   name: string;
   sets: WorkoutSet[];
@@ -57,7 +58,7 @@ function SortableExercise({
   onRemove: (exercise_id: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
-    id: ex.exercise_id
+    id:ex.id
   });
 
   const style = {
@@ -148,6 +149,7 @@ export default function Step2ConfigureCircuit({
 	const [exercises, setExercises] = useState<ExerciseConfig[]>(() =>
 	  Array.isArray(selectedExercises)
 	    ? selectedExercises.map((ex, i) => ({
+					id: ex.id,
 	        exercise_id: ex.exercise_id,
 	        name: ex.name ?? '',
 	        order: typeof ex.order === 'number' ? ex.order : i,
@@ -174,6 +176,7 @@ export default function Step2ConfigureCircuit({
 
   // Sync prop -> internal state whenever selectedExercises changes
   useEffect(() => {
+		console.log('[STEP2] exercises:', exercises);
     if (!Array.isArray(selectedExercises)) {
       setExercises([]);
       return;
@@ -181,6 +184,7 @@ export default function Step2ConfigureCircuit({
 
 
 		const synced: ExerciseConfig[] = selectedExercises.map((ex, i) => ({
+			id: ex.id,
 		  exercise_id: ex.exercise_id,
 		  name: ex.name ?? '',
 		  order: typeof ex.order === 'number' ? ex.order : i,
@@ -203,8 +207,8 @@ export default function Step2ConfigureCircuit({
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
-    const oldIndex = exercises.findIndex(e => e.exercise_id === active.id);
-    const newIndex = exercises.findIndex(e => e.exercise_id === over.id);
+    const oldIndex = exercises.findIndex(e => e.id === active.id);
+    const newIndex = exercises.findIndex(e => e.id === over.id);
 
     if (oldIndex === -1 || newIndex === -1) return;
 
@@ -414,12 +418,12 @@ export default function Step2ConfigureCircuit({
       <h2>📋 Exercises</h2>
       <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
         <SortableContext
-          items={exercises.map(e => e.exercise_id)}
+          items={exercises.map(e => e.id)}
           strategy={verticalListSortingStrategy}
         >
           {exercises.map((ex, i) => (
             <SortableExercise
-              key={ex.exercise_id}
+              key={ex.id}
               ex={ex}
               index={i}
               onChange={handleChange}

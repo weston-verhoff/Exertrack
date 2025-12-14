@@ -13,6 +13,7 @@ interface Props {
 	onStatusChange: (status: string) => void;
 	onExercisesChange: (exercises: WorkoutExercise[]) => void;
 	onDelete: () => void;
+	onClose?: () => void;
 }
 
 export function WorkoutDetails({
@@ -25,6 +26,7 @@ export function WorkoutDetails({
 	onStatusChange,
 	onExercisesChange,
 	onDelete,
+	onClose,
 }: Props) {
   const navigate = useNavigate();
 
@@ -187,6 +189,7 @@ export function WorkoutDetails({
 
 						    // ✅ Update UI immediately
 						    onStatusChange('completed');
+								onClose?.();
 						  }}
 						/>
           </>
@@ -212,6 +215,7 @@ export function WorkoutDetails({
 
 							// ✅ Update UI immediately
 							onStatusChange('scheduled');
+							onClose?.();
 						}}
 					/>
 					</>
@@ -245,13 +249,17 @@ export function WorkoutDetails({
             if (!template) return;
 
             for (const we of exercises) {
-              await supabase.from('template_exercises').insert({
-                template_id: template.id,
-                exercise_id: we.exercise?.id,
-                order: we.order,
-                sets: we.workout_sets.length,
-                reps: we.workout_sets[0]?.reps ?? 8,
-              });
+							if (!we.exercise?.id) {
+							  console.warn('Skipping exercise with missing exercise.id', we);
+							  continue;
+							}
+							await supabase.from('template_exercises').insert({
+							  template_id: template.id,
+							  exercise_id: we.exercise.id, // 🔑 CORRECT SOURCE
+							  order: we.order,
+							  sets: we.workout_sets.length,
+							  reps: we.workout_sets[0]?.reps ?? 8,
+							});
             }
 
             navigate('/templates');
