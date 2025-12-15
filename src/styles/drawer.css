@@ -69,3 +69,8 @@
   padding-right: 16px;     /* optional: avoids scrollbar overlap */
 	padding-bottom: 32px;
 }
+
+.exercise-item ul {
+	padding-left: 0;
+	list-style: none;
+}

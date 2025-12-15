@@ -105,7 +105,7 @@ export function WorkoutDetails({
 									}}
                   style={{ width: 60 }}
                 />
-                reps @
+                reps
                 <input
                   type="number"
                   value={set.weight}
