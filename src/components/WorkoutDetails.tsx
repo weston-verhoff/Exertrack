@@ -10,6 +10,9 @@ interface Props {
   exercises: WorkoutExercise[];
   onDateChange: (date: string) => void;
   onSave: () => Promise<void>;
+  isSaving?: boolean;
+  statusMessage?: string | null;
+  errorMessage?: string | null;
 	onStatusChange: (status: string) => void;
 	onExercisesChange: (exercises: WorkoutExercise[]) => void;
 	onDelete: () => void;
@@ -23,6 +26,9 @@ export function WorkoutDetails({
   exercises,
   onDateChange,
   onSave,
+  isSaving,
+  statusMessage,
+  errorMessage,
 	onStatusChange,
 	onExercisesChange,
 	onDelete,
@@ -112,62 +118,75 @@ export function WorkoutDetails({
 									onChange={e => {
 									  const weight = Number(e.target.value);
 
-									  onExercisesChange(
-									    exercises.map(ex =>
-									      ex.id !== we.id
-									        ? ex
-									        : {
-									            ...ex,
-									            workout_sets: ex.workout_sets.map(s =>
-									              s.set_number === set.set_number
-									                ? { ...s, weight }
-									                : s
-									            ),
-									          }
-									    )
-									  );
-									}}
-                  style={{ width: 70, marginLeft: 6 }}
-                />
-                lbs
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+										onExercisesChange(
+										    exercises.map(ex =>
+										      ex.id !== we.id
+										        ? ex
+										        : {
+										            ...ex,
+										            workout_sets: ex.workout_sets.map(s =>
+										              s.set_number === set.set_number
+										                ? { ...s, weight }
+										                : s
+										            ),
+										          }
+										    )
+										  );
+										}}
+	                  style={{ width: 70, marginLeft: 6 }}
+	                />
+	                lbs
+	              </li>
+	            ))}
+	          </ul>
+	        </div>
+	      ))}
 
-      <WorkoutButton
-        label="Save Changes"
-        icon="💾"
-        variant="info"
-        onClick={onSave}
-      />
+	      <WorkoutButton
+	        label={isSaving ? 'Saving...' : 'Save Changes'}
+	        icon="💾"
+	        variant="info"
+	        onClick={onSave}
+	        disabled={isSaving}
+	        data-testid="save-workout"
+	      />
 
-      <hr style={{ margin: '2rem 0' }} />
+	      {statusMessage && (
+	        <p style={{ marginTop: '0.5rem', color: 'var(--accent-color)' }}>
+	          {statusMessage}
+	        </p>
+	      )}
+	      {errorMessage && (
+	        <p style={{ marginTop: '0.5rem', color: '#ff8a8a' }}>
+	          {errorMessage}
+	        </p>
+	      )}
 
-      <h2>📊 Volume Summary</h2>
-      <ul>
-        {volumeByExercise.map((ve, i) => (
-          <li key={i}>
-            {ve.name}: {ve.sets} sets → Volume: {ve.volume}
-          </li>
-        ))}
-      </ul>
+	      <hr style={{ margin: '2rem 0' }} />
 
-      <h2>🧠 Muscle Volume Breakdown</h2>
-      <ul>
-        {Object.entries(muscleSummary).map(([muscle, vol]) => (
-          <li key={muscle}>
-            {muscle}: {vol}
-          </li>
-        ))}
-      </ul>
+	      <h2>📊 Volume Summary</h2>
+	      <ul>
+	        {volumeByExercise.map((ve, i) => (
+	          <li key={i}>
+	            {ve.name}: {ve.sets} sets → Volume: {ve.volume}
+	          </li>
+	        ))}
+	      </ul>
 
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
-        {status !== 'completed' && (
-          <>
-            <WorkoutButton
-              label="Start Workout"
+	      <h2>🧠 Muscle Volume Breakdown</h2>
+	      <ul>
+	        {Object.entries(muscleSummary).map(([muscle, vol]) => (
+	          <li key={muscle}>
+	            {muscle}: {vol}
+	          </li>
+	        ))}
+	      </ul>
+
+	      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
+	        {status !== 'completed' && (
+	          <>
+	            <WorkoutButton
+	              label="Start Workout"
               variant="info"
               onClick={() => navigate(`/runner/${workoutId}`)}
             />

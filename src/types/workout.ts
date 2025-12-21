@@ -2,6 +2,7 @@
 
 export interface WorkoutSet {
   id?: string;
+	workout_exercise_id?: string;
   set_number: number;
   reps: number;
   weight: number;

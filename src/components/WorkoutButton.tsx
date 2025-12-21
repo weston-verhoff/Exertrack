@@ -5,6 +5,10 @@ interface WorkoutButtonProps {
   icon?: string
   onClick: () => void
   variant?: 'accent' | 'info' | 'blackText' | 'whiteText'
+  disabled?: boolean
+  loading?: boolean
+  loadingLabel?: string
+  type?: 'button' | 'submit' | 'reset'
 }
 
 const variantStyles: Record<string, React.CSSProperties> = {
@@ -28,7 +32,16 @@ const variantStyles: Record<string, React.CSSProperties> = {
 	}
 }
 
-export function WorkoutButton({ label, icon, onClick, variant = 'accent' }: WorkoutButtonProps) {
+export function WorkoutButton({
+  label,
+  icon,
+  onClick,
+  variant = 'accent',
+  disabled = false,
+  loading = false,
+  loadingLabel,
+  type = 'button',
+}: WorkoutButtonProps) {
   const [isPressed, setIsPressed] = useState(false)
 
   const baseStyle: React.CSSProperties = {
@@ -38,18 +51,31 @@ export function WorkoutButton({ label, icon, onClick, variant = 'accent' }: Work
     border: 'none',
     borderRadius: '4px',
     boxShadow: variant==='whiteText'||variant==='blackText'? 'none' : (isPressed ? 'inset 0 0px 8px rgba(0, 0, 0, 0.8)' : 'inset -2px -2px rgba(0,0,0,0.25)'),
-    transition: 'box-shadow 0.1s ease'
+    transition: 'box-shadow 0.1s ease',
+    opacity: disabled || loading ? 0.6 : isPressed ? 0.85 : 1,
+    cursor: disabled || loading ? 'not-allowed' : 'pointer'
   }
+
+  const isDisabled = disabled || loading;
+  const displayLabel = loading ? loadingLabel ?? label : label;
 
   return (
     <button
-      onClick={onClick}
-      onMouseDown={() => setIsPressed(true)}
+      type={type}
+      onClick={isDisabled ? undefined : onClick}
+      onMouseDown={() => {
+        if (isDisabled) return;
+        if (variant === 'whiteText' || variant === 'blackText') return;
+        setIsPressed(true);
+      }}
       onMouseUp={() => setIsPressed(false)}
       onMouseLeave={() => setIsPressed(false)}
       style={baseStyle}
+      disabled={isDisabled}
+      aria-disabled={isDisabled}
+      aria-busy={loading}
     >
-      {icon ? `${icon} ` : ''}{label}
+      {icon ? `${icon} ` : ''}{displayLabel}
     </button>
   )
 }

@@ -140,7 +140,7 @@ function SortableExercise({
 export default function Step2ConfigureCircuit({
   selectedExercises,
   onNext,
-  isEditingTemplate,
+	isEditingTemplate,
   onSaveTemplate,
   isEditingWorkout,
   editingWorkoutId
@@ -165,11 +165,13 @@ export default function Step2ConfigureCircuit({
 	            ],
 	      }))
 	    : []
-	);
+  );
   const [selectedDate, setSelectedDate] = useState(() =>
     new Date().toISOString().split('T')[0]
   );
   const [saving, setSaving] = useState(false);
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const navigate = useNavigate();
 
   const sensors = useSensors(useSensor(PointerSensor));
@@ -246,170 +248,160 @@ export default function Step2ConfigureCircuit({
 	    ex.sets = ex.sets.map(s => ({ ...s, reps: value }));
 	  }
 
-	  setExercises(updated);
-	};
+		setExercises(updated);
+		};
 
-  const handleRemoveExercise = (exercise_id: string) => {
-    const updated = exercises
-      .filter(e => e.exercise_id !== exercise_id)
-      .map((e, i) => ({ ...e, order: i }));
-    setExercises(updated);
-  };
+	  const handleRemoveExercise = (exercise_id: string) => {
+	    const updated = exercises
+	      .filter(e => e.exercise_id !== exercise_id)
+	      .map((e, i) => ({ ...e, order: i }));
+	    setExercises(updated);
+	  };
 
-  const handleSaveWorkout = async () => {
-    if (exercises.length === 0) {
-      alert('Add at least one exercise.');
-      return;
-    }
+	  const handleSaveWorkout = async () => {
+	    if (exercises.length === 0) {
+	      alert('Add at least one exercise.');
+	      return;
+	    }
 
-    const validExercises = exercises.filter(e => !!e.exercise_id);
-    const skipped = exercises.filter(e => !e.exercise_id);
+	    const validExercises = exercises.filter(e => !!e.exercise_id);
+	    const skipped = exercises.filter(e => !e.exercise_id);
 
-    if (skipped.length > 0) {
-      console.warn('Skipped exercises with missing IDs:', skipped);
-      alert('Some exercises were skipped due to missing IDs.');
-    }
+	    if (skipped.length > 0) {
+	      console.warn('Skipped exercises with missing IDs:', skipped);
+	      alert('Some exercises were skipped due to missing IDs.');
+	    }
 
-    setSaving(true);
+	    if (validExercises.length === 0) {
+	      setErrorMessage('Add at least one exercise with a valid selection.');
+	      return;
+	    }
 
-    try {
-      if (isEditingWorkout && editingWorkoutId) {
-				// 1️⃣ Delete existing exercises (sets will cascade if FK is set)
-				await supabase
-				  .from('workout_exercises')
-				  .delete()
-				  .eq('workout_id', editingWorkoutId);
+	    setErrorMessage(null);
+	    setStatusMessage(isEditingWorkout ? 'Updating workout...' : 'Saving workout...');
+	    setSaving(true);
 
-				// 2️⃣ Recreate exercises + sets
-				for (const ex of validExercises) {
-				  // Create workout_exercise
-				  const { data: we, error: weError } = await supabase
-				    .from('workout_exercises')
-						.insert({
-						  workout_id: editingWorkoutId,
-						  exercise_id: ex.exercise_id,
-						  order: ex.order,
-						  sets: ex.sets.length,
-						  reps: ex.sets[0]?.reps ?? 0,
-						  weight: ex.sets[0]?.weight ?? 0,
-						})
-				    .select()
-				    .single();
+	    const saveExercisesAndSets = async (workoutId: string, exercisesToSave: ExerciseConfig[]) => {
+	      setStatusMessage('Saving exercises...');
+	      const workoutExerciseRows = exercisesToSave.map(ex => ({
+	        workout_id: workoutId,
+	        exercise_id: ex.exercise_id,
+	        order: ex.order,
+	        sets: ex.sets.length,
+	        reps: ex.sets[0]?.reps ?? 0,
+	        weight: ex.sets[0]?.weight ?? 0,
+	      }));
 
-				  if (weError || !we) {
-				    console.error(weError);
-				    throw weError;
-				  }
+	      const { data: workoutExercises, error: exercisesError } = await supabase
+	        .from('workout_exercises')
+	        .insert(workoutExerciseRows)
+	        .select();
 
-				  // Create workout_sets
-				  const setRows = ex.sets.map(set => ({
-				    workout_exercise_id: we.id,
-				    set_number: set.set_number,
-				    reps: set.reps,
-				    weight: set.weight,
-				    intensity_type: set.intensity_type ?? 'normal',
-				    notes: set.notes ?? null,
-				  }));
+	      if (exercisesError || !workoutExercises) {
+	        throw exercisesError ?? new Error('Failed to save workout exercises.');
+	      }
 
-				  const { error: setsError } = await supabase
-				    .from('workout_sets')
-				    .insert(setRows);
+	      const workoutExerciseLookup = new Map<string, string>();
+	      workoutExercises.forEach((row: any) => {
+	        const key = `${row.exercise_id}-${row.order}`;
+	        if (!workoutExerciseLookup.has(key)) {
+	          workoutExerciseLookup.set(key, row.id);
+	        }
+	      });
 
-				  if (setsError) {
-				    console.error(setsError);
-				    throw setsError;
-				  }
-				}
+	      const setRows = exercisesToSave.flatMap(ex => {
+	        const workoutExerciseId = workoutExerciseLookup.get(`${ex.exercise_id}-${ex.order}`);
+	        if (!workoutExerciseId) return [];
 
-				navigate(`/workout/${editingWorkoutId}`);
-				setSaving(false);
-				return;
-      }
+	        return ex.sets.map(set => ({
+	          workout_exercise_id: workoutExerciseId,
+	          set_number: set.set_number,
+	          reps: set.reps,
+	          weight: set.weight,
+	          intensity_type: set.intensity_type ?? 'normal',
+	          notes: set.notes ?? null,
+	        }));
+	      });
 
-      // Create new workout
-      const { data: workoutData, error: workoutError } = await supabase
-        .from('workouts')
-        .insert([{ date: selectedDate, status: 'scheduled' }])
-        .select()
-        .single();
+	      setStatusMessage('Saving sets...');
+	      const { error: setsError } = await supabase.from('workout_sets').insert(setRows);
 
-      if (workoutError || !workoutData) {
-        console.error('Error creating workout:', workoutError);
-        alert('Failed to create workout.');
-        setSaving(false);
-        return;
-      }
+	      if (setsError) {
+	        throw setsError;
+	      }
+	    };
 
-      const workoutId = workoutData.id;
+	    try {
+	      if (isEditingWorkout && editingWorkoutId) {
+	        setStatusMessage('Refreshing workout...');
+	        const { error: deleteError } = await supabase
+	          .from('workout_exercises')
+	          .delete()
+	          .eq('workout_id', editingWorkoutId);
 
-			for (const ex of validExercises) {
-			  const { data: we, error: weError } = await supabase
-			    .from('workout_exercises')
-					.insert({
-					  workout_id: workoutId,
-					  exercise_id: ex.exercise_id,
-					  order: ex.order,
-					  sets: ex.sets.length,
-					  reps: ex.sets[0]?.reps ?? 0,
-					  weight: ex.sets[0]?.weight ?? 0,
-					})
-			    .select()
-			    .single();
+	        if (deleteError) {
+	          throw deleteError;
+	        }
 
-			  if (weError || !we) {
-			    console.error(weError);
-			    throw weError;
-			  }
+	        await saveExercisesAndSets(editingWorkoutId, validExercises);
+	        setStatusMessage('Workout updated! Redirecting...');
+	        navigate(`/workout/${editingWorkoutId}`);
+	        setSaving(false);
+	        return;
+	      }
 
-			  const setRows = ex.sets.map(set => ({
-			    workout_exercise_id: we.id,
-			    set_number: set.set_number,
-			    reps: set.reps,
-			    weight: set.weight,
-			    intensity_type: set.intensity_type ?? 'normal',
-			    notes: set.notes ?? null,
-			  }));
+	      // Create new workout
+	      setStatusMessage('Creating workout...');
+	      const { data: workoutData, error: workoutError } = await supabase
+	        .from('workouts')
+	        .insert([{ date: selectedDate, status: 'scheduled' }])
+	        .select()
+	        .single();
 
-			  const { error: setsError } = await supabase
-			    .from('workout_sets')
-			    .insert(setRows);
+	      if (workoutError || !workoutData) {
+	        console.error('Error creating workout:', workoutError);
+	        setErrorMessage('Failed to create workout.');
+	        alert('Failed to create workout.');
+	        setSaving(false);
+	        return;
+	      }
 
-			  if (setsError) {
-			    console.error(setsError);
-			    throw setsError;
-			  }
-			}
+	      const workoutId = workoutData.id;
 
-			navigate(`/workout/${workoutId}`);
-			setSaving(false);
+	      await saveExercisesAndSets(workoutId, validExercises);
+	      setStatusMessage('Workout saved! Redirecting...');
+	      navigate(`/workout/${workoutId}`);
+	      setSaving(false);
 
-    } catch (err) {
-      console.error('Unexpected error saving workout:', err);
-      alert('Something went wrong while saving.');
-      setSaving(false);
-    }
-  };
+	    } catch (err) {
+	      console.error('Unexpected error saving workout:', err);
+	      setErrorMessage('Failed to save workout. Please try again.');
+	      setStatusMessage(null);
+	      alert('Something went wrong while saving.');
+	      setSaving(false);
+	    }
+	  };
 
-  const handleSaveTemplate = async () => {
-    if (!onSaveTemplate) return;
-    setSaving(true);
-    await onSaveTemplate(exercises);
-    setSaving(false);
-  };
+	  const handleSaveTemplate = async () => {
+	    if (!onSaveTemplate) return;
+	    setSaving(true);
+	    await onSaveTemplate(exercises);
+	    setSaving(false);
+	  };
 
-  return (
-    <div>
-      {!isEditingTemplate && (
-        <>
-          <label htmlFor="workout-date">Workout Date:</label>
-          <input
-            type="date"
-            id="workout-date"
-            value={selectedDate}
-            onChange={e => setSelectedDate(e.target.value)}
-            style={{ marginBottom: '1rem', marginLeft:'1rem', padding: '0.4rem' }}
-          />
-        </>
+	  return (
+	    <div>
+	      {!isEditingTemplate && (
+	        <>
+	          <label htmlFor="workout-date">Workout Date:</label>
+	          <input
+	            type="date"
+	            id="workout-date"
+	            value={selectedDate}
+	            onChange={e => setSelectedDate(e.target.value)}
+	            style={{ marginBottom: '1rem', marginLeft:'1rem', padding: '0.4rem' }}
+	          />
+	        </>
       )}
 
       <h2>📋 Exercises</h2>
@@ -420,44 +412,55 @@ export default function Step2ConfigureCircuit({
         >
           {exercises.map((ex, i) => (
             <SortableExercise
-              key={ex.id}
-              ex={ex}
-              index={i}
-              onChange={handleChange}
-              onRemove={handleRemoveExercise}
-            />
-          ))}
-        </SortableContext>
-      </DndContext>
+						key={ex.id}
+						ex={ex}
+						index={i}
+						onChange={handleChange}
+						onRemove={handleRemoveExercise}
+					/>
+				))}
+			</SortableContext>
+		</DndContext>
 
-      <br />
+		<br />
 
-      <div style={{ display: 'flex', gap: '1rem' }}>
-        {!isEditingTemplate && (
-          <button
-            onClick={handleSaveWorkout}
-            disabled={saving}
-            style={{
-              padding: '0.5rem 1rem',
-              backgroundColor: 'var(--accent-color)',
-              color: 'white',
-              border: 'none',
-              borderRadius: '4px'
-            }}
-          >
-            💾 Save Workout
-          </button>
-        )}
+		<div style={{ display: 'flex', gap: '1rem' }}>
+			{!isEditingTemplate && (
+				<button
+					onClick={handleSaveWorkout}
+					disabled={saving}
+					style={{
+						padding: '0.5rem 1rem',
+						backgroundColor: 'var(--accent-color)',
+						color: 'white',
+						border: 'none',
+						borderRadius: '4px'
+					}}
+				>
+					{saving ? '💾 Saving...' : '💾 Save Workout'}
+				</button>
+			)}
 
-        {isEditingTemplate && (
-          <WorkoutButton
-            label="Save Template"
-            icon=""
-            variant="info"
-            onClick={handleSaveTemplate}
-          />
-        )}
-      </div>
-    </div>
-  );
+			{isEditingTemplate && (
+				<WorkoutButton
+					label="Save Template"
+					icon=""
+					variant="info"
+					onClick={handleSaveTemplate}
+				/>
+			)}
+		</div>
+
+		{statusMessage && (
+			<p style={{ marginTop: '0.5rem', color: 'var(--accent-color)' }}>
+				{statusMessage}
+			</p>
+		)}
+		{errorMessage && (
+			<p style={{ marginTop: '0.5rem', color: '#ff8a8a' }}>
+				{errorMessage}
+			</p>
+		)}
+	</div>
+);
 }

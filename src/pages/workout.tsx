@@ -28,6 +28,9 @@ export default function WorkoutRecap() {
   const [workout, setWorkout] = useState<Workout | null>(null)
   const [editedExercises, setEditedExercises] = useState<WorkoutExercise[]>([])
   const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [statusMessage, setStatusMessage] = useState<string | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   useEffect(() => {
     async function fetchWorkout() {
@@ -45,13 +48,14 @@ export default function WorkoutRecap() {
 			        name,
 			        target_muscle
 			      ),
-			      workout_sets (
-			        id,
-			        set_number,
-			        reps,
-			        weight,
-			        intensity_type,
-			        notes
+				      workout_sets (
+				        id,
+				        workout_exercise_id,
+				        set_number,
+				        reps,
+				        weight,
+				        intensity_type,
+				        notes
 			      )
 			    )
 			  `)
@@ -89,42 +93,56 @@ export default function WorkoutRecap() {
   }, [id])
 
 	const saveUpdates = async (): Promise<void> => {
-  try {
-    // 1️⃣ Update workout date (if changed)
-    if (workout?.date) {
-      const { error: dateError } = await supabase
-        .from('workouts')
-        .update({ date: workout.date })
-        .eq('id', workout.id);
+	  if (!workout) return;
 
-      if (dateError) throw dateError;
-    }
+	  setSaving(true);
+	  setErrorMessage(null);
+	  setStatusMessage('Saving workout...');
 
-    // 2️⃣ Update each workout_set
-    for (const ex of editedExercises) {
-      for (const set of ex.workout_sets) {
-        // If set has an ID, update it
-        if (set.id) {
-          const { error } = await supabase
-            .from('workout_sets')
-            .update({
-              reps: set.reps,
-              weight: set.weight,
-              intensity_type: set.intensity_type ?? 'normal',
-              notes: set.notes ?? null,
-            })
-            .eq('id', set.id);
+	  try {
+	    if (workout.date) {
+	      setStatusMessage('Updating workout info...');
+	      const { error: dateError } = await supabase
+	        .from('workouts')
+	        .update({ date: workout.date })
+	        .eq('id', workout.id);
 
-          if (error) throw error;
-        }
-      }
-    }
-  } catch (err) {
-    console.error(err);
-    alert('Something went wrong while saving.');
-    return;
-  }
-};
+	      if (dateError) throw dateError;
+	    }
+
+		    const setRows = editedExercises.flatMap(ex =>
+		      ex.workout_sets
+		        .filter(set => !!set.id)
+		        .map(set => ({
+		          id: set.id,
+		          workout_exercise_id: set.workout_exercise_id,
+		          set_number: set.set_number,
+		          reps: set.reps,
+		          weight: set.weight,
+		          intensity_type: set.intensity_type ?? 'normal',
+		          notes: set.notes ?? null,
+		        }))
+	    );
+
+	    if (setRows.length > 0) {
+	      setStatusMessage('Saving sets...');
+	      const { error: setsError } = await supabase
+	        .from('workout_sets')
+	        .upsert(setRows, { onConflict: 'id' });
+
+	      if (setsError) throw setsError;
+	    }
+
+	    setStatusMessage('Workout saved!');
+	  } catch (err) {
+	    console.error(err);
+	    setErrorMessage('Failed to save workout. Please try again.');
+	    setStatusMessage(null);
+	    alert('Something went wrong while saving.');
+	  } finally {
+	    setSaving(false);
+	  }
+	};
 
   if (loading) return <p>Loading recap...</p>
   if (!workout) return <p>Workout not found.</p>
@@ -169,6 +187,9 @@ export default function WorkoutRecap() {
 	date={workout.date}
 	status={workout.status}
 	exercises={editedExercises}
+	isSaving={saving}
+	statusMessage={statusMessage}
+	errorMessage={errorMessage}
 	onDateChange={date =>
 		setWorkout(prev => prev ? { ...prev, date } : prev)
 	}
