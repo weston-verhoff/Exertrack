@@ -359,59 +359,71 @@ export default function Step2ConfigureCircuit({
 	        .single();
 
 	      if (workoutError || !workoutData) {
-	        console.error('Error creating workout:', workoutError);
-	        setErrorMessage('Failed to create workout.');
-	        alert('Failed to create workout.');
-	        setSaving(false);
-	        return;
-	      }
+					console.error('Error creating workout:', workoutError);
+	setErrorMessage('Failed to create workout.');
+	alert('Failed to create workout.');
+	setSaving(false);
+	return;
+}
 
-	      const workoutId = workoutData.id;
+const workoutId = workoutData.id;
 
-	      await saveExercisesAndSets(workoutId, validExercises);
-	      setStatusMessage('Workout saved! Redirecting...');
-	      navigate(`/workout/${workoutId}`);
-	      setSaving(false);
+await saveExercisesAndSets(workoutId, validExercises);
+setStatusMessage('Workout saved! Redirecting...');
+navigate(`/workout/${workoutId}`);
+setSaving(false);
 
-	    } catch (err) {
-	      console.error('Unexpected error saving workout:', err);
-	      setErrorMessage('Failed to save workout. Please try again.');
-	      setStatusMessage(null);
-	      alert('Something went wrong while saving.');
-	      setSaving(false);
-	    }
-	  };
+} catch (err) {
+console.error('Unexpected error saving workout:', err);
+setErrorMessage('Failed to save workout. Please try again.');
+setStatusMessage(null);
+alert('Something went wrong while saving.');
+setSaving(false);
+}
+};
 
-	  const handleSaveTemplate = async () => {
-	    if (!onSaveTemplate) return;
-	    setSaving(true);
-	    await onSaveTemplate(exercises);
-	    setSaving(false);
-	  };
+const handleSaveTemplate = async () => {
+if (!onSaveTemplate) return;
+setErrorMessage(null);
+setStatusMessage('Saving template...');
+setSaving(true);
+try {
+await onSaveTemplate(exercises);
+setStatusMessage('Template saved! Redirecting...');
+} catch (err: any) {
+console.error('Failed to save template:', err);
+const message = err?.message ?? 'Failed to save template. Please try again.';
+setErrorMessage(message);
+setStatusMessage(null);
+alert(message);
+} finally {
+setSaving(false);
+}
+};
 
-	  return (
-	    <div>
-	      {!isEditingTemplate && (
-	        <>
-	          <label htmlFor="workout-date">Workout Date:</label>
-	          <input
-	            type="date"
-	            id="workout-date"
-	            value={selectedDate}
-	            onChange={e => setSelectedDate(e.target.value)}
-	            style={{ marginBottom: '1rem', marginLeft:'1rem', padding: '0.4rem' }}
-	          />
-	        </>
-      )}
+return (
+<div>
+{!isEditingTemplate && (
+	<>
+		<label htmlFor="workout-date">Workout Date:</label>
+		<input
+			type="date"
+			id="workout-date"
+			value={selectedDate}
+			onChange={e => setSelectedDate(e.target.value)}
+			style={{ marginBottom: '1rem', marginLeft:'1rem', padding: '0.4rem' }}
+		/>
+	</>
+)}
 
-      <h2>📋 Exercises</h2>
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext
-          items={exercises.map(e => e.id)}
-          strategy={verticalListSortingStrategy}
-        >
-          {exercises.map((ex, i) => (
-            <SortableExercise
+<h2>📋 Exercises</h2>
+<DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+<SortableContext
+	items={exercises.map(e => e.id)}
+	strategy={verticalListSortingStrategy}
+>
+	{exercises.map((ex, i) => (
+		<SortableExercise
 						key={ex.id}
 						ex={ex}
 						index={i}
@@ -441,14 +453,16 @@ export default function Step2ConfigureCircuit({
 				</button>
 			)}
 
-			{isEditingTemplate && (
-				<WorkoutButton
-					label="Save Template"
-					icon=""
-					variant="info"
-					onClick={handleSaveTemplate}
-				/>
-			)}
+		{isEditingTemplate && (
+			<WorkoutButton
+				label="Save Template"
+				icon=""
+				variant="info"
+				onClick={handleSaveTemplate}
+				loading={saving}
+				loadingLabel="Saving..."
+			/>
+		)}
 		</div>
 
 		{statusMessage && (

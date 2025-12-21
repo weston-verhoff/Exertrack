@@ -155,7 +155,7 @@ export default function PlanSession() {
 
 
   const toggleExercise = (id: string) => {
-    setSelectedExerciseIds(prev =>
+		setSelectedExerciseIds(prev =>
       prev.includes(id) ? prev.filter(e => e !== id) : [...prev, id]
     );
   };
@@ -180,38 +180,37 @@ export default function PlanSession() {
   };
 
   const handleSaveTemplate = async (configured: ConfiguredExercise[]) => {
-    if (!activeTemplateId) return;
-
-    const { error: deleteError } = await supabase
-      .from('template_exercises')
-      .delete()
-      .eq('template_id', activeTemplateId);
-
-    if (deleteError) {
-      console.error('Error deleting old template exercises:', deleteError);
-      alert('Failed to update template.');
-      return;
+    if (!activeTemplateId) {
+      throw new Error('No active template selected.');
     }
 
-		const inserts = configured.map((ex, i) => ({
-		  template_id: activeTemplateId,
-		  exercise_id: ex.exercise_id,
-		  sets: ex.sets.length,
-		  reps: ex.sets[0]?.reps ?? 8,
-		  order: i,
-		}));
+		const inserts = configured
+		  .filter(ex => !!ex.exercise_id)
+		  .map((ex, i) => ({
+		    template_id: activeTemplateId,
+		    exercise_id: ex.exercise_id,
+		    sets: ex.sets.length,
+		    reps: ex.sets[0]?.reps ?? 8,
+		    order: i,
+		  }));
 
-    const { error: insertError } = await supabase
-      .from('template_exercises')
-      .insert(inserts);
+		if (inserts.length === 0) {
+		  throw new Error('Add at least one valid exercise before saving.');
+		}
 
-    if (insertError) {
-      console.error('Error inserting updated exercises:', insertError);
-      alert('Failed to save template.');
-      return;
-    }
+		const { error: transactionError } = await supabase.rpc(
+		  'replace_template_exercises',
+		  {
+		    template_id: activeTemplateId,
+		    exercises_payload: inserts,
+		  }
+		);
 
-    // alert('✅ Template updated!');
+		if (transactionError) {
+		  console.error('Error saving template transaction:', transactionError);
+		  throw transactionError;
+		}
+
     navigate('/templates');
   };
 
