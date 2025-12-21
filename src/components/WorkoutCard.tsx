@@ -62,6 +62,7 @@ export function WorkoutCard({
 	const [editedDate, setEditedDate] = useState(workout.date);
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const [localStatus, setLocalStatus] = useState(workout.status);
+	const [isSaving, setIsSaving] = useState(false);
 	const [editedExercises, setEditedExercises] = useState(() =>
 	  workout.workout_exercises.map(ex => ({
 	    ...ex,
@@ -122,75 +123,83 @@ const closeDrawerAfterSave = () => {
       <div className="workout-btns">
         {variant !== 'past-workout'  && localStatus !== 'completed' && (
           <button
-            className="start-btn btn"
-            onClick={() => navigate(`/runner/${workout.id}`)}
-          >
-            Start
-          </button>
-        )}
-        <WorkoutButton
-          label="Delete"
-          icon="🗑"
-          variant="accent"
-          onClick={() => onDelete(workout.id)}
-        />
-      </div>
-			<Drawer
-			  isOpen={drawerOpen}
+					className="start-btn btn"
+					onClick={() => navigate(`/runner/${workout.id}`)}
+				>
+					Start
+				</button>
+			)}
+			<WorkoutButton
+				label="Delete"
+				icon="🗑"
+				variant="accent"
+				onClick={() => onDelete(workout.id)}
+			/>
+		</div>
+		<Drawer
+			isOpen={drawerOpen}
+			onClose={closeDrawer}
+			width={520}
+		>
+			<WorkoutDetails
+				workoutId={workout.id}
+				date={editedDate}
+				status={localStatus}
+				exercises={editedExercises}
 				onClose={closeDrawer}
-			  width={520}
-			>
-			  <WorkoutDetails
-			    workoutId={workout.id}
-			    date={editedDate}
-			    status={localStatus}
-			    exercises={editedExercises}
-					onClose={closeDrawer}
-			    onDateChange={setEditedDate}   // optional: wire if you want editing here
-					onStatusChange={status => {
-				    setLocalStatus(status);                // immediate UI
-				    onStatusChange(workout.id, status);    // notify parent
-				  }}
-					onExercisesChange={setEditedExercises}
-					onSave={async () => {
-				    await saveWorkout({
-				      workoutId: workout.id,
+				onDateChange={setEditedDate}   // optional: wire if you want editing here
+				onStatusChange={status => {
+					setLocalStatus(status);                // immediate UI
+					onStatusChange(workout.id, status);    // notify parent
+				}}
+				onExercisesChange={setEditedExercises}
+				isSaving={isSaving}
+				onSave={async () => {
+					setIsSaving(true);
+					try {
+						await saveWorkout({
+							workoutId: workout.id,
 							date: editedDate,
-				      status: localStatus,
-				      exercises: editedExercises,
-				    });
+							status: localStatus,
+							exercises: editedExercises,
+						});
 						onWorkoutUpdated({
-					    ...workout,
-					    date: editedDate,
-					    status: localStatus,
-					    workout_exercises: editedExercises,
-					  });
-				    closeDrawerAfterSave();
-				  }}
-					onDelete={async () => {
-				    // 🔑 1. Tell parent to delete
-				    onDelete(workout.id);
+							...workout,
+							date: editedDate,
+							status: localStatus,
+							workout_exercises: editedExercises,
+						});
+						closeDrawerAfterSave();
+					} catch (error) {
+						console.error('Failed to save workout:', error);
+					} finally {
+						setIsSaving(false);
+					}
+				}}
+				onDelete={async () => {
+					// 🔑 1. Tell parent to delete
+					onDelete(workout.id);
 
-				    // 🔑 2. Close drawer locally
-				    closeDrawer();
-				  }}
-			  />
-			</Drawer>
-    </div>
-  );
+					// 🔑 2. Close drawer locally
+					closeDrawer();
+				}}
+			/>
+		</Drawer>
+	</div>
+);
 }
 
 function formatDateCompact(dateStr: string) {
-  const [year, month, day] = dateStr.split('-').map(Number);
-  const date = new Date(year, month - 1, day);
+const [year, month, day] = dateStr.split('-').map(Number);
+const date = new Date(year, month - 1, day);
 
-  const weekday = new Intl.DateTimeFormat('en-US', {
-    weekday: 'short',
-  }).format(date);
+const weekday = new Intl.DateTimeFormat('en-US', {
+	weekday: 'short',
+}).format(date);
 
-  const compactDate = new Intl.DateTimeFormat('en-US', {
-    month: 'numeric',
-    day: 'numeric',
+const compactDate = new Intl.DateTimeFormat('en-US', {
+	month: 'numeric',
+	day: 'numeric',
     year: '2-digit',
   }).format(date);
 

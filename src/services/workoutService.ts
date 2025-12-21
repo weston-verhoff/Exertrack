@@ -40,24 +40,28 @@ export async function saveWorkout({
   }
 
   // 2️⃣ Update sets
-  for (const ex of exercises) {
-    for (const set of ex.workout_sets) {
-      if (!set.id) continue;
+	const setsToUpsert = exercises.flatMap(ex =>
+     ex.workout_sets
+       .filter(set => set.id)
+       .map(set => ({
+         id: set.id,
+         workout_exercise_id: set.workout_exercise_id,
+         set_number: set.set_number,
+         reps: set.reps,
+         weight: set.weight,
+         intensity_type: set.intensity_type ?? 'normal',
+         notes: set.notes ?? null,
+       }))
+   );
 
-      const { error } = await supabase
-        .from('workout_sets')
-        .update({
-          reps: set.reps,
-          weight: set.weight,
-          intensity_type: set.intensity_type ?? 'normal',
-          notes: set.notes ?? null,
-        })
-        .eq('id', set.id);
+   if (setsToUpsert.length > 0) {
+     const { error } = await supabase
+       .from('workout_sets')
+       .upsert(setsToUpsert, { onConflict: 'id' });
 
-      if (error) {
-        console.error('Failed to update set:', error);
-        throw error;
-      }
-    }
-  }
-}
+     if (error) {
+       console.error('Failed to update sets:', error);
+       throw error;
+     }
+   }
+ }
