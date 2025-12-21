@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { WorkoutButton } from './WorkoutButton';
 import '../styles/WorkoutCard.css';
 import { Workout } from '../types/workout';
@@ -70,6 +70,17 @@ export function WorkoutCard({
 	  }))
 	);
 
+	useEffect(() => {
+			setEditedDate(workout.date);
+			setLocalStatus(workout.status);
+			setEditedExercises(
+				workout.workout_exercises.map(ex => ({
+					...ex,
+					workout_sets: ex.workout_sets.map(set => ({ ...set })),
+				}))
+			);
+		}, [workout]);
+		
 	const resetDraftState = () => {
   setEditedDate(workout.date);
 
