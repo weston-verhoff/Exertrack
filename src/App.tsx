@@ -10,28 +10,111 @@ import Analytics from './pages/analytics';
 import PastDetail from './pages/past_detail';
 import WorkoutRecap from './pages/workout';
 import { GlobalHeader } from './components/GlobalHeader';
+import { AuthProvider } from './context/AuthContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import Login from './pages/login';
 import './index.css';
 
 function App() {
   return (
     <BrowserRouter>
-      <GlobalHeader /> {}
+		<AuthProvider>
+			<GlobalHeader />
 
-      <main>
-        <Routes>
-          <Route path="/" element={<Dashboard />} />
-          <Route path="/templates/:id/edit" element={<PlanSession />} />
-          <Route path="/plan" element={<PlanSession />} />
-          <Route path="/templates" element={<Templates />} />
-          <Route path="/runner" element={<WorkoutRunner />} />
-          <Route path="/recap" element={<Recap />} />
-          <Route path="/past" element={<PastWorkouts />} />
-          <Route path="/analytics" element={<Analytics />} />
-          <Route path="/past/:id" element={<PastDetail />} />
-          <Route path="/workout/:id" element={<WorkoutRecap />} />
-          <Route path="/runner/:id" element={<WorkoutRunner />} />
-        </Routes>
-      </main>
+			<main>
+				<Routes>
+					<Route path="/login" element={<Login />} />
+					<Route
+						path="/"
+						element={
+							<ProtectedRoute>
+								<Dashboard />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/templates/:id/edit"
+						element={
+							<ProtectedRoute>
+								<PlanSession />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/plan"
+						element={
+							<ProtectedRoute>
+								<PlanSession />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/templates"
+						element={
+							<ProtectedRoute>
+								<Templates />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/runner"
+						element={
+							<ProtectedRoute>
+								<WorkoutRunner />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/recap"
+						element={
+							<ProtectedRoute>
+								<Recap />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/past"
+						element={
+							<ProtectedRoute>
+								<PastWorkouts />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/analytics"
+						element={
+							<ProtectedRoute>
+								<Analytics />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/past/:id"
+						element={
+							<ProtectedRoute>
+								<PastDetail />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/workout/:id"
+						element={
+							<ProtectedRoute>
+								<WorkoutRecap />
+							</ProtectedRoute>
+						}
+					/>
+					<Route
+						path="/runner/:id"
+						element={
+							<ProtectedRoute>
+								<WorkoutRunner />
+							</ProtectedRoute>
+						}
+					/>
+				</Routes>
+			</main>
+		</AuthProvider>
     </BrowserRouter>
   );
 }

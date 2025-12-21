@@ -6,6 +6,12 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### Environment variables
+
+Create a `.env` file (you can copy `.env.example`) with your Supabase credentials:
+
+These variables are automatically loaded by Create React App during `npm start` and `npm run build`.
+
 ### `npm start`
 
 Runs the app in the development mode.\
