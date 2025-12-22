@@ -296,7 +296,6 @@ export default function Step2ConfigureCircuit({
 	        sets: ex.sets.length,
 	        reps: ex.sets[0]?.reps ?? 0,
 	        weight: ex.sets[0]?.weight ?? 0,
-					user_id: userId,
 	      }));
 
 	      const { data: workoutExercises, error: exercisesError } = await supabase
@@ -327,7 +326,6 @@ export default function Step2ConfigureCircuit({
 	          weight: set.weight,
 	          intensity_type: set.intensity_type ?? 'normal',
 	          notes: set.notes ?? null,
-						user_id: userId,
 	        }));
 	      });
 
