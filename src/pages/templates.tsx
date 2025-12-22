@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { Layout } from '../components/Layout';
 import { TemplateCard } from '../components/TemplateCard';
+import { useAuth } from '../context/AuthContext';
 
 interface TemplateExercise {
   id: string
@@ -25,9 +26,12 @@ export default function TemplatesPage() {
   const [templates, setTemplates] = useState<Template[]>([])
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
+  const { userId, loading: authLoading } = useAuth()
 
   useEffect(() => {
     async function fetchTemplates() {
+      if (!userId) return
+
       const { data, error } = await supabase
         .from('templates')
         .select(`
@@ -41,6 +45,7 @@ export default function TemplatesPage() {
             exercise:exercise_id(id, name, target_muscle)
           )
         `)
+        .eq('user_id', userId)
         .order('name', { ascending: true })
 
       if (error) {
@@ -63,16 +68,27 @@ export default function TemplatesPage() {
       console.log('Fetched templates:', data);
     }
 
+    if (authLoading) return
+
+    if (!userId) {
+      setTemplates([])
+      setLoading(false)
+      return
+    }
+
     fetchTemplates()
-  }, [])
+  }, [authLoading, userId])
 
   const deleteTemplate = async (id: string) => {
     if (!window.confirm('Delete this template?')) return
+
+    if (!userId) return
 
     const { error } = await supabase
       .from('templates')
       .delete()
       .eq('id', id)
+      .eq('user_id', userId)
 
     if (error) {
       console.error('Error deleting template:', error)
@@ -88,10 +104,13 @@ export default function TemplatesPage() {
     const newName = window.prompt('Enter new template name:', currentTemplate.name)
     if (!newName) return
 
+    if (!userId) return
+
     supabase
       .from('templates')
       .update({ name: newName })
       .eq('id', id)
+      .eq('user_id', userId)
       .then(({ error }) => {
         if (error) {
           alert('Failed to rename template.')

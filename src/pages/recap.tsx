@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
+import { useAuth } from '../context/AuthContext'
 
 export default function Recap() {
   const [searchParams] = useSearchParams()
   const workoutId = searchParams.get('workoutId')
   const navigate = useNavigate()
+  const { userId, loading: authLoading } = useAuth()
 
   const [exercises, setExercises] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
@@ -13,7 +15,7 @@ export default function Recap() {
 
   useEffect(() => {
     async function fetchWorkoutExercises() {
-      if (!workoutId) return
+      if (!workoutId || !userId) return
 
       const { data, error } = await supabase
         .from('workout_exercises')
@@ -30,8 +32,17 @@ export default function Recap() {
       setLoading(false)
     }
 
+    if (authLoading) return
+
+    if (!userId) {
+      setExercises([])
+      setLoading(false)
+      setVolumeByMuscle({})
+      return
+    }
+
     fetchWorkoutExercises()
-  }, [workoutId])
+  }, [authLoading, userId, workoutId])
 
   const calculateVolume = (data: any[]) => {
     const volume: Record<string, number> = {}

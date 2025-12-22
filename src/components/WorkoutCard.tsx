@@ -6,6 +6,7 @@ import { Workout } from '../types/workout';
 import { Drawer } from './Drawer'
 import { WorkoutDetails } from './WorkoutDetails';
 import { saveWorkout } from '../services/workoutService';
+import { useAuth } from '../context/AuthContext';
 
 interface WorkoutSet {
   set_number: number;
@@ -57,6 +58,7 @@ export function WorkoutCard({
 }: Props) {
   const navigate = useNavigate();
   const formattedDate = formatDateCompact(workout.date);
+	const { userId } = useAuth();
 
   const variantClass = `workout-card ${variant} ${isNext ? 'highlight' : ''}`;
 	const [editedDate, setEditedDate] = useState(workout.date);
@@ -80,7 +82,7 @@ export function WorkoutCard({
 				}))
 			);
 		}, [workout]);
-		
+
 	const resetDraftState = () => {
   setEditedDate(workout.date);
 
@@ -168,11 +170,15 @@ const closeDrawerAfterSave = () => {
 				onSave={async () => {
 					setIsSaving(true);
 					try {
+						if (!userId) {
+              throw new Error('Missing user context');
+            }
 						await saveWorkout({
 							workoutId: workout.id,
 							date: editedDate,
 							status: localStatus,
 							exercises: editedExercises,
+							userId,
 						});
 						onWorkoutUpdated({
 							...workout,

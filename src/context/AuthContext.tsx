@@ -12,6 +12,7 @@ import { supabase } from '../supabase/client';
 type AuthContextValue = {
   session: Session | null;
   user: User | null;
+  userId: string | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -48,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => listener?.subscription.unsubscribe();
   }, []);
 
-  const handleSignIn = async (email: string, password: string) => {
+	const handleSignIn = async (email: string, password: string) => {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -73,10 +74,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(null);
   };
 
-  const value = useMemo(
-    () => ({ session, user, loading, signIn: handleSignIn, signOut: handleSignOut }),
-    [loading, session, user]
-  );
+  const value = useMemo(() => {
+    const userId = user?.id ?? null;
+
+    return {
+      session,
+      user,
+      userId,
+      loading,
+      signIn: handleSignIn,
+      signOut: handleSignOut,
+    };
+  }, [loading, session, user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -4,10 +4,12 @@ import { supabase } from '../supabase/client'
 import { WorkoutButton } from '../components/WorkoutButton'
 import { Layout } from '../components/Layout';
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
+import { useAuth } from '../context/AuthContext';
 
 export default function WorkoutRunner() {
   const { id: workoutId } = useParams()
   const navigate = useNavigate()
+  const { userId, loading: authLoading } = useAuth()
 
 	const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -20,7 +22,7 @@ export default function WorkoutRunner() {
 
   useEffect(() => {
     async function fetchWorkoutExercises() {
-      if (!workoutId) {
+      if (!workoutId || !userId) {
         console.warn('No workout ID found in URL.')
         setLoading(false)
         return
@@ -50,6 +52,7 @@ export default function WorkoutRunner() {
 				  )
 				`)
 			  .eq('id', workoutId)
+        .eq('user_id', userId)
 			  .single();
 
 				if (error || !data) {
@@ -72,8 +75,16 @@ export default function WorkoutRunner() {
       setLoading(false)
     }
 
+    if (authLoading) return
+
+    if (!userId) {
+      setExercises([])
+      setLoading(false)
+      return
+    }
+
     fetchWorkoutExercises()
-  }, [workoutId])
+  }, [authLoading, userId, workoutId])
 
   const updateCurrentSet = (field: 'weight' | 'reps' | 'notes', value: any) => {
 	  setExercises(prev =>
@@ -117,6 +128,8 @@ export default function WorkoutRunner() {
 	};
 
 	const finishWorkout = async () => {
+		if (authLoading || !userId) return;
+
 		const updates = exercises.flatMap(ex =>
 		  ex.workout_sets.map(set => ({
 		    id: set.id,
@@ -143,7 +156,8 @@ export default function WorkoutRunner() {
 	  await supabase
 	    .from('workouts')
 	    .update({ status: 'completed' })
-	    .eq('id', workoutId);
+	    .eq('id', workoutId)
+      .eq('user_id', userId);
 
 	  navigate(`/workout/${workoutId}`);
 	};

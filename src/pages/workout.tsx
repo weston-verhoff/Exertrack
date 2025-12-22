@@ -6,6 +6,7 @@ import '../styles/workout.css' // ✅ Import your CSS file
 import { Layout } from '../components/Layout';
 import { Workout, WorkoutExercise, WorkoutSet } from '../types/workout';
 import { WorkoutDetails } from '../components/WorkoutDetails'
+import { useAuth } from '../context/AuthContext';
 // import { saveWorkout } from '../services/workoutService';
 
 // // ✅ Reusable styles for summary lists
@@ -31,9 +32,11 @@ export default function WorkoutRecap() {
   const [saving, setSaving] = useState(false)
   const [statusMessage, setStatusMessage] = useState<string | null>(null)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const { userId, loading: authLoading } = useAuth();
 
   useEffect(() => {
     async function fetchWorkout() {
+      if (!userId) return;
 			const { data, error } = await supabase
 			  .from('workouts')
 			  .select(`
@@ -60,6 +63,7 @@ export default function WorkoutRecap() {
 			    )
 			  `)
 			  .eq('id', id)
+        .eq('user_id', userId)
 			  .order('order', { foreignTable: 'workout_exercises', ascending: true })
 			  .single()
 
@@ -89,11 +93,20 @@ export default function WorkoutRecap() {
       setLoading(false)
     }
 
+    if (authLoading) return;
+
+    if (!userId) {
+      setWorkout(null);
+      setLoading(false);
+      return;
+    }
+
     fetchWorkout()
-  }, [id])
+  }, [authLoading, id, userId])
 
 	const saveUpdates = async (): Promise<void> => {
 	  if (!workout) return;
+    if (!userId) return;
 
 	  setSaving(true);
 	  setErrorMessage(null);
@@ -105,7 +118,8 @@ export default function WorkoutRecap() {
 	      const { error: dateError } = await supabase
 	        .from('workouts')
 	        .update({ date: workout.date })
-	        .eq('id', workout.id);
+	        .eq('id', workout.id)
+          .eq('user_id', userId);
 
 	      if (dateError) throw dateError;
 	    }
@@ -136,64 +150,65 @@ export default function WorkoutRecap() {
 	    setStatusMessage('Workout saved!');
 	  } catch (err) {
 	    console.error(err);
-	    setErrorMessage('Failed to save workout. Please try again.');
-	    setStatusMessage(null);
-	    alert('Something went wrong while saving.');
-	  } finally {
-	    setSaving(false);
-	  }
-	};
+			setErrorMessage('Failed to save workout. Please try again.');
+		setStatusMessage(null);
+		alert('Something went wrong while saving.');
+	} finally {
+		setSaving(false);
+	}
+};
 
-  if (loading) return <p>Loading recap...</p>
-  if (!workout) return <p>Workout not found.</p>
+if (loading) return <p>Loading recap...</p>
+if (!workout) return <p>Workout not found.</p>
 
-	const muscleSummary: Record<string, number> = {};
+const muscleSummary: Record<string, number> = {};
 
-	editedExercises.forEach(we => {
-	  const muscle = we.exercise?.target_muscle ?? 'Unknown';
+editedExercises.forEach(we => {
+	const muscle = we.exercise?.target_muscle ?? 'Unknown';
 
-	  const volume = we.workout_sets.reduce(
-	    (sum: number, s: WorkoutSet) => sum + s.reps * s.weight,
-	    0
-	  );
+	const volume = we.workout_sets.reduce(
+		(sum: number, s: WorkoutSet) => sum + s.reps * s.weight,
+		0
+	);
 
-	  muscleSummary[muscle] = (muscleSummary[muscle] || 0) + volume;
-	});
-	const handleDeleteWorkout = async () => {
-	  if (!workout) return;
+	muscleSummary[muscle] = (muscleSummary[muscle] || 0) + volume;
+});
+const handleDeleteWorkout = async () => {
+	if (!workout) return;
+	if (!userId) return;
 
-		const confirmed = window.confirm(
-			'Delete workout? Cannot be undone.'
-		);
+	const confirmed = window.confirm(
+		'Delete workout? Cannot be undone.'
+	);
 
-		if (!confirmed) return;
+	if (!confirmed) return;
 
-	  const success = await deleteWorkoutById(workout.id);
+	const success = await deleteWorkoutById(workout.id, userId);
 
-	  if (!success) {
-	    alert('Failed to delete workout.');
-	    return;
-	  }
+	if (!success) {
+		alert('Failed to delete workout.');
+		return;
+	}
 
-	  navigate('/'); // or '/dashboard' if that’s your route
-	};
+	navigate('/'); // or '/dashboard' if that’s your route
+};
 
-  return (
-    <Layout padded maxWidth="xl" scrollable>
-		<h1>📈 Workout Recap</h1>
+return (
+	<Layout padded maxWidth="xl" scrollable>
+	<h1>📈 Workout Recap</h1>
 
 <WorkoutDetails
-	workoutId={workout.id}
-	date={workout.date}
-	status={workout.status}
-	exercises={editedExercises}
-	isSaving={saving}
-	statusMessage={statusMessage}
-	errorMessage={errorMessage}
-	onDateChange={date =>
-		setWorkout(prev => prev ? { ...prev, date } : prev)
-	}
-	onSave={saveUpdates}
+workoutId={workout.id}
+date={workout.date}
+status={workout.status}
+exercises={editedExercises}
+isSaving={saving}
+statusMessage={statusMessage}
+errorMessage={errorMessage}
+onDateChange={date =>
+	setWorkout(prev => prev ? { ...prev, date } : prev)
+}
+onSave={saveUpdates}
 	onStatusChange={status =>
     setWorkout(prev => prev ? { ...prev, status } : prev)
   }

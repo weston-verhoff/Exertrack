@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
+import { useAuth } from '../context/AuthContext'
 
 interface WorkoutExercise {
   id: string
@@ -29,10 +30,11 @@ export default function PastDetail() {
   const [workout, setWorkout] = useState<Workout | null>(null)
   const [loading, setLoading] = useState(true)
   const [volumeByMuscle, setVolumeByMuscle] = useState<Record<string, number>>({})
+  const { userId, loading: authLoading } = useAuth()
 
   useEffect(() => {
     async function fetchWorkoutDetail() {
-      if (!id) return
+      if (!id || !userId) return
 
       const { data, error } = await supabase
         .from('workouts')
@@ -50,6 +52,7 @@ export default function PastDetail() {
           )
         `)
         .eq('id', id)
+        .eq('user_id', userId)
         .single()
 
       if (error) {
@@ -71,8 +74,16 @@ export default function PastDetail() {
       setLoading(false)
     }
 
+    if (authLoading) return
+
+    if (!userId) {
+      setWorkout(null)
+      setLoading(false)
+      return
+    }
+
     fetchWorkoutDetail()
-  }, [id])
+  }, [authLoading, id, userId])
 
   const calculateVolume = (exs: WorkoutExercise[]) => {
     const volume: Record<string, number> = {}

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { supabase } from '../supabase/client'
+import { useAuth } from '../context/AuthContext'
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -36,9 +37,12 @@ export default function AnalyticsPage() {
   const [workouts, setWorkouts] = useState<Workout[]>([])
   const [selectedMuscle, setSelectedMuscle] = useState<string>('all')
   const [loading, setLoading] = useState(true)
+  const { userId, loading: authLoading } = useAuth()
 
   useEffect(() => {
     async function fetchWorkouts() {
+      if (!userId) return
+
       const { data, error } = await supabase
         .from('workouts')
         .select(`
@@ -52,6 +56,7 @@ export default function AnalyticsPage() {
           )
         `)
         .neq('status', 'canceled')
+        .eq('user_id', userId)
         .order('date', { ascending: true })
 
       if (error) {
@@ -71,8 +76,16 @@ export default function AnalyticsPage() {
       setLoading(false)
     }
 
+    if (authLoading) return
+
+    if (!userId) {
+      setWorkouts([])
+      setLoading(false)
+      return
+    }
+
     fetchWorkouts()
-  }, [])
+  }, [authLoading, userId])
 
   const volumeByDate: Record<string, number> = {}
 

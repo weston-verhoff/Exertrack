@@ -7,6 +7,7 @@ interface SaveWorkoutParams {
   date?: string;
   status?: string;
   exercises: WorkoutExercise[];
+  userId: string;
 }
 
 /**
@@ -18,10 +19,11 @@ interface SaveWorkoutParams {
  * - planner
 */
 export async function saveWorkout({
- workoutId,
- date,
- status,
- exercises,
+workoutId,
+date,
+status,
+exercises,
+userId,
 }: SaveWorkoutParams): Promise<void> {
  // 1️⃣ Update workout core fields
  if (date || status) {
@@ -31,7 +33,8 @@ export async function saveWorkout({
 			 ...(date ? { date } : {}),
 			 ...(status ? { status } : {}),
 		 })
-		 .eq('id', workoutId);
+		 .eq('id', workoutId)
+     .eq('user_id', userId);
 
 	 if (error) {
 		 console.error('Failed to update workout:', error);

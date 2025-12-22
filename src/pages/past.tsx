@@ -4,10 +4,12 @@ import { supabase } from '../supabase/client'
 import { deleteWorkoutById } from '../utils/deleteWorkout'
 import { Layout } from '../components/Layout'
 import { WorkoutCard } from '../components/WorkoutCard'
+import { useAuth } from '../context/AuthContext'
 
 export default function PastWorkouts() {
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true)
+	const { userId, loading: authLoading } = useAuth()
 	const handleStatusChange = (id: string, status: string) => {
 	  setWorkouts(prev =>
 	    prev.map(w =>
@@ -18,6 +20,8 @@ export default function PastWorkouts() {
 
   useEffect(() => {
     async function fetchWorkouts() {
+			if (!userId) return
+
 			const { data, error } = await supabase
 			  .from('workouts')
 			  .select(`
@@ -42,6 +46,7 @@ export default function PastWorkouts() {
 			      )
 			    )
 			  `)
+			  .eq('user_id', userId)
 			  .order('date', { ascending: false });
 				const cleaned = (data ?? []).map(w => ({
 				  ...w,
@@ -52,21 +57,29 @@ export default function PastWorkouts() {
 				  })),
 				}));
 
-				setWorkouts(cleaned);
-
       if (error) console.error('Error fetching workouts:', error)
-      else setWorkouts(data || [])
+      else setWorkouts(cleaned)
 
       setLoading(false)
     }
 
+    if (authLoading) return
+
+    if (!userId) {
+      setWorkouts([])
+      setLoading(false)
+      return
+    }
+
     fetchWorkouts()
-  }, [])
+  }, [authLoading, userId])
 
 	const deleteWorkout = async (id: string) => {
 	  if (!window.confirm('Delete this workout?')) return
 
-	  const success = await deleteWorkoutById(id)
+		if (!userId) return
+
+	  const success = await deleteWorkoutById(id, userId)
 
 	  if (!success) {
 	    alert('Could not delete workout.')

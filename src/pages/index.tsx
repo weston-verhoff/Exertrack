@@ -6,6 +6,7 @@ import { WorkoutButton } from '../components/WorkoutButton';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { motion } from 'framer-motion'; // ✅ Import motion
 import { Workout } from '../types/workout';
+import { useAuth } from '../context/AuthContext';
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -14,6 +15,7 @@ export default function Dashboard() {
   const futureRef = useRef<HTMLDivElement>(null);
   const [constraints, setConstraints] = useState({ left: 0, right: 0 });
 	const [drawerOpen, setDrawerOpen] = useState(false);
+	const { userId, loading: authLoading } = useAuth();
 
 	const handleStatusChange = (id: string, status: string) => {
 	  setWorkouts(prev =>
@@ -27,6 +29,8 @@ export default function Dashboard() {
     const today = getLocalDateString();
 
     async function fetchWorkouts() {
+			if (!userId) return;
+
 			const { data, error } = await supabase
 		  .from('workouts')
 		  .select(`
@@ -50,6 +54,7 @@ export default function Dashboard() {
 		      )
 		    )
 		  `)
+		  .eq('user_id', userId)
 		  .order('date', { ascending: true });
 
       if (error) {
@@ -81,8 +86,16 @@ export default function Dashboard() {
       setLoading(false);
     }
 
+    if (authLoading) return;
+
+    if (!userId) {
+      setWorkouts([]);
+      setLoading(false);
+      return;
+    }
+
     fetchWorkouts();
-  }, []);
+  }, [authLoading, userId]);
 
   // ✅ Dynamically calculate drag constraints when workouts change
   useEffect(() => {
@@ -104,7 +117,9 @@ export default function Dashboard() {
   const deleteWorkout = async (id: string) => {
     if (!window.confirm('Delete this workout permanently?')) return;
 
-    const success = await deleteWorkoutById(id);
+    if (!userId) return;
+
+    const success = await deleteWorkoutById(id, userId);
 
     if (!success) {
       alert('Unable to delete workout.');

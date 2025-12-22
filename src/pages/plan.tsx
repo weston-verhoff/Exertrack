@@ -5,6 +5,7 @@ import { useTemplates } from '../hooks/useTemplates';
 import { supabase } from '../supabase/client';
 import Step2ConfigureCircuit, { ConfiguredExercise } from '../components/PlanSession/Step2ConfigureCircuit';
 import { Layout } from '../components/Layout';
+import { useAuth } from '../context/AuthContext';
 
 export default function PlanSession() {
   const [searchParams] = useSearchParams();
@@ -42,9 +43,10 @@ export default function PlanSession() {
     : workoutParam
     ? `workout:${workoutParam}`
     : null;
+  const { userId, loading: authLoading } = useAuth();
 
-		useEffect(() => {
-  if (!importKey) return;
+useEffect(() => {
+  if (authLoading || !importKey || !userId) return;
   if (lastImportedKey === importKey) return;
 
   async function fetchImportedData() {
@@ -106,8 +108,8 @@ export default function PlanSession() {
               reps,
               weight,
               intensity_type
-            )
-          `)
+          )
+        `)
           .eq('workout_id', workoutParam)
           .order('order', { ascending: true });
 
@@ -147,6 +149,8 @@ export default function PlanSession() {
   workoutParam,
   importKey,
   lastImportedKey,
+  userId,
+  authLoading,
 ]);
 
 
@@ -161,11 +165,12 @@ export default function PlanSession() {
   };
 
   const addCustomExercise = async () => {
+    if (!userId) return;
     if (!customName || !customMuscle) return;
 
     const { data, error } = await supabase
       .from('exercises')
-      .insert([{ name: customName, target_muscle: customMuscle, is_custom: true }])
+      .insert([{ name: customName, target_muscle: customMuscle, is_custom: true, user_id: userId }])
       .select();
 
     if (error) {
@@ -180,19 +185,22 @@ export default function PlanSession() {
   };
 
   const handleSaveTemplate = async (configured: ConfiguredExercise[]) => {
+    if (!userId) {
+      throw new Error('No authenticated user.');
+    }
     if (!activeTemplateId) {
       throw new Error('No active template selected.');
     }
 
-		const inserts = configured
-		  .filter(ex => !!ex.exercise_id)
-		  .map((ex, i) => ({
-		    template_id: activeTemplateId,
-		    exercise_id: ex.exercise_id,
-		    sets: ex.sets.length,
-		    reps: ex.sets[0]?.reps ?? 8,
-		    order: i,
-		  }));
+			const inserts = configured
+			  .filter(ex => !!ex.exercise_id)
+			  .map((ex, i) => ({
+			    template_id: activeTemplateId,
+			    exercise_id: ex.exercise_id,
+			    sets: ex.sets.length,
+			    reps: ex.sets[0]?.reps ?? 8,
+			    order: i,
+			  }));
 
 		if (inserts.length === 0) {
 		  throw new Error('Add at least one valid exercise before saving.');

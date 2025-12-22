@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../supabase/client';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 import {
   DndContext,
   closestCenter,
@@ -145,6 +146,7 @@ export default function Step2ConfigureCircuit({
   isEditingWorkout,
   editingWorkoutId
 }: Step2Props) {
+	const { userId, loading: authLoading } = useAuth();
   // initialize as empty, then sync from prop
 	const [exercises, setExercises] = useState<ExerciseConfig[]>(() =>
 	  Array.isArray(selectedExercises)
@@ -259,6 +261,10 @@ export default function Step2ConfigureCircuit({
 	  };
 
 	  const handleSaveWorkout = async () => {
+			if (authLoading || !userId) {
+        setErrorMessage('Please wait for session to load.');
+        return;
+      }
 	    if (exercises.length === 0) {
 	      alert('Add at least one exercise.');
 	      return;
@@ -290,6 +296,7 @@ export default function Step2ConfigureCircuit({
 	        sets: ex.sets.length,
 	        reps: ex.sets[0]?.reps ?? 0,
 	        weight: ex.sets[0]?.weight ?? 0,
+					user_id: userId,
 	      }));
 
 	      const { data: workoutExercises, error: exercisesError } = await supabase
@@ -320,6 +327,7 @@ export default function Step2ConfigureCircuit({
 	          weight: set.weight,
 	          intensity_type: set.intensity_type ?? 'normal',
 	          notes: set.notes ?? null,
+						user_id: userId,
 	        }));
 	      });
 
@@ -337,7 +345,8 @@ export default function Step2ConfigureCircuit({
 	        const { error: deleteError } = await supabase
 	          .from('workout_exercises')
 	          .delete()
-	          .eq('workout_id', editingWorkoutId);
+						.eq('workout_id', editingWorkoutId)
+            .eq('user_id', userId);
 
 	        if (deleteError) {
 	          throw deleteError;
@@ -354,7 +363,7 @@ export default function Step2ConfigureCircuit({
 	      setStatusMessage('Creating workout...');
 	      const { data: workoutData, error: workoutError } = await supabase
 	        .from('workouts')
-	        .insert([{ date: selectedDate, status: 'scheduled' }])
+	        .insert([{ date: selectedDate, status: 'scheduled', user_id: userId }])
 	        .select()
 	        .single();
 

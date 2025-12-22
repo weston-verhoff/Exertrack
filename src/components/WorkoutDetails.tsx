@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabase/client';
 import { WorkoutButton } from './WorkoutButton';
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
+import { useAuth } from '../context/AuthContext';
 
 interface Props {
   workoutId: string;
@@ -35,6 +36,7 @@ export function WorkoutDetails({
 	onClose,
 }: Props) {
   const navigate = useNavigate();
+	const { userId, loading: authLoading } = useAuth();
 
   /* ------------------ Derived Data ------------------ */
 
@@ -195,11 +197,12 @@ export function WorkoutDetails({
 						  icon="✅"
 						  variant="info"
 						  onClick={async () => {
+								if (authLoading || !userId) return;
 						    const { error } = await supabase
 						      .from('workouts')
 						      .update({ status: 'completed' })
-						      .eq('id', workoutId);
-
+									.eq('id', workoutId)
+                  .eq('user_id', userId);
 						    if (error) {
 						      console.error(error);
 						      alert('Failed to mark workout as completed.');
@@ -217,14 +220,16 @@ export function WorkoutDetails({
 				{status !== 'scheduled' && (
 					<>
 					<WorkoutButton
-						label="Move to Scheduled"
-						icon="✅"
-						variant="info"
-						onClick={async () => {
+						  label="Move to Scheduled"
+						  icon="✅"
+						  variant="info"
+						  onClick={async () => {
+              if (authLoading || !userId) return;
 							const { error } = await supabase
 								.from('workouts')
 								.update({ status: 'scheduled' })
-								.eq('id', workoutId);
+								.eq('id', workoutId)
+                .eq('user_id', userId);
 
 							if (error) {
 								console.error(error);
@@ -255,12 +260,15 @@ export function WorkoutDetails({
             const name = window.prompt('Name your template:');
             if (!name) return;
 
+						if (authLoading || !userId) return;
+
             const { data: template } = await supabase
               .from('templates')
               .insert({
                 name,
                 source_workout_id: workoutId,
                 created_at: new Date().toISOString(),
+								user_id: userId,
               })
               .select()
               .single();
@@ -278,6 +286,7 @@ export function WorkoutDetails({
 							  order: we.order,
 							  sets: we.workout_sets.length,
 							  reps: we.workout_sets[0]?.reps ?? 8,
+								user_id: userId,
 							});
             }
 
