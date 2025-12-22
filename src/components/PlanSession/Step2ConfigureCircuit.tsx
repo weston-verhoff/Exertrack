@@ -344,7 +344,6 @@ export default function Step2ConfigureCircuit({
 	          .from('workout_exercises')
 	          .delete()
 						.eq('workout_id', editingWorkoutId)
-            .eq('user_id', userId);
 
 	        if (deleteError) {
 	          throw deleteError;
