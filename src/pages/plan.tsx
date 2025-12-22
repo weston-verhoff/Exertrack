@@ -206,17 +206,23 @@ useEffect(() => {
 		  throw new Error('Add at least one valid exercise before saving.');
 		}
 
-		const { error: transactionError } = await supabase.rpc(
-		  'replace_template_exercises',
-		  {
-		    template_id: activeTemplateId,
-		    exercises_payload: inserts,
-		  }
-		);
+		const { error: deleteError } = await supabase
+		  .from('template_exercises')
+		  .delete()
+		  .eq('template_id', activeTemplateId);
 
-		if (transactionError) {
-		  console.error('Error saving template transaction:', transactionError);
-		  throw transactionError;
+		if (deleteError) {
+		  console.error('Error clearing existing template exercises:', deleteError);
+		  throw deleteError;
+		}
+
+		const { error: insertError } = await supabase
+		  .from('template_exercises')
+		  .insert(inserts);
+
+		if (insertError) {
+		  console.error('Error saving template exercises:', insertError);
+		  throw insertError;
 		}
 
     navigate('/templates');
