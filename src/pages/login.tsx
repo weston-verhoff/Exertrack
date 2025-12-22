@@ -10,7 +10,7 @@ type LocationState = {
 };
 
 export default function Login() {
-  const { signIn, loading } = useAuth();
+  const { signIn, signUp, loading } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const state = location.state as LocationState | undefined;
@@ -20,20 +20,45 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+	const [activeAction, setActiveAction] = useState<'signin' | 'signup' | null>(null);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     setSubmitting(true);
     setError('');
+		setActiveAction('signin');
 
     try {
-      await signIn(email, password);
+      await signIn(email.trim(), password);
       navigate(redirectPath, { replace: true });
     } catch (err) {
       setError((err as Error).message ?? 'An unexpected error occurred');
     } finally {
       setSubmitting(false);
+			setActiveAction(null);
+    }
+  };
+
+  const handleCreateAccount = async () => {
+    setSubmitting(true);
+    setActiveAction('signup');
+    setError('');
+
+    try {
+      const hasSession = await signUp(email.trim(), password);
+      if (hasSession) {
+        navigate(redirectPath, { replace: true });
+      } else {
+        setError('Please check your email to confirm your account before signing in.');
+      }
+    } catch (err) {
+      const message = (err as Error).message ?? 'Unable to create your account. Please try again.';
+      setError(message);
+			console.log(err);
+    } finally {
+      setSubmitting(false);
+      setActiveAction(null);
     }
   };
 
@@ -64,10 +89,19 @@ export default function Login() {
         </label>
 
         {error && <p className="auth-error">{error}</p>}
-
-        <button type="submit" disabled={submitting || loading}>
-          {submitting ? 'Signing in...' : 'Sign In'}
-        </button>
+				<div className="auth-actions">
+          <button type="submit" disabled={submitting || loading}>
+            {activeAction === 'signin' ? 'Signing in...' : 'Sign In'}
+          </button>
+          <button
+            type="button"
+            className="secondary"
+            onClick={handleCreateAccount}
+            disabled={submitting || loading}
+          >
+            {activeAction === 'signup' ? 'Creating...' : 'Create Account'}
+          </button>
+        </div>
       </form>
 
       <p>

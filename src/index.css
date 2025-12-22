@@ -49,9 +49,58 @@ input[type='checkbox']{
 	margin-bottom:16px;
 	margin-right: 12px;
 }
-.session-planner-exercises{
-	list-style: none;
-	padding-left:0;
+.auth-container {
+	max-width: 420px;
+	margin: 6rem auto 0;
+	padding: 2rem;
+	background: rgba(14, 23, 55, 0.9);
+	color: white;
+	border-radius: 12px;
+	box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+}
+.auth-form {
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+.auth-form label {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+	gap: 0.5rem;
+	color: #e3e8ff;
+}
+.auth-form input {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	text-align: left;
+}
+.auth-actions {
+	display: flex;
+	gap: 0.75rem;
+}
+.auth-actions button {
+	flex: 1;
+	padding: 0.75rem 1rem;
+	border-radius: 8px;
+	border: none;
+	font-weight: 600;
+	cursor: pointer;
+}
+.auth-actions .secondary {
+	background: transparent;
+	border: 1px solid #e3e8ff;
+	color: #e3e8ff;
+}
+.auth-error {
+	color: #ffb4b4;
+	margin: 0;
+}
+.auth-note {
+	margin-top: 0.75rem;
+	color: #cbd5ff;
+	font-size: 0.9rem;
 }
 
 /* === CUSTOM PROPERTIES === */
@@ -168,6 +217,18 @@ input[type='checkbox']{
 	display:flex;
 	align-items:center;
 	gap:8px;
+}
+.global-header .nav-links .sign-out-button {
+	background: transparent;
+	border: 1px solid white;
+	color: white;
+	border-radius: 6px;
+	padding: 0.4rem 0.8rem;
+	cursor: pointer;
+	font-size: 0.9rem;
+}
+.global-header .nav-links .sign-out-button:hover {
+	background-color: rgba(255, 255, 255, 0.1);
 }
 
 .global-header .hamburger {
@@ -302,7 +363,12 @@ input.exerciseSearch{
 		display: flex;
 		transition: background 0.2s ease;
 	}
-
+	.global-header .nav-links .sign-out-button {
+		border: 1px solid white;
+		padding: 0.75rem 1rem;
+		width: 100%;
+		text-align: left;
+	}
 	.global-header .nav-links a:hover {
 		background-color: rgba(255, 255, 255, 0.1);
 	}

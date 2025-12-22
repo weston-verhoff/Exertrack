@@ -15,6 +15,7 @@ type AuthContextValue = {
   userId: string | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
+	signUp: (email: string, password: string) => Promise<boolean>;
   signOut: () => Promise<void>;
 };
 
@@ -50,9 +51,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
 	const handleSignIn = async (email: string, password: string) => {
+    const trimmedEmail = email.trim();
+    const trimmedPassword = password.trim();
+
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
+      email: trimmedEmail,
+      password: trimmedPassword,
     });
 
     if (error) {
@@ -62,6 +66,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setSession(data.session);
     setUser(data.session?.user ?? null);
   };
+
+	const handleSignUp = async (email: string, password: string) => {
+			const trimmedEmail = email.trim();
+			const trimmedPassword = password.trim();
+
+			const { data, error } = await supabase.auth.signUp({
+				email: trimmedEmail,
+				password: trimmedPassword,
+	      options: {
+	        emailRedirectTo: window.location.origin,
+	        data: {
+	          // Provide basic metadata to avoid downstream NOT NULL triggers in profile tables.
+	          email_lower: trimmedEmail.toLowerCase(),
+	        },
+	      },
+			});
+
+			if (error) {
+				throw error;
+			}
+
+			setSession(data.session);
+			setUser(data.session?.user ?? data.user ?? null);
+
+			return Boolean(data.session);
+		};
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut();
@@ -83,6 +113,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       userId,
       loading,
       signIn: handleSignIn,
+			signUp: handleSignUp,
       signOut: handleSignOut,
     };
   }, [loading, session, user]);
