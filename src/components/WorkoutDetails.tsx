@@ -275,20 +275,39 @@ export function WorkoutDetails({
 
             if (!template) return;
 
-            for (const we of exercises) {
-							if (!we.exercise?.id) {
-							  console.warn('Skipping exercise with missing exercise.id', we);
-							  continue;
-							}
-							await supabase.from('template_exercises').insert({
-							  template_id: template.id,
-							  exercise_id: we.exercise.id, // 🔑 CORRECT SOURCE
-							  order: we.order,
-							  sets: we.workout_sets.length,
-							  reps: we.workout_sets[0]?.reps ?? 8,
-								user_id: userId,
-							});
-            }
+						const inserts = exercises
+						  .map(we => {
+						    const exerciseId = we.exercise?.id ?? we.exercise_id;
+
+								if (!exerciseId) {
+								  console.warn('Skipping exercise with missing exercise identifier', we);
+								  return null;
+								}
+
+						    return {
+						      template_id: template.id,
+						      exercise_id: exerciseId, // 🔑 CORRECT SOURCE
+						      order: we.order,
+						      sets: we.workout_sets.length,
+						      reps: we.workout_sets[0]?.reps ?? 8,
+						    };
+						  })
+							.filter((row): row is NonNullable<typeof row> => row !== null);
+
+						if (inserts.length === 0) {
+						  alert('No exercises were available to add to the template.');
+							return;
+						}
+
+						const { error: templateExerciseError } = await supabase
+						  .from('template_exercises')
+						  .insert(inserts);
+
+						if (templateExerciseError) {
+						  console.error(templateExerciseError);
+						  alert('Failed to add exercises to the template.');
+						  return;
+						}
 
             navigate('/templates');
           }}
