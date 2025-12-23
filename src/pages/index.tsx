@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { supabase } from '../supabase/client';
 import { useNavigate } from 'react-router-dom';
 import { deleteWorkoutById } from '../utils/deleteWorkout';
@@ -49,11 +49,23 @@ export default function Dashboard() {
       )
     )
   `;
+	const getLocalDateString = useCallback(() => {
+	  const now = new Date();
+	  const year = now.getFullYear();
+	  const month = String(now.getMonth() + 1).padStart(2, '0');
+	  const day = String(now.getDate()).padStart(2, '0');
+	  return `${year}-${month}-${day}`;
+	}, []);
 
-  const cleanWorkouts = (data: any[] | null) =>
-    (data ?? []).map((w: any) => ({
+	const cleanWorkouts = useCallback(
+  (data: any[] | null) => {
+    const today = getLocalDateString();
+
+    return (data ?? []).map((w: any) => ({
       ...w,
-      status: w.status ?? (w.date >= getLocalDateString() ? 'scheduled' : 'completed'),
+      status:
+        w.status ??
+        (w.date >= today ? 'scheduled' : 'completed'),
       workout_exercises: w.workout_exercises.map((we: any) => ({
         ...we,
         exercise:
@@ -65,41 +77,53 @@ export default function Dashboard() {
         workout_sets: we.workout_sets ?? [],
       })),
     }));
+  },
+  [getLocalDateString]
+);
 
-  const fetchInitialWorkouts = async (currentUserId: string) => {
-    const todayString = getLocalDateString();
-    const [scheduledResponse, completedResponse] = await Promise.all([
-      supabase
-        .from('workouts')
-        .select(workoutFields)
-        .eq('user_id', currentUserId)
-        .or('status.eq.scheduled,status.is.null')
-        .gte('date', todayString)
-        .order('date', { ascending: true }),
-      supabase
-        .from('workouts')
-        .select(workoutFields, { count: 'exact' })
-        .eq('user_id', currentUserId)
-        .or('status.eq.completed,status.is.null')
-        .lt('date', todayString)
-        .order('date', { ascending: false })
-        .limit(9),
-    ]);
+		const fetchInitialWorkouts = useCallback(
+	  async (currentUserId: string) => {
+	    const todayString = getLocalDateString();
 
-    if (scheduledResponse.error) {
-      console.error('Error fetching scheduled workouts:', scheduledResponse.error);
-    }
-    if (completedResponse.error) {
-      console.error('Error fetching completed workouts:', completedResponse.error);
-    }
+	    const [scheduledResponse, completedResponse] = await Promise.all([
+	      supabase
+	        .from('workouts')
+	        .select(workoutFields)
+	        .eq('user_id', currentUserId)
+	        .or('status.eq.scheduled,status.is.null')
+	        .gte('date', todayString)
+	        .order('date', { ascending: true }),
 
-    const scheduledClean = cleanWorkouts(scheduledResponse.data);
-    const completedClean = cleanWorkouts(completedResponse.data);
-    setCompletedTotalCount(completedResponse.count ?? completedClean.length);
+	      supabase
+	        .from('workouts')
+	        .select(workoutFields, { count: 'exact' })
+	        .eq('user_id', currentUserId)
+	        .or('status.eq.completed,status.is.null')
+	        .lt('date', todayString)
+	        .order('date', { ascending: false })
+	        .limit(9),
+	    ]);
 
-    setWorkouts([...scheduledClean, ...completedClean]);
-    setLoading(false);
-  };
+	    if (scheduledResponse.error) {
+	      console.error('Error fetching scheduled workouts:', scheduledResponse.error);
+	    }
+
+	    if (completedResponse.error) {
+	      console.error('Error fetching completed workouts:', completedResponse.error);
+	    }
+
+	    const scheduledClean = cleanWorkouts(scheduledResponse.data);
+	    const completedClean = cleanWorkouts(completedResponse.data);
+
+	    setCompletedTotalCount(
+	      completedResponse.count ?? completedClean.length
+	    );
+
+	    setWorkouts([...scheduledClean, ...completedClean]);
+	    setLoading(false);
+	  },
+	  [workoutFields, cleanWorkouts, getLocalDateString]
+	);
 
   useEffect(() => {
 
@@ -112,7 +136,7 @@ export default function Dashboard() {
     }
 
     fetchInitialWorkouts(userId);
-  }, [authLoading, userId]);
+  }, [authLoading, userId, fetchInitialWorkouts ]);
 
   // ✅ Dynamically calculate drag constraints when workouts change
   useEffect(() => {
@@ -122,14 +146,6 @@ export default function Dashboard() {
       setConstraints({ left: -(scrollWidth - clientWidth), right: 0 });
     }
   }, [workouts]);
-
-  function getLocalDateString() {
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = String(now.getMonth() + 1).padStart(2, '0');
-    const day = String(now.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`; // e.g. "2025-07-29"
-  }
 
   const deleteWorkout = async (id: string) => {
     if (!window.confirm('Delete this workout permanently?')) return;
