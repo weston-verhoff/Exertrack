@@ -1,5 +1,5 @@
 // src/pages/past.tsx
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../supabase/client'
 import { deleteWorkoutById } from '../utils/deleteWorkout'
 import { Layout } from '../components/Layout'
@@ -46,7 +46,8 @@ export default function PastWorkouts() {
 
   const getTodayString = () => new Date().toISOString().slice(0, 10);
 
-  const cleanWorkouts = (data: any[] | null) =>
+	const cleanWorkouts = useCallback(
+  (data: any[] | null) =>
     (data ?? []).map(w => ({
       ...w,
       status: w.status ?? (w.date >= getTodayString() ? 'scheduled' : 'completed'),
@@ -55,7 +56,9 @@ export default function PastWorkouts() {
         exercise: Array.isArray(we.exercise) ? we.exercise[0] : we.exercise,
         workout_sets: we.workout_sets ?? [],
       })),
-    }));
+    })),
+  []
+);
 
   useEffect(() => {
     async function fetchWorkouts() {
@@ -101,7 +104,7 @@ export default function PastWorkouts() {
     }
 
     fetchWorkouts()
-  }, [authLoading, userId])
+  }, [authLoading, userId, workoutFields, cleanWorkouts ])
 
 	const deleteWorkout = async (id: string) => {
 	  if (!window.confirm('Delete this workout?')) return
