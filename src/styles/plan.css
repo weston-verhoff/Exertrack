@@ -186,7 +186,7 @@
   width: calc(100% - 2rem);
   margin: 1rem;
   background: #b7f3c2;
-  border: 2px solid #6ab57a;
+  border: 1px solid #6ab57a;
   color: #0f3b1c;
   font-size: 1.2rem;
   font-weight: 800;
@@ -257,14 +257,14 @@
   font-weight: 800;
   font-size: 1rem;
   cursor: pointer;
-  margin-bottom: 1rem;
+  margin-top: 1.5rem;
 }
 
 .custom-lift__form {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 0.5rem;
-  margin-bottom: 1rem;
+  margin-top: 1.5rem;
 }
 
 .custom-lift__form input {
@@ -323,6 +323,7 @@
   font-size: 1.2rem;
   display: grid;
   place-items: center;
+	flex-shrink: 0;
 }
 
 .exercise-pill__meta {
@@ -356,10 +357,16 @@
 .template-pill {
   padding: 0.7rem 1.2rem;
   border-radius: 16px;
-  border: 2px solid #1f2c4f;
+  border: 1px solid #1f2c4f;
   background: #f1f4ff;
   font-weight: 800;
   cursor: pointer;
+	transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.template-pill:hover{
+	background-color: #fff;
+	box-shadow: 0 8px 12px rgba(0, 0, 0, 0.14);
 }
 
 .muted {

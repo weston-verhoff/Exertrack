@@ -745,38 +745,6 @@ export default function PlanSession() {
                 />
               </div>
 
-              <div className="custom-lift">
-                {addingCustom ? (
-                  <div className="custom-lift__form">
-                    <input
-                      type="text"
-                      placeholder="Exercise name"
-                      value={customName}
-                      onChange={e => setCustomName(e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Target muscle"
-                      value={customMuscle}
-                      onChange={e => setCustomMuscle(e.target.value)}
-                    />
-                    <div className="custom-actions">
-                      <button onClick={addCustomExercise}>Add</button>
-                      <button onClick={() => setAddingCustom(false)}>
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    className="custom-lift__trigger"
-                    onClick={() => setAddingCustom(true)}
-                  >
-                    Add a Custom Lift +
-                  </button>
-                )}
-              </div>
-
               <div className="exercise-list">
                 {loadingExercises ? (
                   <p>Loading exercises...</p>
@@ -807,8 +775,40 @@ export default function PlanSession() {
                   ))
                 )}
               </div>
+							<div className="custom-lift">
+                {addingCustom ? (
+                  <div className="custom-lift__form">
+                    <input
+                      type="text"
+                      placeholder="Exercise name"
+                      value={customName}
+                      onChange={e => setCustomName(e.target.value)}
+                    />
+                    <input
+                      type="text"
+                      placeholder="Target muscle"
+                      value={customMuscle}
+                      onChange={e => setCustomMuscle(e.target.value)}
+                    />
+                    <div className="custom-actions">
+                      <button onClick={addCustomExercise}>Add</button>
+                      <button onClick={() => setAddingCustom(false)}>
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    className="custom-lift__trigger"
+                    onClick={() => setAddingCustom(true)}
+                  >
+                    Add a Custom Lift +
+                  </button>
+                )}
+              </div>
             </div>
           </div>
+
 
           <div className="template-import">
             <h3>Import a Template</h3>
