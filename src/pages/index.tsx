@@ -11,11 +11,14 @@ import { useAuth } from '../context/AuthContext';
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [loading, setLoading] = useState(true);
+	const [loadingAllPast, setLoadingAllPast] = useState(false);
   const navigate = useNavigate();
   const futureRef = useRef<HTMLDivElement>(null);
   const [constraints, setConstraints] = useState({ left: 0, right: 0 });
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const { userId, loading: authLoading } = useAuth();
+  const { userId, loading: authLoading } = useAuth();
+  const [showAllPast, setShowAllPast] = useState(false);
+  const [completedTotalCount, setCompletedTotalCount] = useState<number>(0);
 
 	const handleStatusChange = (id: string, status: string) => {
 	  setWorkouts(prev =>
@@ -25,66 +28,80 @@ export default function Dashboard() {
 	  );
 	};
 
-  useEffect(() => {
-    const today = getLocalDateString();
+	const workoutFields = `
+    id,
+    date,
+    status,
+    workout_exercises (
+      id,
+      order,
+      exercise:exercise_id (
+        id,
+        name,
+        target_muscle
+      ),
+      workout_sets (
+        id,
+        set_number,
+        reps,
+        weight,
+        intensity_type
+      )
+    )
+  `;
 
-    async function fetchWorkouts() {
-			if (!userId) return;
+  const cleanWorkouts = (data: any[] | null) =>
+    (data ?? []).map((w: any) => ({
+      ...w,
+      status: w.status ?? (w.date >= getLocalDateString() ? 'scheduled' : 'completed'),
+      workout_exercises: w.workout_exercises.map((we: any) => ({
+        ...we,
+        exercise:
+          we.exercise && typeof we.exercise === 'object'
+            ? Array.isArray(we.exercise)
+              ? we.exercise[0]
+              : we.exercise
+            : null,
+        workout_sets: we.workout_sets ?? [],
+      })),
+    }));
 
-			const { data, error } = await supabase
-		  .from('workouts')
-		  .select(`
-		    id,
-		    date,
-		    status,
-		    workout_exercises (
-		      id,
-		      order,
-		      exercise:exercise_id (
-						id,
-		        name,
-		        target_muscle
-		      ),
-		      workout_sets (
-						id,
-		        set_number,
-		        reps,
-		        weight,
-		        intensity_type
-		      )
-		    )
-		  `)
-		  .eq('user_id', userId)
-		  .order('date', { ascending: true });
+  const fetchInitialWorkouts = async (currentUserId: string) => {
+    const todayString = getLocalDateString();
+    const [scheduledResponse, completedResponse] = await Promise.all([
+      supabase
+        .from('workouts')
+        .select(workoutFields)
+        .eq('user_id', currentUserId)
+        .or('status.eq.scheduled,status.is.null')
+        .gte('date', todayString)
+        .order('date', { ascending: true }),
+      supabase
+        .from('workouts')
+        .select(workoutFields, { count: 'exact' })
+        .eq('user_id', currentUserId)
+        .or('status.eq.completed,status.is.null')
+        .lt('date', todayString)
+        .order('date', { ascending: false })
+        .limit(9),
+    ]);
 
-      if (error) {
-        console.error('Error fetching workouts:', error);
-        return;
-      }
-
-      const cleaned = (data ?? []).map((w: any) => {
-        const workoutDate = w.date;
-        const isFutureOrToday = workoutDate >= today;
-
-        return {
-          ...w,
-          status: w.status ?? (isFutureOrToday ? 'scheduled' : 'completed'),
-          workout_exercises: w.workout_exercises.map((we: any) => ({
-            ...we,
-            exercise:
-              we.exercise && typeof we.exercise === 'object'
-                ? Array.isArray(we.exercise)
-                  ? we.exercise[0]
-                  : we.exercise
-                : null,
-								workout_sets: we.workout_sets ?? [],
-          })),
-        };
-      });
-
-      setWorkouts(cleaned);
-      setLoading(false);
+    if (scheduledResponse.error) {
+      console.error('Error fetching scheduled workouts:', scheduledResponse.error);
     }
+    if (completedResponse.error) {
+      console.error('Error fetching completed workouts:', completedResponse.error);
+    }
+
+    const scheduledClean = cleanWorkouts(scheduledResponse.data);
+    const completedClean = cleanWorkouts(completedResponse.data);
+    setCompletedTotalCount(completedResponse.count ?? completedClean.length);
+
+    setWorkouts([...scheduledClean, ...completedClean]);
+    setLoading(false);
+  };
+
+  useEffect(() => {
 
     if (authLoading) return;
 
@@ -94,7 +111,7 @@ export default function Dashboard() {
       return;
     }
 
-    fetchWorkouts();
+    fetchInitialWorkouts(userId);
   }, [authLoading, userId]);
 
   // ✅ Dynamically calculate drag constraints when workouts change
@@ -140,6 +157,45 @@ export default function Dashboard() {
 
   const nextWorkoutId = scheduledWorkouts[0]?.id;
 	const nextWorkout = scheduledWorkouts[0];
+	const loadAllCompletedWorkouts = async () => {
+    if (loadingAllPast || showAllPast) return;
+    setLoadingAllPast(true);
+
+    const { data, error } = await supabase
+      .from('workouts')
+      .select(workoutFields)
+      .eq('user_id', userId!)
+      .or('status.eq.completed,status.is.null')
+      .lt('date', getLocalDateString())
+      .order('date', { ascending: false });
+
+    if (error) {
+      console.error('Error fetching all completed workouts:', error);
+      setLoadingAllPast(false);
+      return;
+    }
+
+    const completedClean = cleanWorkouts(data);
+    setCompletedTotalCount(completedClean.length);
+
+    setWorkouts((prev) => {
+      const scheduled = prev.filter((w) => w.status === 'scheduled');
+      const merged = [...scheduled, ...completedClean];
+      const seen = new Set<string>();
+      return merged.filter((w) => {
+        if (seen.has(w.id)) return false;
+        seen.add(w.id);
+        return true;
+      });
+    });
+
+    setShowAllPast(true);
+    setLoadingAllPast(false);
+  };
+
+	const displayedCompletedWorkouts = showAllPast
+    ? completedWorkouts
+    : completedWorkouts.slice(0, 9);
 
   return (
     <div className="clearfix">
@@ -224,7 +280,7 @@ export default function Dashboard() {
               <p>No completed workouts yet.</p>
             ) : (
               <div className="past-workouts">
-                {completedWorkouts.map((w) => (
+                {displayedCompletedWorkouts.map((w) => (
                   <WorkoutCard
                     key={w.id}
                     workout={w}
@@ -241,6 +297,16 @@ export default function Dashboard() {
 								  }}
                   />
                 ))}
+								{!showAllPast && completedTotalCount > displayedCompletedWorkouts.length && (
+                  <button
+                    className="show-all-button"
+                    type="button"
+                    onClick={loadAllCompletedWorkouts}
+                    disabled={loadingAllPast}
+                  >
+                    {loadingAllPast ? 'Loading...' : 'Show All'}
+                  </button>
+                )}
               </div>
             )}
           </section>

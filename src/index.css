@@ -309,6 +309,23 @@ input.exerciseSearch{
 	flex-wrap:wrap;
 	justify-content: center;
 }
+.show-all-button {
+	margin: 1rem auto 0;
+	padding: 0.75rem 1.5rem;
+	border-radius: 12px;
+	border: 1px solid var(--primary-border);
+	background: var(--primary-100);
+	color: var(--primary-ink-strong);
+	font-weight: 700;
+	cursor: pointer;
+	box-shadow: 0 6px 16px var(--shadow-soft);
+	transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
+}
+.show-all-button:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 10px 24px var(--shadow-strong);
+	background: var(--primary-120);
+}
 .past-workout-container {
 	padding: 2rem;
 	padding-top:8rem;

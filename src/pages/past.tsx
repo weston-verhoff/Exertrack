@@ -9,6 +9,9 @@ import { useAuth } from '../context/AuthContext'
 export default function PastWorkouts() {
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true)
+	const [showAllPast, setShowAllPast] = useState(false)
+  const [loadingAllPast, setLoadingAllPast] = useState(false)
+  const [completedTotalCount, setCompletedTotalCount] = useState<number>(0)
 	const { userId, loading: authLoading } = useAuth()
 	const handleStatusChange = (id: string, status: string) => {
 	  setWorkouts(prev =>
@@ -18,47 +21,73 @@ export default function PastWorkouts() {
 	  );
 	};
 
+	const workoutFields = `
+    id,
+    date,
+    status,
+    template:template_id(name),
+    workout_exercises (
+      id,
+      order,
+      exercise:exercise_id (
+        id,
+        name,
+        target_muscle
+      ),
+      workout_sets (
+        id,
+        set_number,
+        reps,
+        weight,
+        intensity_type
+      )
+    )
+  `;
+
+  const getTodayString = () => new Date().toISOString().slice(0, 10);
+
+  const cleanWorkouts = (data: any[] | null) =>
+    (data ?? []).map(w => ({
+      ...w,
+      status: w.status ?? (w.date >= getTodayString() ? 'scheduled' : 'completed'),
+      workout_exercises: w.workout_exercises.map((we: any) => ({
+        ...we,
+        exercise: Array.isArray(we.exercise) ? we.exercise[0] : we.exercise,
+        workout_sets: we.workout_sets ?? [],
+      })),
+    }));
+
   useEffect(() => {
     async function fetchWorkouts() {
 			if (!userId) return
 
-			const { data, error } = await supabase
-			  .from('workouts')
-			  .select(`
-			    id,
-			    date,
-			    status,
-			    template:template_id(name),
-			    workout_exercises (
-			      id,
-			      order,
-			      exercise:exercise_id (
-			        id,
-			        name,
-			        target_muscle
-			      ),
-			      workout_sets (
-			        id,
-			        set_number,
-			        reps,
-			        weight,
-			        intensity_type
-			      )
-			    )
-			  `)
-			  .eq('user_id', userId)
-			  .order('date', { ascending: false });
-				const cleaned = (data ?? []).map(w => ({
-				  ...w,
-				  workout_exercises: w.workout_exercises.map(we => ({
-				    ...we,
-				    exercise: Array.isArray(we.exercise) ? we.exercise[0] : we.exercise,
-				    workout_sets: we.workout_sets ?? [],
-				  })),
-				}));
+			const todayString = getTodayString();
+      const [scheduledResponse, completedResponse] = await Promise.all([
+        supabase
+          .from('workouts')
+          .select(workoutFields)
+          .eq('user_id', userId)
+          .or('status.eq.scheduled,status.is.null')
+          .gte('date', todayString)
+          .order('date', { ascending: true }),
+        supabase
+          .from('workouts')
+          .select(workoutFields, { count: 'exact' })
+          .eq('user_id', userId)
+          .or('status.eq.completed,status.is.null')
+          .lt('date', todayString)
+          .order('date', { ascending: false })
+          .limit(9),
+      ]);
 
-      if (error) console.error('Error fetching workouts:', error)
-      else setWorkouts(cleaned)
+      if (scheduledResponse.error) console.error('Error fetching scheduled workouts:', scheduledResponse.error)
+      if (completedResponse.error) console.error('Error fetching completed workouts:', completedResponse.error)
+
+      const scheduledClean = cleanWorkouts(scheduledResponse.data);
+      const completedClean = cleanWorkouts(completedResponse.data);
+
+      setCompletedTotalCount(completedResponse.count ?? completedClean.length);
+      setWorkouts([...scheduledClean, ...completedClean])
 
       setLoading(false)
     }
@@ -94,7 +123,44 @@ export default function PastWorkouts() {
 	const scheduledWorkouts = workouts
 	    .filter((w) => w.status === 'scheduled')
 	    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+			const displayedCompletedWorkouts = showAllPast
+	  ? completedWorkouts
+	  : completedWorkouts.slice(0, 9);
 
+	const loadAllCompletedWorkouts = async () => {
+	  if (loadingAllPast || showAllPast) return
+
+	  setLoadingAllPast(true)
+	  const { data, error } = await supabase
+	    .from('workouts')
+	    .select(workoutFields)
+	    .eq('user_id', userId!)
+	    .or('status.eq.completed,status.is.null')
+	    .lt('date', getTodayString())
+	    .order('date', { ascending: false });
+
+	  if (error) {
+	    console.error('Error fetching all completed workouts:', error)
+	    setLoadingAllPast(false)
+	    return
+	  }
+
+	  const completedClean = cleanWorkouts(data);
+	  setCompletedTotalCount(completedClean.length);
+	  setWorkouts(prev => {
+	    const scheduled = prev.filter(w => w.status === 'scheduled');
+	    const merged = [...scheduled, ...completedClean];
+	    const seen = new Set<string>();
+	    return merged.filter(w => {
+	      if (seen.has(w.id)) return false;
+	      seen.add(w.id);
+	      return true;
+	    });
+	  });
+
+	  setShowAllPast(true);
+	  setLoadingAllPast(false);
+	};
 
 
   return (
@@ -128,11 +194,11 @@ export default function PastWorkouts() {
 			<h2 style={{textAlign:'center'}}>Past Workouts</h2>
       {loading ? (
         <p>Loading...</p>
-      ) : workouts.length === 0 ? (
+      ) : completedWorkouts.length === 0 ? (
         <p>No past workouts found.</p>
       ) : (
 				<div className="past-workouts">
-					{completedWorkouts.map((w) => (
+					{displayedCompletedWorkouts.map((w) => (
 						<WorkoutCard
 							key={w.id}
 							workout={w}
@@ -148,6 +214,16 @@ export default function PastWorkouts() {
 					  }}
 						/>
 					))}
+					{!showAllPast && completedTotalCount > displayedCompletedWorkouts.length && (
+					  <button
+					    className="show-all-button"
+					    type="button"
+					    onClick={loadAllCompletedWorkouts}
+					    disabled={loadingAllPast}
+					  >
+					    {loadingAllPast ? 'Loading...' : 'Show All'}
+					  </button>
+					)}
 				</div>
       )}
 			</div>
