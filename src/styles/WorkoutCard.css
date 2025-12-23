@@ -10,20 +10,20 @@
 }
 
 .future-workout{
-	  background-color: #FFF7ED;
-		border: 1px solid #441306;
+	background-color: var(--warm-50);
+	border: 1px solid var(--warm-ink);
 }
 .past-workout{
-	background-color: #EFF6FF;
-	border: 1px solid #060a44;
+	background-color: var(--primary-400);
+	border: 1px solid var(--primary-border);
 }
 .template-workout{
-	background-color: #EFF6FF;
-	border: 1px solid #060a44;
+	background-color: var(--primary-400);
+	border: 1px solid var(--primary-border);
 }
 .highlighted{
-	background-color: #afc9fa;
-	border: 1px solid #060a44;
+	background-color: var(--primary-350);
+	border: 1px solid var(--primary-border);
 }
 
 .workout-head {
@@ -39,15 +39,15 @@
 }
 
 .future-workout .workout-head {
-  background-color: #F54900;
-  color: white;
+	background-color: var(--warm-425);
+  color: var(--text-inverse);
 }
 .past-workout .workout-head {
-	background-color: #BEDBFF;
+	background-color: var(--primary-300);
 }
 
 .template-workout .workout-head {
-	background-color: #BEDBFF;
+	background-color: var(--primary-300);
 
 	font-weight:bold;
 	text-transform: capitalize;
@@ -61,12 +61,12 @@
 }
 
 .highlighted .workout-head {
-	background-color: #1446de;
-	color: white;
+	background-color: var(--primary-hero);
+	color: var(--text-inverse);
 }
 .workout-head a{
   font-weight: 400;
-  color: white;
+  color: var(--text-inverse);
 }
 .workout-btns {
   display: flex;
@@ -87,16 +87,16 @@
 .btn:active{filter: brightness(95%);}
 .start-btn{
   flex-grow:1;
-  background-color: #B9F8CF;
+  background-color: var(--success-color);
 }
 
 .delete-btn{
-  background-color: #FB2C36;
-  color: white;
+	background-color: var(--danger);
+  color: var(--text-inverse);
 	font-weight:bold;
 }
 .lifts{
-	color: black;
+	color: var(--neutral-ink);
   margin: 1rem;
   display: flex;
   flex-direction: column;

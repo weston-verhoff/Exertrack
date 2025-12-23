@@ -1,11 +1,87 @@
 :root {
+  /* Typography */
+  --font-headline: 'Inter', sans-serif;
+  --font-body: 'Roboto', sans-serif;
+
+  /* Base brand */
+  --bg-10: #111111;
   --bg-color: #1f2a33;
-	--bg-20: #2f3e4d; /*20% lighter bg*/
-	--bg-30: #141b21;
-	--bg-40: #7a96aa;
+  --bg-20: #2f3e4d; /*20% lighter bg*/
+  --bg-30: #141b21;
+  --bg-40: #7a96aa;
   --text-color: #162456;
+  --text-strong: #1f1f1f;
+  --text-muted: #404040;
+  --text-subtle: #4a4a4a;
+  --text-soft: #32446d;
+  --text-inverse: #ffffff;
+
+  /* Primary blues */
+  --primary-100: #e3e8ff;
+  --primary-120: #f1f4ff;
+  --primary-150: #dfe7ff;
+  --primary-200: #cbd5ff;
+  --primary-300: #bedbff;
+  --primary-350: #afc9fa;
+  --primary-400: #eff6ff;
+  --primary-soft: #e6eaf7;
+  --primary-surface: rgba(219, 234, 254, 0.95);
+  --primary-ink-strong: #253e80;
+  --primary-ink: #1f2c4f;
+  --primary-border: #060a44;
+  --primary-hero: #1446de;
+  --highlight-color: #f0f8ff;
+  --info-color: #2196f3;
+  --info-soft: #eef4ff;
+  --info-contrast: #1e3a8a;
+
+  /* Warm accents (oranges & ambers) */
+  --warm-50: #fff7ed; /* future workout base */
+  --warm-60: #fff7ec; /* plan card base */
+  --warm-80: #fef3df; /* empty state */
+  --warm-100: #f8dfc7;
+  --warm-200: #f7c48c;
+  --warm-300: #d4a162;
+  --warm-350: #c94614;
+  --warm-400: #f0551c;
+  --warm-425: #f54900;
+  --warm-450: #f0851d;
+  --warm-ink: #441306;
+  --warm-text: #5b371e;
+
+  /* Status & feedback */
   --accent-color: #e63946;
-	--info-color: #2196f3;   /* new */
-  --font-headline: 'Lato', sans-serif;
-  --font-body: 'Nunito', sans-serif;
+  --success-color: #b9f8cf;
+  --success-strong: #4caf50;
+  --success-deep: #388e3c;
+  --success-surface: #b7f3c2;
+  --success-border: #6ab57a;
+  --success-hover: #60d67a;
+  --success-text: #0f3b1c;
+  --danger: #fb2c36;
+  --danger-soft: #ffb4b4;
+  --danger-highlight: #ff8a8a;
+  --danger-bg: #ffe8e8;
+  --danger-pill: #ff5f60;
+  --danger-text: #9a1f1f;
+
+  /* Neutrals & utilities */
+  --neutral-50: #f5f5f5;
+  --neutral-75: #eeeeee;
+  --neutral-100: #d9d9d9;
+  --neutral-125: #d3d7dd;
+  --neutral-150: #a5a5a5;
+  --neutral-175: #9da0a6;
+  --neutral-200: #6d6f74;
+  --neutral-225: #888888;
+  --neutral-ink: #000000;
+  --neutral-hero: #333333;
+  --neutral-strong: #111111;
+
+  /* Overlays & shadows */
+  --overlay-strong: rgba(14, 23, 55, 0.95);
+  --overlay-dim: rgba(0, 0, 0, 0.45);
+  --shadow-strong: rgba(0, 0, 0, 0.5);
+  --shadow-soft: rgba(0, 0, 0, 0.14);
+  --shadow-subtle: rgba(0, 0, 0, 0.08);
 }

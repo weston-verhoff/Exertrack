@@ -153,16 +153,16 @@ export function WorkoutDetails({
 	        data-testid="save-workout"
 	      />
 
-	      {statusMessage && (
-	        <p style={{ marginTop: '0.5rem', color: 'var(--accent-color)' }}>
-	          {statusMessage}
-	        </p>
-	      )}
-	      {errorMessage && (
-	        <p style={{ marginTop: '0.5rem', color: '#ff8a8a' }}>
-	          {errorMessage}
-	        </p>
-	      )}
+				{statusMessage && (
+        <p style={{ marginTop: '0.5rem', color: 'var(--accent-color)' }}>
+          {statusMessage}
+        </p>
+      )}
+      {errorMessage && (
+        <p style={{ marginTop: '0.5rem', color: 'var(--danger-highlight)' }}>
+          {errorMessage}
+        </p>
+      )}
 
 	      <hr style={{ margin: '2rem 0' }} />
 

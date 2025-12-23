@@ -212,7 +212,7 @@ function ExerciseHeader({ name, targetMuscle }: { name: string; targetMuscle: st
   return (
     <div style={{ marginBottom: '1rem' }}>
       <h2>{name}</h2>
-      <p style={{ color: '#888' }}>{targetMuscle}</p>
+      <p style={{ color: 'var(--neutral-225)' }}>{targetMuscle}</p>
     </div>
   )
 }
@@ -231,9 +231,9 @@ function SetProgress({
         const isCompleted = setNumber < current
         const isCurrent = setNumber === current
 
-        let color = '#ccc'
-        if (isCompleted) color = '#2196f3'
-        else if (isCurrent) color = '#4CAF50'
+				let color = 'var(--neutral-125)'
+        if (isCompleted) color = 'var(--info-color)'
+        else if (isCurrent) color = 'var(--success-strong)'
 
         return (
           <div
@@ -330,7 +330,7 @@ function WorkoutProgressBar({ current, total }: { current: number; total: number
         style={{
           height: '16px',
           width: '100%',
-          backgroundColor: '#eee',
+          backgroundColor: 'var(--neutral-75)',
           borderRadius: '8px',
           overflow: 'hidden'
         }}

@@ -16,8 +16,8 @@ export default function StatusButton({
   idleLabel = 'Submit',
   successLabel = '✅ Saved!',
   width = '200px',
-  accentColor = '#ddd',
-  successColor = '#4CAF50'
+  accentColor = 'var(--neutral-100)',
+  successColor = 'var(--success-strong)'
 }: StatusButtonProps) {
   const [status, setStatus] = useState<ButtonState>('idle')
 
@@ -37,7 +37,7 @@ export default function StatusButton({
   const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.style.transform = 'scale(0.96)'
     e.currentTarget.style.backgroundColor =
-      status === 'success' ? '#388E3C' : '#bbb'
+      status === 'success' ? 'var(--success-deep)' : 'var(--neutral-150)'
   }
 
   const handleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -62,7 +62,7 @@ export default function StatusButton({
 			  border: 'none',
 			  borderRadius: '4px',
 			  textAlign: 'center',
-			  color: status === 'success' ? 'white' : 'black',
+			  color: status === 'success' ? 'var(--text-inverse)' : 'var(--neutral-ink)',
 			  backgroundColor: status === 'success' ? successColor : accentColor,
 			  transition: 'transform 0.1s ease-in-out, background-color 0.2s ease-in-out',
 			  opacity: status === 'success' ? 1 : 0.85,

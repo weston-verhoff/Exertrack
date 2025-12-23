@@ -2,7 +2,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  background: linear-gradient(135deg, #f8dfc7 0%, #f7c48c 55%, #f0851d 100%);
+  background: linear-gradient(135deg, var(--warm-100) 0%, var(--warm-200) 55%, var(--warm-450) 100%);
   min-height: 100vh;
   padding: 6rem 2rem 3rem;
   box-sizing: border-box;
@@ -32,7 +32,7 @@
 
 .plan-title p {
   margin: 0.25rem 0 0;
-  color: #1f1f1f;
+  color: var(--text-strong);
 }
 
 .plan-grid {
@@ -43,10 +43,10 @@
 }
 
 .plan-workout-card {
-  background: #fff7ec;
-  border: 1px solid #d4a162;
+	background: var(--warm-60);
+  border: 1px solid var(--warm-300);
   border-radius: 16px;
-  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 10px 18px var(--shadow-strong);
   padding: 0;
   overflow: hidden;
 }
@@ -61,14 +61,14 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.25rem;
-  background: #f0551c;
-  border-bottom: 1px solid #c94614;
+	background: var(--warm-400);
+  border-bottom: 1px solid var(--warm-350);
 }
 
 .card-date {
   width: 100%;
   font-size: 1.1rem;
-  border: 1px solid #000;
+  border: 1px solid var(--neutral-ink);
   border-radius: 999px;
   padding: 0.55rem 1rem;
   font-weight: 700;
@@ -87,11 +87,11 @@
 }
 
 .empty-card {
-  background: #fef3df;
-  border: 1px dashed #d4a162;
+	background: var(--warm-80);
+  border: 1px dashed var(--warm-300);
   border-radius: 12px;
   padding: 1rem;
-  color: #5b371e;
+  color: var(--warm-text);
   text-align: center;
 }
 
@@ -100,17 +100,17 @@
   grid-template-columns: 64px 1fr 1.1fr 44px;
   align-items: stretch;
   gap: 0.5rem;
-  background: #d9d9d9;
+  background: var(--neutral-100);
   border-radius: 24px;
   padding: 0.5rem;
-  border: 1px solid #a5a5a5;
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.08);
+	border: 1px solid var(--neutral-150);
+  box-shadow: 0 6px 10px var(--shadow-subtle);
 }
 
 .remove-chip {
-  border: 2px solid #000;
-  background: #ff5f60;
-  color: #000;
+  border: 2px solid var(--neutral-ink);
+	background: var(--danger-pill);
+  color: var(--neutral-ink);
   font-weight: 800;
   border-radius: 50%;
   width: 56px;
@@ -136,7 +136,7 @@
 }
 
 .builder-row__muscle {
-  color: #404040;
+  color: var(--text-muted);
   font-size: 0.9rem;
 }
 
@@ -159,7 +159,7 @@
 .stat-field input {
   width: 100%;
 	min-width:50px;
-  border: 1px solid #000;
+  border: 1px solid var(--neutral-ink);
   border-radius: 12px;
   font-size: 1rem;
   font-weight: 700;
@@ -175,19 +175,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #9da0a6;
+  background: var(--neutral-175);
   border-radius: 16px;
   font-size: 1.2rem;
   cursor: grab;
-  border: 1px solid #6d6f74;
+  border: 1px solid var(--neutral-200);
 }
 
 .save-button {
   width: calc(100% - 2rem);
   margin: 1rem;
-  background: #b7f3c2;
-  border: 1px solid #6ab57a;
-  color: #0f3b1c;
+	background: var(--success-surface);
+  border: 1px solid var(--success-border);
+  color: var(--success-text);
   font-size: 1.2rem;
   font-weight: 800;
   border-radius: 14px;
@@ -202,9 +202,8 @@
 }
 
 .save-button:hover:not(:disabled) {
-  /* transform: translateY(-2px); */
-	background: #60d67a;
-  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.14);
+	background: var(--success-hover);
+  box-shadow: 0 8px 12px var(--shadow-soft);
 }
 
 .status-message {
@@ -215,21 +214,21 @@
 }
 
 .status-message--info {
-  background: #eef4ff;
-  color: #1e3a8a;
+	background: var(--info-soft);
+  color: var(--info-contrast);
 }
 
 .status-message--error {
-  background: #ffe8e8;
-  color: #9a1f1f;
+	background: var(--danger-bg);
+  color: var(--danger-text);
 }
 
 .search-row {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #f5f5f5;
-  border: 1px solid #000;
+	background: var(--neutral-50);
+  border: 1px solid var(--neutral-ink);
   border-radius: 999px;
   padding: 0.35rem 0.75rem;
   margin-bottom: 1rem;
@@ -250,8 +249,8 @@
 
 .custom-lift__trigger {
   width: 100%;
-  background: #dfe7ff;
-  border: 1px solid #253e80;
+	background: var(--primary-150);
+  border: 1px solid var(--primary-ink-strong);
   border-radius: 8px;
   padding: 0.5rem 1rem;
   font-weight: 800;
@@ -269,7 +268,7 @@
 
 .custom-lift__form input {
   width: 100%;
-  border: 2px solid #000;
+  border: 2px solid var(--neutral-ink);
   padding: 0.65rem 0.75rem;
   border-radius: 12px;
 }
@@ -284,7 +283,7 @@
   flex: 1;
   padding: 0.65rem 0.75rem;
   border-radius: 12px;
-  border: 2px solid #000;
+  border: 2px solid var(--neutral-ink);
   cursor: pointer;
 }
 
@@ -299,22 +298,22 @@
   gap: 0.6rem;
   align-items: center;
   padding: 0.65rem 0.75rem;
-  border: 1px solid #1f2c4f;
+  border: 1px solid var(--primary-ink);
   border-radius: 999px;
-  background: #e6eaf7;
+  background: var(--primary-soft);
   cursor: pointer;
   font-weight: 700;
 	transition: box-shadow 0.2s ease, background 0.1s ease;
 }
 .exercise-pill:hover{
-	box-shadow: 0 8px 12px rgba(0, 0, 0, 0.14);
-	background:#fff;
+	box-shadow: 0 8px 12px var(--shadow-soft);
+	background: var(--text-inverse);
 }
 
 .add-chip {
-  border: 1px solid #000;
-  background: #d3d7dd;
-  color: #000;
+	border: 1px solid var(--neutral-ink);
+  background: var(--neutral-125);
+  color: var(--neutral-ink);
   font-weight: 800;
   border-radius: 50%;
   width: 44px;
@@ -338,7 +337,7 @@
 
 .exercise-pill__muscle {
   font-size: 0.8rem;
-  color: #32446d;
+  color: var(--text-soft);
 }
 
 .template-import {
@@ -357,20 +356,20 @@
 .template-pill {
   padding: 0.7rem 1.2rem;
   border-radius: 16px;
-  border: 1px solid #1f2c4f;
-  background: #f1f4ff;
+	border: 1px solid var(--primary-ink);
+  background: var(--primary-120);
   font-weight: 800;
   cursor: pointer;
 	transition: background 0.2s ease, box-shadow 0.2s ease;
 }
 
 .template-pill:hover{
-	background-color: #fff;
-	box-shadow: 0 8px 12px rgba(0, 0, 0, 0.14);
+	background-color: var(--text-inverse);
+	box-shadow: 0 8px 12px var(--shadow-soft);
 }
 
 .muted {
-  color: #4a4a4a;
+  color: var(--text-subtle);
 }
 
 @media (max-width: 800px) {
