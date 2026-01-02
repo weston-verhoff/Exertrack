@@ -78,7 +78,6 @@ export default function PastWorkouts() {
           .select(workoutFields, { count: 'exact' })
           .eq('user_id', userId)
           .or('status.eq.completed,status.is.null')
-          .lt('date', todayString)
           .order('date', { ascending: false })
           .limit(9),
       ]);
@@ -134,13 +133,12 @@ export default function PastWorkouts() {
 	  if (loadingAllPast || showAllPast) return
 
 	  setLoadingAllPast(true)
-	  const { data, error } = await supabase
-	    .from('workouts')
-	    .select(workoutFields)
-	    .eq('user_id', userId!)
-	    .or('status.eq.completed,status.is.null')
-	    .lt('date', getTodayString())
-	    .order('date', { ascending: false });
+		const { data, error } = await supabase
+            .from('workouts')
+            .select(workoutFields)
+            .eq('user_id', userId!)
+            .or('status.eq.completed,status.is.null')
+            .order('date', { ascending: false });
 
 	  if (error) {
 	    console.error('Error fetching all completed workouts:', error)

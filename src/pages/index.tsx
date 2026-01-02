@@ -99,7 +99,6 @@ export default function Dashboard() {
 	        .select(workoutFields, { count: 'exact' })
 	        .eq('user_id', currentUserId)
 	        .or('status.eq.completed,status.is.null')
-	        .lt('date', todayString)
 	        .order('date', { ascending: false })
 	        .limit(9),
 	    ]);

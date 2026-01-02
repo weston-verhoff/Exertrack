@@ -309,6 +309,11 @@ input.exerciseSearch{
   flex-wrap:wrap;
   justify-content: center;
 }
+.past-workouts-footer {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+}
 .show-all-button {
 	margin: 1rem auto 0;
   align-self: center;
