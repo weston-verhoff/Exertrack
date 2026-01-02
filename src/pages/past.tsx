@@ -198,34 +198,38 @@ export default function PastWorkouts() {
       ) : completedWorkouts.length === 0 ? (
         <p>No past workouts found.</p>
       ) : (
-				<div className="past-workouts">
-					{displayedCompletedWorkouts.map((w) => (
-						<WorkoutCard
-							key={w.id}
-							workout={w}
-							onDelete={deleteWorkout}
-							variant="past-workout"
-							onStatusChange={handleStatusChange}
-							onWorkoutUpdated={updatedWorkout => {
-					    setWorkouts(prev =>
-					      prev.map(w =>
-					        w.id === updatedWorkout.id ? updatedWorkout : w
-					      )
-					    );
-					  }}
-						/>
-					))}
-					{!showAllPast && completedTotalCount > displayedCompletedWorkouts.length && (
-					  <button
-					    className="show-all-button"
-					    type="button"
-					    onClick={loadAllCompletedWorkouts}
-					    disabled={loadingAllPast}
-					  >
-					    {loadingAllPast ? 'Loading...' : 'Show All'}
-					  </button>
+				<>
+					<div className="past-workouts">
+									{displayedCompletedWorkouts.map((w) => (
+										<WorkoutCard
+											key={w.id}
+											workout={w}
+											onDelete={deleteWorkout}
+											variant="past-workout"
+											onStatusChange={handleStatusChange}
+											onWorkoutUpdated={updatedWorkout => {
+											setWorkouts(prev =>
+												prev.map(w =>
+													w.id === updatedWorkout.id ? updatedWorkout : w
+												)
+											);
+										}}
+									/>
+								))}
+					</div>
+																				{!showAllPast && completedTotalCount > displayedCompletedWorkouts.length && (
+						<div className="past-workouts-footer">
+							<button
+								className="show-all-button"
+								type="button"
+								onClick={loadAllCompletedWorkouts}
+								disabled={loadingAllPast}
+							>
+								{loadingAllPast ? 'Loading...' : 'Show All'}
+							</button>
+						</div>
 					)}
-				</div>
+				</>
       )}
 			</div>
     </Layout>
