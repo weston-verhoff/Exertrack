@@ -133,6 +133,7 @@ export default function WorkoutRunner() {
 		const updates = exercises.flatMap(ex =>
 		  ex.workout_sets.map(set => ({
 		    id: set.id,
+				workout_exercise_id: set.workout_exercise_id ?? ex.id,
 		    set_number: set.set_number, // 🔑 REQUIRED
 		    reps: set.reps,
 		    weight: set.weight,
