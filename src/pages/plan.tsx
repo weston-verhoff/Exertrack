@@ -116,7 +116,6 @@ export default function PlanSession() {
     exercises,
     loading: loadingExercises,
     refetch,
-    addExercise,
   } = useExercises();
   const { templates, loading: loadingTemplates } = useTemplates();
   const { userId, loading: authLoading } = useAuth();
