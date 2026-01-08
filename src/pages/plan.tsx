@@ -152,8 +152,9 @@ export default function PlanSession() {
   const importKey = useMemo(() => {
     if (queryTemplateId) return `template:${queryTemplateId}`;
     if (queryWorkoutId) return `workout:${queryWorkoutId}`;
+		if (editTemplateId) return `template:${editTemplateId}`;
     return null;
-  }, [queryTemplateId, queryWorkoutId]);
+  }, [queryTemplateId, queryWorkoutId, editTemplateId]);
 
   const filteredExercises = useMemo(
     () =>
@@ -182,8 +183,11 @@ export default function PlanSession() {
         let cleaned: BuilderExerciseConfig[] = [];
         let importedDate: string | null = null;
 
-        if (queryTemplateId) {const { data, error } = await fetchTemplateBuilderExercises(
-            queryTemplateId
+				const templateId = queryTemplateId ?? editTemplateId;
+
+        if (templateId) {
+          const { data, error } = await fetchTemplateBuilderExercises(
+            templateId
           );
           if (error) throw new Error(error);
           cleaned = data ?? [];
