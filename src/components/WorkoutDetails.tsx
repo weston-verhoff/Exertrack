@@ -3,6 +3,7 @@ import { supabase } from '../supabase/client';
 import { WorkoutButton } from './WorkoutButton';
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
+import { useState } from 'react'
 
 interface Props {
   workoutId: string;
@@ -37,6 +38,9 @@ export function WorkoutDetails({
 }: Props) {
   const navigate = useNavigate();
 	const { userId, loading: authLoading } = useAuth();
+	const [isDuplicating, setIsDuplicating] = useState(false);
+  const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
+  const [duplicateError, setDuplicateError] = useState<string | null>(null);
 
   /* ------------------ Derived Data ------------------ */
 
@@ -163,6 +167,16 @@ export function WorkoutDetails({
           {errorMessage}
         </p>
       )}
+			{duplicateMessage && (
+        <p style={{ marginTop: '0.5rem', color: 'var(--accent-color)' }}>
+          {duplicateMessage}
+        </p>
+      )}
+      {duplicateError && (
+        <p style={{ marginTop: '0.5rem', color: 'var(--danger-highlight)' }}>
+          {duplicateError}
+        </p>
+      )}
 
 	      <hr style={{ margin: '2rem 0' }} />
 
@@ -250,6 +264,116 @@ export function WorkoutDetails({
           icon="✏️"
           variant="info"
           onClick={() => navigate(`/plan?importWorkout=${workoutId}`)}
+        />
+				<WorkoutButton
+          label={isDuplicating ? 'Duplicating...' : 'Duplicate Workout'}
+          icon="📄"
+          variant="info"
+          onClick={async () => {
+            if (authLoading || !userId) return;
+            setIsDuplicating(true);
+            setDuplicateMessage(null);
+            setDuplicateError(null);
+            try {
+              const duplicateDate = new Date().toISOString().split('T')[0];
+              const { data: newWorkout, error: workoutError } = await supabase
+                .from('workouts')
+                .insert({
+                  date: duplicateDate,
+                  status: 'scheduled',
+                  user_id: userId,
+                })
+                .select()
+                .single();
+
+              if (workoutError || !newWorkout) {
+                throw workoutError ?? new Error('Failed to create workout.');
+              }
+
+              const workoutExerciseRows = exercises
+                .map((we, index) => {
+                  const exerciseId = we.exercise?.id ?? we.exercise_id;
+
+                  if (!exerciseId) {
+                    console.warn('Skipping exercise missing exercise id', we);
+                    return null;
+                  }
+
+                  return {
+                    workout_id: newWorkout.id,
+                    exercise_id: exerciseId,
+                    order: we.order ?? index,
+                    sets: we.workout_sets.length,
+                    reps: we.workout_sets[0]?.reps ?? 0,
+                    weight: we.workout_sets[0]?.weight ?? 0,
+                  };
+                })
+                .filter(
+                  (row): row is NonNullable<typeof row> => row !== null
+                );
+
+              if (workoutExerciseRows.length === 0) {
+                throw new Error('No exercises available to duplicate.');
+              }
+
+              const {
+                data: workoutExercises,
+                error: exercisesError,
+              } = await supabase
+                .from('workout_exercises')
+                .insert(workoutExerciseRows)
+                .select();
+
+              if (exercisesError || !workoutExercises) {
+                throw exercisesError ?? new Error('Failed to copy exercises.');
+              }
+
+              const workoutExerciseLookup = new Map<string, string>();
+              workoutExercises.forEach((row: any) => {
+                const key = `${row.exercise_id}-${row.order}`;
+                if (!workoutExerciseLookup.has(key)) {
+                  workoutExerciseLookup.set(key, row.id);
+                }
+              });
+
+              const setRows = exercises.flatMap(we => {
+                const exerciseId = we.exercise?.id ?? we.exercise_id;
+                if (!exerciseId) return [];
+
+                const workoutExerciseId = workoutExerciseLookup.get(
+                  `${exerciseId}-${we.order}`
+                );
+                if (!workoutExerciseId) return [];
+
+                return we.workout_sets.map(set => ({
+                  workout_exercise_id: workoutExerciseId,
+                  set_number: set.set_number,
+                  reps: set.reps,
+                  weight: set.weight,
+                  intensity_type: set.intensity_type ?? 'normal',
+                }));
+              });
+
+              if (setRows.length > 0) {
+                const { error: setsError } = await supabase
+                  .from('workout_sets')
+                  .insert(setRows);
+
+                if (setsError) {
+                  throw setsError;
+                }
+              }
+
+              setDuplicateMessage('Workout duplicated! Redirecting...');
+              navigate(`/workout/${newWorkout.id}`);
+            } catch (error) {
+              console.error('Failed to duplicate workout:', error);
+              setDuplicateError('Failed to duplicate workout.');
+            } finally {
+              setIsDuplicating(false);
+            }
+          }}
+          disabled={isDuplicating}
         />
 
         <WorkoutButton
