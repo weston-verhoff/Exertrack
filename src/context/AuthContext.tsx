@@ -1,5 +1,6 @@
 import {
   ReactNode,
+	useCallback,
   createContext,
   useContext,
   useEffect,
@@ -50,7 +51,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => listener?.subscription.unsubscribe();
   }, []);
 
-	const handleSignIn = async (email: string, password: string) => {
+	const handleSignIn = useCallback(async (email: string, password: string) => {
     const trimmedEmail = email.trim();
     const trimmedPassword = password.trim();
 
@@ -65,9 +66,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setSession(data.session);
     setUser(data.session?.user ?? null);
-  };
+  }, []);
 
-	const handleSignUp = async (email: string, password: string) => {
+	const handleSignUp = useCallback(async (email: string, password: string) => {
 			const trimmedEmail = email.trim();
 			const trimmedPassword = password.trim();
 
@@ -91,9 +92,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			setUser(data.session?.user ?? data.user ?? null);
 
 			return Boolean(data.session);
-		};
+		}, []);
 
-  const handleSignOut = async () => {
+  const handleSignOut = useCallback(async () => {
+    if (!session) {
+      setSession(null);
+      setUser(null);
+      return;
+    }
 		if (!session) {
       setSession(null);
       setUser(null);
@@ -109,7 +115,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     setSession(null);
     setUser(null);
-  };
+  }, [session]);
 
   const value = useMemo(() => {
     const userId = user?.id ?? null;
@@ -123,7 +129,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 			signUp: handleSignUp,
       signOut: handleSignOut,
     };
-  }, [loading, session, user]);
+  }, [handleSignIn, handleSignOut, handleSignUp, loading, session, user]);
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
