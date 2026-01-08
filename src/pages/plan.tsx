@@ -223,6 +223,7 @@ export default function PlanSession() {
     queryWorkoutId,
     userId,
 		addExercise,
+		editTemplateId,
   ]);
 
   const toggleExercise = (exerciseId: string) => {
