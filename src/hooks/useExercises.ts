@@ -22,5 +22,14 @@ export function useExercises() {
     fetchExercises()
   }, [])
 
-  return { exercises, loading, refetch: fetchExercises }
+	const addExercise = (exercise: any) => {
+    setExercises(prev => {
+      const exists = prev.some(item => item.id === exercise.id)
+      if (exists) return prev
+      const next = [...prev, exercise]
+      return next.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''))
+    })
+  }
+
+  return { exercises, loading, refetch: fetchExercises, addExercise }
 }

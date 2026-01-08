@@ -112,7 +112,12 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
 export default function PlanSession() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { exercises, loading: loadingExercises, refetch } = useExercises();
+	const {
+    exercises,
+    loading: loadingExercises,
+    refetch,
+    addExercise,
+  } = useExercises();
   const { templates, loading: loadingTemplates } = useTemplates();
   const { userId, loading: authLoading } = useAuth();
 
