@@ -304,6 +304,10 @@
   cursor: pointer;
   font-weight: 700;
 	transition: box-shadow 0.2s ease, background 0.1s ease;
+	width: 100%;
+  text-align: left;
+  font-family: inherit;
+  color: inherit;
 }
 .exercise-pill:hover{
 	box-shadow: 0 8px 12px var(--shadow-soft);

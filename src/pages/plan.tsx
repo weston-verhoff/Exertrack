@@ -754,15 +754,16 @@ export default function PlanSession() {
                   </p>
                 ) : (
                   availableExercises.map(exercise => (
-                    <div key={exercise.id} className="exercise-pill">
-                      <button
-                        type="button"
-                        className="add-chip"
-                        onClick={() => toggleExercise(exercise.id)}
-                        aria-label={`Add ${exercise.name}`}
-                      >
+										<button
+                      key={exercise.id}
+                      type="button"
+                      className="exercise-pill"
+                      onClick={() => toggleExercise(exercise.id)}
+                      aria-label={`Add ${exercise.name}`}
+                    >
+                      <span className="add-chip" aria-hidden="true">
                         +
-                      </button>
+                      </span>
                       <span className="exercise-pill__meta">
                         <span className="exercise-pill__name">
                           {exercise.name}
@@ -771,7 +772,7 @@ export default function PlanSession() {
                           {exercise.target_muscle}
                         </span>
                       </span>
-                    </div>
+                    </button>
                   ))
                 )}
               </div>
