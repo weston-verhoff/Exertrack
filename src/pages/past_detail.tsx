@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { supabase } from '../supabase/client'
 import { useAuth } from '../context/AuthContext'
+import { fetchWorkoutDetail } from '../services/workoutService'
 
 interface WorkoutExercise {
-  id: string
+  id?: string
   sets: number
   reps: number
   weight: number
-  notes: string
+  notes?: string | null
   exercise: {
     name: string
     target_muscle: string
@@ -33,44 +33,20 @@ export default function PastDetail() {
   const { userId, loading: authLoading } = useAuth()
 
   useEffect(() => {
-    async function fetchWorkoutDetail() {
+    async function loadWorkoutDetail() {
       if (!id || !userId) return
 
-      const { data, error } = await supabase
-        .from('workouts')
-        .select(`
-          id,
-          date,
-          template:template_id(name),
-          workout_exercises (
-            id,
-            sets,
-            reps,
-            weight,
-            notes,
-            exercise:exercise_id(name, target_muscle)
-          )
-        `)
-        .eq('id', id)
-        .eq('user_id', userId)
-        .single()
+			const { data, error } = await fetchWorkoutDetail({
+        workoutId: id,
+        userId,
+      })
 
-      if (error) {
-        console.error('Error fetching workout:', error)
+      if (error || !data) {
+        console.error(error ?? 'Error fetching workout.')
       } else {
-        const cleaned = {
-          ...data,
-          template: Array.isArray(data.template) ? data.template[0] : data.template,
-          workout_exercises: data.workout_exercises.map((we: any) => ({
-            ...we,
-            exercise: Array.isArray(we.exercise) ? we.exercise[0] : we.exercise
-          }))
-        }
-
-        setWorkout(cleaned as Workout)
-        calculateVolume(cleaned.workout_exercises)
-      }
-
+        setWorkout(data as Workout)
+        calculateVolume(data.workout_exercises)
+			      }
       setLoading(false)
     }
 
@@ -82,7 +58,7 @@ export default function PastDetail() {
       return
     }
 
-    fetchWorkoutDetail()
+    loadWorkoutDetail()
   }, [authLoading, id, userId])
 
   const calculateVolume = (exs: WorkoutExercise[]) => {

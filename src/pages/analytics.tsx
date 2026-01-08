@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react'
-import { supabase } from '../supabase/client'
 import { useAuth } from '../context/AuthContext'
 import {
   Chart as ChartJS,
@@ -13,6 +12,7 @@ import {
 } from 'chart.js'
 import { Line } from 'react-chartjs-2'
 import { Layout } from '../components/Layout'
+import { fetchAnalyticsWorkouts } from '../services/workoutService'
 
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
@@ -43,36 +43,15 @@ export default function AnalyticsPage() {
     async function fetchWorkouts() {
       if (!userId) return
 
-      const { data, error } = await supabase
-        .from('workouts')
-        .select(`
-          id,
-          date,
-          workout_exercises (
-            sets,
-            reps,
-            weight,
-            exercise:exercise_id(name, target_muscle)
-          )
-        `)
-        .neq('status', 'canceled')
-        .eq('user_id', userId)
-        .order('date', { ascending: true })
+			const { data, error } = await fetchAnalyticsWorkouts({ userId })
 
-      if (error) {
-        console.error('Error fetching workouts:', error)
+      if (error || !data) {
+        console.error(error ?? 'Error fetching workouts.')
+        setLoading(false)
         return
       }
 
-      const cleaned = (data ?? []).map((w: any) => ({
-        ...w,
-        workout_exercises: w.workout_exercises.map((we: any) => ({
-          ...we,
-          exercise: Array.isArray(we.exercise) ? we.exercise[0] : we.exercise
-        }))
-      }))
-
-      setWorkouts(cleaned)
+      setWorkouts(data)
       setLoading(false)
     }
 

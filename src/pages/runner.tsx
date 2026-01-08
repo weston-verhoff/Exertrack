@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { supabase } from '../supabase/client'
 import { WorkoutButton } from '../components/WorkoutButton'
 import { Layout } from '../components/Layout';
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
+import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
 
 export default function WorkoutRunner() {
   const { id: workoutId } = useParams()
@@ -28,50 +28,18 @@ export default function WorkoutRunner() {
         return
       }
 
-			const { data, error } = await supabase
-			  .from('workouts')
-				.select(`
-				  id,
-				  workout_exercises (
-				    id,
-				    exercise_id,
-				    order,
-				    exercise:exercise_id (
-				      id,
-				      name,
-				      target_muscle
-				    ),
-				    workout_sets (
-				      id,
-				      set_number,
-				      reps,
-				      weight,
-				      notes,
-				      intensity_type
-				    )
-				  )
-				`)
-			  .eq('id', workoutId)
-        .eq('user_id', userId)
-			  .single();
+			const { data, error } = await fetchWorkoutById({
+	        workoutId,
+	        userId,
+	      });
 
 				if (error || !data) {
-				  console.error(error);
+				  console.error(error ?? 'Failed to load workout.');
 				  setLoading(false);
 				  return;
 				}
-				const cleaned: WorkoutExercise[] = data.workout_exercises
-				  .slice()
-				  .sort((a, b) => a.order - b.order)
-				  .map(we => ({
-				    ...we,
-				    exercise: Array.isArray(we.exercise) ? we.exercise[0] : we.exercise,
-				    workout_sets: we.workout_sets
-				      .slice()
-				      .sort((a, b) => a.set_number - b.set_number),
-				  }));
 
-      setExercises(cleaned)
+      setExercises(data.workout_exercises)
       setLoading(false)
     }
 
@@ -130,35 +98,18 @@ export default function WorkoutRunner() {
 	const finishWorkout = async () => {
 		if (authLoading || !userId) return;
 
-		const updates = exercises.flatMap(ex =>
-		  ex.workout_sets.map(set => ({
-		    id: set.id,
-				workout_exercise_id: set.workout_exercise_id ?? ex.id,
-		    set_number: set.set_number, // 🔑 REQUIRED
-		    reps: set.reps,
-		    weight: set.weight,
-		    notes: set.notes ?? null,
-		    intensity_type: set.intensity_type ?? 'normal',
-		  }))
-		);
-
-	  const { error } = await supabase
-	    .from('workout_sets')
-			.upsert(updates, {
-		    onConflict: 'id',
-		  });
+		const { error } = await saveWorkout({
+	      workoutId: workoutId!,
+	      status: 'completed',
+	      exercises,
+	      userId,
+	    });
 
 	  if (error) {
 	    console.error(error);
-	    alert('Failed to save workout.');
+	    alert(error);
 	    return;
 	  }
-
-	  await supabase
-	    .from('workouts')
-	    .update({ status: 'completed' })
-	    .eq('id', workoutId)
-      .eq('user_id', userId);
 
 	  navigate(`/workout/${workoutId}`);
 	};

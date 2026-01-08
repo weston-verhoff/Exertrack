@@ -173,13 +173,16 @@ const closeDrawerAfterSave = () => {
 						if (!userId) {
               throw new Error('Missing user context');
             }
-						await saveWorkout({
+						const { error } = await saveWorkout({
 							workoutId: workout.id,
 							date: editedDate,
 							status: localStatus,
 							exercises: editedExercises,
 							userId,
 						});
+						if (error) {
+              throw new Error(error);
+            }
 						onWorkoutUpdated({
 							...workout,
 							date: editedDate,

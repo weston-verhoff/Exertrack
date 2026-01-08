@@ -20,24 +20,13 @@ import { supabase } from '../supabase/client';
 import { Layout } from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
 import '../styles/plan.css';
-
-export type WorkoutSet = {
-  set_number: number;
-  reps: number;
-  weight: number;
-  intensity_type?: string;
-  notes?: string;
-};
-
-export type ConfiguredExercise = {
-  id: string;
-  exercise_id: string;
-  name: string;
-  sets: WorkoutSet[];
-  order: number;
-};
-
-type BuilderExerciseConfig = ConfiguredExercise & { target_muscle?: string };
+import { BuilderExerciseConfig } from '../types/workoutBuilder';
+import {
+  createWorkoutFromBuilder,
+  fetchTemplateBuilderExercises,
+  fetchWorkoutBuilderExercises,
+  updateWorkoutFromBuilder,
+} from '../services/workoutService';
 
 type BuilderRowProps = {
   exercise: BuilderExerciseConfig;
@@ -188,96 +177,18 @@ export default function PlanSession() {
         let cleaned: BuilderExerciseConfig[] = [];
         let importedDate: string | null = null;
 
-        if (queryTemplateId) {
-          const { data, error } = await supabase
-            .from('template_exercises')
-            .select(
-              `
-              exercise_id,
-              sets,
-              reps,
-              order,
-              exercise:exercises!template_exercises_exercise_id_fkey (
-                id,
-                name,
-                target_muscle
-              )
-            `
-            )
-            .eq('template_id', queryTemplateId)
-            .order('order', { ascending: true });
-
-          if (error) throw error;
-
-          cleaned = (data ?? []).map((item: any, i: number) => ({
-            id: `template-${queryTemplateId}-${item.exercise_id}-${i}`,
-            exercise_id: item.exercise_id,
-            name: item.exercise?.name ?? '',
-            target_muscle: item.exercise?.target_muscle ?? '',
-            order: item.order ?? i,
-            sets: Array.from({ length: item.sets ?? 3 }, (_, idx) => ({
-              set_number: idx + 1,
-              reps: item.reps ?? 8,
-              weight: 0,
-              intensity_type: 'normal',
-            })),
-          }));
+        if (queryTemplateId) {const { data, error } = await fetchTemplateBuilderExercises(
+            queryTemplateId
+          );
+          if (error) throw new Error(error);
+          cleaned = data ?? [];
         } else if (queryWorkoutId) {
-          const { data, error } = await supabase
-            .from('workout_exercises')
-            .select(
-              `
-              exercise_id,
-              order,
-              exercise:exercise_id (
-                id,
-                name,
-                target_muscle
-              ),
-              workout_sets (
-                set_number,
-                reps,
-                weight,
-                intensity_type
-              )
-            `
-            )
-            .eq('workout_id', queryWorkoutId)
-            .order('order', { ascending: true });
-
-          if (error) throw error;
-
-          const { data: workoutMeta } = await supabase
-            .from('workouts')
-            .select('date')
-            .eq('id', queryWorkoutId)
-            .single();
-
-          importedDate = workoutMeta?.date ?? null;
-
-          cleaned = (data ?? []).map((item: any, i: number) => ({
-            id: `workout-${queryWorkoutId}-${item.exercise_id}-${i}`,
-            exercise_id: item.exercise_id,
-            name: item.exercise?.name ?? '',
-            target_muscle: item.exercise?.target_muscle ?? '',
-            order: item.order ?? i,
-            sets:
-              item.workout_sets?.length > 0
-                ? item.workout_sets.map((set: any, idx: number) => ({
-                    set_number: idx + 1,
-                    reps: set.reps ?? 0,
-                    weight: set.weight ?? 0,
-                    intensity_type: set.intensity_type ?? 'normal',
-                  }))
-                : [
-                    {
-                      set_number: 1,
-                      reps: 8,
-                      weight: 0,
-                      intensity_type: 'normal',
-                    },
-                  ],
-          }));
+          const { data, error } = await fetchWorkoutBuilderExercises(
+            queryWorkoutId
+          );
+          if (error) throw new Error(error);
+          cleaned = data?.exercises ?? [];
+          importedDate = data?.date ?? null;
         }
 
         if (cleaned.length > 0) {
@@ -500,24 +411,6 @@ export default function PlanSession() {
     const normalizedExercises = validExercises.map((ex, idx) => ({
       ...ex,
       order: idx,
-      sets:
-        ex.sets.length > 0
-          ? ex.sets.map((set: WorkoutSet, setIdx: number) => ({
-              set_number: setIdx + 1,
-              reps: Number(set.reps ?? 0),
-              weight: Number(set.weight ?? 0),
-              intensity_type: set.intensity_type ?? 'normal',
-              notes: set.notes ?? undefined,
-          }))
-          : [
-              {
-                set_number: 1,
-                reps: Number(ex.sets[0]?.reps ?? 0),
-                weight: Number(ex.sets[0]?.weight ?? 0),
-                intensity_type: 'normal',
-                notes: undefined,
-              },
-            ],
     }));
 
     setErrorMessage(null);
@@ -526,81 +419,19 @@ export default function PlanSession() {
     );
     setSaving(true);
 
-    const saveExercisesAndSets = async (
-      workoutId: string,
-      exercisesToSave: BuilderExerciseConfig[]
-    ) => {
-      const workoutExerciseRows = exercisesToSave.map(ex => ({
-        workout_id: workoutId,
-        exercise_id: ex.exercise_id,
-        order: ex.order,
-        sets: ex.sets.length,
-        reps: ex.sets[0]?.reps ?? 0,
-        weight: ex.sets[0]?.weight ?? 0,
-      }));
-
-      const { data: workoutExercises, error: exercisesError } = await supabase
-        .from('workout_exercises')
-        .insert(workoutExerciseRows)
-        .select();
-
-      if (exercisesError || !workoutExercises) {
-        throw exercisesError ?? new Error('Failed to save workout exercises.');
-      }
-
-      const workoutExerciseLookup = new Map<string, string>();
-      workoutExercises.forEach((row: any) => {
-        const key = `${row.exercise_id}-${row.order}`;
-        if (!workoutExerciseLookup.has(key)) {
-          workoutExerciseLookup.set(key, row.id);
-        }
-      });
-
-      const setRows = exercisesToSave.flatMap(ex => {
-        const workoutExerciseId = workoutExerciseLookup.get(
-          `${ex.exercise_id}-${ex.order}`
-        );
-        if (!workoutExerciseId) return [];
-
-        return ex.sets.map((set: WorkoutSet) => ({
-          workout_exercise_id: workoutExerciseId,
-          set_number: set.set_number,
-          reps: set.reps,
-          weight: set.weight,
-          intensity_type: set.intensity_type ?? 'normal',
-          notes: set.notes ?? undefined,
-        }));
-      });
-
-      if (setRows.length === 0) return;
-
-      const { error: setsError } = await supabase
-        .from('workout_sets')
-        .insert(setRows);
-
-      if (setsError) {
-        throw setsError;
-      }
-    };
-
     try {
       if (isEditingWorkout && editingWorkoutId) {
         setStatusMessage('Refreshing workout...');
-        const { error: deleteError } = await supabase
-          .from('workout_exercises')
-          .delete()
-          .eq('workout_id', editingWorkoutId);
+				const { error } = await updateWorkoutFromBuilder({
+          workoutId: editingWorkoutId,
+          date: selectedDate,
+          exercises: normalizedExercises,
+        });
 
-        if (deleteError) {
-          throw deleteError;
+        if (error) {
+          throw new Error(error);
         }
 
-        await supabase
-          .from('workouts')
-          .update({ date: selectedDate })
-          .eq('id', editingWorkoutId);
-
-        await saveExercisesAndSets(editingWorkoutId, normalizedExercises);
         setStatusMessage('Workout updated! Redirecting...');
         navigate(`/workout/${editingWorkoutId}`);
         setSaving(false);
@@ -608,22 +439,19 @@ export default function PlanSession() {
       }
 
       setStatusMessage('Creating workout...');
-      const { data: workoutData, error: workoutError } = await supabase
-        .from('workouts')
-        .insert([{ date: selectedDate, status: 'scheduled', user_id: userId }])
-        .select()
-        .single();
+			const { data, error } = await createWorkoutFromBuilder({
+        userId,
+        date: selectedDate,
+        exercises: normalizedExercises,
+      });
 
-      if (workoutError || !workoutData) {
-        console.error('Error creating workout:', workoutError);
-        setErrorMessage('Failed to create workout.');
+      if (error || !data) {
+        setErrorMessage(error ?? 'Failed to create workout.');
         setSaving(false);
         return;
       }
-
-      await saveExercisesAndSets(workoutData.id, normalizedExercises);
       setStatusMessage('Workout saved! Redirecting...');
-      navigate(`/workout/${workoutData.id}`);
+      navigate(`/workout/${data.id}`);
     } catch (err) {
       console.error('Unexpected error saving workout:', err);
       setErrorMessage('Failed to save workout. Please try again.');

@@ -1,27 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { supabase } from '../supabase/client'
-import { deleteWorkoutById } from '../utils/deleteWorkout';
 import '../styles/workout.css' // ✅ Import your CSS file
 import { Layout } from '../components/Layout';
 import { Workout, WorkoutExercise, WorkoutSet } from '../types/workout';
 import { WorkoutDetails } from '../components/WorkoutDetails'
 import { useAuth } from '../context/AuthContext';
-// import { saveWorkout } from '../services/workoutService';
-
-// // ✅ Reusable styles for summary lists
-// const listContainerStyle: React.CSSProperties = {
-//   width: '600px',
-// 	marginBottom: '2rem',
-// 	maxWidth: '100%',
-// }
-
-// const listItemStyle: React.CSSProperties = {
-//   marginBottom: '1rem',
-//   wordWrap: 'break-word',
-//   overflowWrap: 'break-word',
-//   lineHeight: '1.5'
-// }
+import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
+import { confirmAndDeleteWorkout } from '../utils/workoutActions';
 
 export default function WorkoutRecap() {
   const { id } = useParams()
@@ -36,60 +21,22 @@ export default function WorkoutRecap() {
 
   useEffect(() => {
     async function fetchWorkout() {
-      if (!userId) return;
-			const { data, error } = await supabase
-			  .from('workouts')
-			  .select(`
-			    id,
-			    date,
-			    status,
-			    workout_exercises (
-			      id,
-			      order,
-			      exercise:exercise_id (
-			        id,
-			        name,
-			        target_muscle
-			      ),
-				      workout_sets (
-				        id,
-				        workout_exercise_id,
-				        set_number,
-				        reps,
-				        weight,
-				        intensity_type,
-				        notes
-			      )
-			    )
-			  `)
-			  .eq('id', id)
-        .eq('user_id', userId)
-			  .order('order', { foreignTable: 'workout_exercises', ascending: true })
-			  .single()
+			if (!userId || !id) return;
+
+      const { data, error } = await fetchWorkoutById({
+        workoutId: id,
+        userId,
+      });
 
       if (error || !data) {
-        console.error('Error fetching workout:', error)
+				console.error(error ?? 'Error fetching workout.');
         setWorkout(null)
         setLoading(false)
         return
       }
 
-			const cleaned = {
-			  ...data,
-			  workout_exercises: data.workout_exercises.map((we: any) => ({
-			    ...we,
-			    exercise:
-			      we.exercise && typeof we.exercise === 'object'
-			        ? Array.isArray(we.exercise)
-			          ? we.exercise[0]
-			          : we.exercise
-			        : null,
-			    workout_sets: we.workout_sets ?? []
-			  }))
-			}
-
-      setWorkout(cleaned)
-      setEditedExercises(cleaned.workout_exercises)
+			setWorkout(data)
+      setEditedExercises(data.workout_exercises)
       setLoading(false)
     }
 
@@ -113,46 +60,22 @@ export default function WorkoutRecap() {
 	  setStatusMessage('Saving workout...');
 
 	  try {
-	    if (workout.date) {
-	      setStatusMessage('Updating workout info...');
-	      const { error: dateError } = await supabase
-	        .from('workouts')
-	        .update({ date: workout.date })
-	        .eq('id', workout.id)
-          .eq('user_id', userId);
+			setStatusMessage('Updating workout info...');
+	    const { error } = await saveWorkout({
+	      workoutId: workout.id,
+        date: workout.date,
+	      exercises: editedExercises,
+	      userId,
+        onlyExistingSets: true,
+	    });
 
-	      if (dateError) throw dateError;
-	    }
-
-		    const setRows = editedExercises.flatMap(ex =>
-		      ex.workout_sets
-		        .filter(set => !!set.id)
-		        .map(set => ({
-		          id: set.id,
-		          workout_exercise_id: set.workout_exercise_id,
-		          set_number: set.set_number,
-		          reps: set.reps,
-		          weight: set.weight,
-		          intensity_type: set.intensity_type ?? 'normal',
-		          notes: set.notes ?? null,
-		        }))
-	    );
-
-	    if (setRows.length > 0) {
-	      setStatusMessage('Saving sets...');
-	      const { error: setsError } = await supabase
-	        .from('workout_sets')
-	        .upsert(setRows, { onConflict: 'id' });
-
-	      if (setsError) throw setsError;
-	    }
+	    if (error) throw new Error(error);
 
 	    setStatusMessage('Workout saved!');
 	  } catch (err) {
 	    console.error(err);
 			setErrorMessage('Failed to save workout. Please try again.');
-		setStatusMessage(null);
-		alert('Something went wrong while saving.');
+			setStatusMessage(null);
 	} finally {
 		setSaving(false);
 	}
@@ -177,18 +100,18 @@ const handleDeleteWorkout = async () => {
 	if (!workout) return;
 	if (!userId) return;
 
-	const confirmed = window.confirm(
-		'Delete workout? Cannot be undone.'
-	);
+	const { deleted, error } = await confirmAndDeleteWorkout({
+    workoutId: workout.id,
+    userId,
+    confirmationMessage: 'Delete workout? Cannot be undone.',
+  });
 
-	if (!confirmed) return;
+  if (error) {
+    alert(error);
+    return;
+  }
 
-	const success = await deleteWorkoutById(workout.id, userId);
-
-	if (!success) {
-		alert('Failed to delete workout.');
-		return;
-	}
+  if (!deleted) return;
 
 	navigate('/'); // or '/dashboard' if that’s your route
 };

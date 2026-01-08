@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { supabase } from '../supabase/client';
 import { useNavigate } from 'react-router-dom';
-import { deleteWorkoutById } from '../utils/deleteWorkout';
 import { WorkoutButton } from '../components/WorkoutButton';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { motion } from 'framer-motion'; // ✅ Import motion
 import { Workout } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
+import {
+  fetchAllCompletedWorkouts,
+  fetchWorkoutOverview,
+  getLocalDateString,
+} from '../services/workoutService';
+import { confirmAndDeleteWorkout } from '../utils/workoutActions';
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -28,100 +32,22 @@ export default function Dashboard() {
 	  );
 	};
 
-	const workoutFields = `
-    id,
-    date,
-    status,
-    workout_exercises (
-      id,
-      order,
-      exercise:exercise_id (
-        id,
-        name,
-        target_muscle
-      ),
-      workout_sets (
-        id,
-        set_number,
-        reps,
-        weight,
-        intensity_type
-      )
-    )
-  `;
-	const getLocalDateString = useCallback(() => {
-	  const now = new Date();
-	  const year = now.getFullYear();
-	  const month = String(now.getMonth() + 1).padStart(2, '0');
-	  const day = String(now.getDate()).padStart(2, '0');
-	  return `${year}-${month}-${day}`;
-	}, []);
-
-	const cleanWorkouts = useCallback(
-  (data: any[] | null) => {
-    const today = getLocalDateString();
-
-    return (data ?? []).map((w: any) => ({
-      ...w,
-      status:
-        w.status ??
-        (w.date >= today ? 'scheduled' : 'completed'),
-      workout_exercises: w.workout_exercises.map((we: any) => ({
-        ...we,
-        exercise:
-          we.exercise && typeof we.exercise === 'object'
-            ? Array.isArray(we.exercise)
-              ? we.exercise[0]
-              : we.exercise
-            : null,
-        workout_sets: we.workout_sets ?? [],
-      })),
-    }));
-  },
-  [getLocalDateString]
-);
-
 		const fetchInitialWorkouts = useCallback(
 	  async (currentUserId: string) => {
-	    const todayString = getLocalDateString();
+			const { data, error } = await fetchWorkoutOverview({
+        userId: currentUserId,
+      });
+			if (error || !data) {
+        console.error(error ?? 'Error fetching workouts.');
+        setLoading(false);
+        return;
+      }
 
-	    const [scheduledResponse, completedResponse] = await Promise.all([
-	      supabase
-	        .from('workouts')
-	        .select(workoutFields)
-	        .eq('user_id', currentUserId)
-	        .or('status.eq.scheduled,status.is.null')
-	        .gte('date', todayString)
-	        .order('date', { ascending: true }),
-
-	      supabase
-	        .from('workouts')
-	        .select(workoutFields, { count: 'exact' })
-	        .eq('user_id', currentUserId)
-	        .or('status.eq.completed,status.is.null')
-	        .order('date', { ascending: false })
-	        .limit(9),
-	    ]);
-
-	    if (scheduledResponse.error) {
-	      console.error('Error fetching scheduled workouts:', scheduledResponse.error);
-	    }
-
-	    if (completedResponse.error) {
-	      console.error('Error fetching completed workouts:', completedResponse.error);
-	    }
-
-	    const scheduledClean = cleanWorkouts(scheduledResponse.data);
-	    const completedClean = cleanWorkouts(completedResponse.data);
-
-	    setCompletedTotalCount(
-	      completedResponse.count ?? completedClean.length
-	    );
-
-	    setWorkouts([...scheduledClean, ...completedClean]);
-	    setLoading(false);
+      setCompletedTotalCount(data.completedCount);
+      setWorkouts([...data.scheduled, ...data.completed]);
+      setLoading(false);
 	  },
-	  [workoutFields, cleanWorkouts, getLocalDateString]
+	  []
 	);
 
   useEffect(() => {
@@ -147,16 +73,20 @@ export default function Dashboard() {
   }, [workouts]);
 
   const deleteWorkout = async (id: string) => {
-    if (!window.confirm('Delete this workout permanently?')) return;
-
     if (!userId) return;
+		const { deleted, error } = await confirmAndDeleteWorkout({
+      workoutId: id,
+      userId,
+      confirmationMessage: 'Delete this workout permanently?',
+    });
 
-    const success = await deleteWorkoutById(id, userId);
+    if (error) {
+      alert(error);
+      return;
+    }
 
-    if (!success) {
-      alert('Unable to delete workout.');
-    } else {
-      setWorkouts((prev) => prev.filter((w) => w.id !== id));
+    if (deleted) {
+      setWorkouts(prev => prev.filter(w => w.id !== id));
     }
   };
 
@@ -176,28 +106,21 @@ export default function Dashboard() {
     if (loadingAllPast || showAllPast) return;
     setLoadingAllPast(true);
 
-    const { data, error } = await supabase
-      .from('workouts')
-      .select(workoutFields)
-      .eq('user_id', userId!)
-      .or('status.eq.completed,status.is.null')
-      .lt('date', getLocalDateString())
-      .order('date', { ascending: false });
+    const { data, error } = await fetchAllCompletedWorkouts({ userId: userId! });
 
-    if (error) {
-      console.error('Error fetching all completed workouts:', error);
+		if (error || !data) {
+      console.error(error ?? 'Error fetching all completed workouts.');
       setLoadingAllPast(false);
       return;
     }
 
-    const completedClean = cleanWorkouts(data);
-    setCompletedTotalCount(completedClean.length);
+    setCompletedTotalCount(data.length);
 
-    setWorkouts((prev) => {
-      const scheduled = prev.filter((w) => w.status === 'scheduled');
-      const merged = [...scheduled, ...completedClean];
+		setWorkouts(prev => {
+      const scheduled = prev.filter(w => w.status === 'scheduled');
+      const merged = [...scheduled, ...data];
       const seen = new Set<string>();
-      return merged.filter((w) => {
+      return merged.filter(w => {
         if (seen.has(w.id)) return false;
         seen.add(w.id);
         return true;
