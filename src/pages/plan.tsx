@@ -116,6 +116,7 @@ export default function PlanSession() {
     exercises,
     loading: loadingExercises,
     refetch,
+    addExercise,
   } = useExercises();
   const { templates, loading: loadingTemplates } = useTemplates();
   const { userId, loading: authLoading } = useAuth();
@@ -217,6 +218,7 @@ export default function PlanSession() {
     queryTemplateId,
     queryWorkoutId,
     userId,
+		addExercise,
   ]);
 
   const toggleExercise = (exerciseId: string) => {
@@ -348,7 +350,8 @@ export default function PlanSession() {
     if (error) {
       console.error('Error adding custom exercise:', error);
     } else if (data && data[0]) {
-      setSelectedExerciseIds(prev => [...prev, data[0].id]);
+			const newExercise = data[0];
+      addExercise(newExercise);
       setCustomName('');
       setCustomMuscle('');
       setAddingCustom(false);
