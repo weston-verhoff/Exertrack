@@ -178,6 +178,9 @@ const normalizeWorkoutDetail = (data: any): WorkoutDetailSummary => ({
   workout_exercises: normalizeSummaryExercises(data.workout_exercises),
 });
 
+const resolveWorkoutStatus = (status: string | null | undefined) =>
+  status ?? 'scheduled';
+
 const buildWorkoutSetRows = (
   exercises: WorkoutExercise[],
   options?: { onlyExisting?: boolean }
@@ -420,7 +423,6 @@ export async function fetchWorkoutOverview({
     completedCount: number;
   }>
 > {
-  const todayString = getLocalDateString();
   const fields = includeTemplate
     ? WORKOUT_SELECT_FIELDS_WITH_TEMPLATE
     : WORKOUT_SELECT_FIELDS;
@@ -431,13 +433,12 @@ export async function fetchWorkoutOverview({
       .select(fields)
       .eq('user_id', userId)
       .or('status.eq.scheduled,status.is.null')
-      .gte('date', todayString)
       .order('date', { ascending: true }),
     supabase
       .from('workouts')
       .select(fields, { count: 'exact' })
       .eq('user_id', userId)
-      .or('status.eq.completed,status.is.null')
+      .eq('status', 'completed')
       .order('date', { ascending: false })
       .limit(limitCompleted),
   ]);
@@ -461,16 +462,12 @@ export async function fetchWorkoutOverview({
 
   const normalizedScheduled = scheduled.map(workout => ({
     ...workout,
-    status:
-      workout.status ??
-      (workout.date >= todayString ? 'scheduled' : 'completed'),
+    status: resolveWorkoutStatus(workout.status),
   }));
 
   const normalizedCompleted = completed.map(workout => ({
     ...workout,
-    status:
-      workout.status ??
-      (workout.date >= todayString ? 'scheduled' : 'completed'),
+    status: resolveWorkoutStatus(workout.status),
   }));
 
   return {
@@ -493,12 +490,11 @@ export async function fetchAllCompletedWorkouts({
   const fields = includeTemplate
     ? WORKOUT_SELECT_FIELDS_WITH_TEMPLATE
     : WORKOUT_SELECT_FIELDS;
-
   const { data, error } = await supabase
     .from('workouts')
     .select(fields)
     .eq('user_id', userId)
-    .or('status.eq.completed,status.is.null')
+    .eq('status', 'completed')
     .order('date', { ascending: false });
 
   if (error) {
