@@ -437,6 +437,26 @@ export async function insertWorkoutSet({
   };
 }
 
+export async function deleteWorkoutSet({
+  setId,
+}: {
+  setId: string;
+}): Promise<ServiceResult<null>> {
+  const { error } = await supabase
+    .from('workout_sets')
+    .delete()
+    .eq('id', setId);
+
+  if (error) {
+    return {
+      data: null,
+      error: logAndReturnError('Failed to delete workout set.', error),
+    };
+  }
+
+  return { data: null, error: null };
+}
+
 export async function deleteWorkout(
   workoutId: string,
   userId: string

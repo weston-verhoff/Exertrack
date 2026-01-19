@@ -5,6 +5,7 @@ import { WorkoutExercise, WorkoutSet } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react'
 import {
+	deleteWorkoutSet,
   duplicateWorkoutFromExercises,
   updateWorkoutStatus,
 	insertWorkoutSet,
@@ -46,6 +47,7 @@ export function WorkoutDetails({
 	const { userId, loading: authLoading } = useAuth();
 	const [isDuplicating, setIsDuplicating] = useState(false);
   const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
+	const [removingSetId, setRemovingSetId] = useState<string | null>(null);
 	const [addingSetId, setAddingSetId] = useState<string | null>(null);
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
 	const toBuilderExercises = (items: WorkoutExercise[]): BuilderExerciseConfig[] =>
@@ -67,6 +69,12 @@ export function WorkoutDetails({
   /* ------------------ Derived Data ------------------ */
 	const getNextSetNumber = (sets: WorkoutSet[]) =>
 			sets.length > 0 ? Math.max(...sets.map(set => set.set_number)) + 1 : 1;
+	const renumberSets = (sets: WorkoutSet[]) =>
+		sets.map((set, index) => ({
+			...set,
+			set_number: index + 1,
+	}));
+
 
   const volumeByExercise = exercises.map(we => {
     const volume = we.workout_sets.reduce(
@@ -204,6 +212,59 @@ export function WorkoutDetails({
 	                  style={{ width: 70, marginLeft: 6 }}
 	                />
 	                lbs
+									<button
+									  type="button"
+									  onClick={async () => {
+									    const setId = set.id;
+									    setRemovingSetId(setId ?? `${we.id}-${set.set_number}`);
+									    if (setId) {
+									      const { error } = await deleteWorkoutSet({ setId });
+									      if (error) {
+									        console.error(error);
+									        alert('Failed to remove set.');
+									        setRemovingSetId(null);
+									        return;
+									      }
+									    }
+
+									    onExercisesChange(
+									      exercises.map(ex =>
+									        ex.id !== we.id
+									          ? ex
+									          : {
+									              ...ex,
+									              workout_sets: renumberSets(
+									                ex.workout_sets.filter(s =>
+									                  setId
+									                    ? s.id !== setId
+									                    : s.set_number !== set.set_number
+									                )
+									              ),
+									            }
+									      )
+									    );
+									    setRemovingSetId(null);
+									  }}
+									  disabled={
+									    removingSetId ===
+									    (set.id ?? `${we.id}-${set.set_number}`)
+									  }
+									  aria-label={`Remove set ${set.set_number}`}
+									  title="Remove set"
+									  style={{
+									    marginLeft: 8,
+									    width: 18,
+									    height: 18,
+									    borderRadius: '50%',
+									    border: 'none',
+									    backgroundColor: 'var(--danger)',
+									    color: '#fff',
+									    fontSize: 12,
+									    cursor: 'pointer',
+									  }}
+									>
+									  −
+									</button>
 	              </li>
 	            ))}
 	          </ul>
