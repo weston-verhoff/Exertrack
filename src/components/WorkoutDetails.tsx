@@ -7,6 +7,7 @@ import { useState } from 'react'
 import {
   duplicateWorkoutFromExercises,
   updateWorkoutStatus,
+	insertWorkoutSet,
 } from '../services/workoutService';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
 
@@ -45,6 +46,7 @@ export function WorkoutDetails({
 	const { userId, loading: authLoading } = useAuth();
 	const [isDuplicating, setIsDuplicating] = useState(false);
   const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
+	const [addingSetId, setAddingSetId] = useState<string | null>(null);
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
 	const toBuilderExercises = (items: WorkoutExercise[]): BuilderExerciseConfig[] =>
     items.map((we, index) => ({
@@ -63,6 +65,8 @@ export function WorkoutDetails({
     }));
 
   /* ------------------ Derived Data ------------------ */
+	const getNextSetNumber = (sets: WorkoutSet[]) =>
+			sets.length > 0 ? Math.max(...sets.map(set => set.set_number)) + 1 : 1;
 
   const volumeByExercise = exercises.map(we => {
     const volume = we.workout_sets.reduce(
@@ -107,6 +111,44 @@ export function WorkoutDetails({
       {exercises.map(we => (
         <div key={we.id} className="exercise-item">
           <strong>{we.exercise?.name ?? 'Unknown'}</strong>
+					<WorkoutButton
+					  label={addingSetId === we.id ? 'Adding...' : 'Add Set'}
+					  icon=""
+					  variant="whiteText"
+					  onClick={async () => {
+					    if (authLoading || !userId) return;
+					    const nextSetNumber = getNextSetNumber(we.workout_sets);
+					    setAddingSetId(we.id);
+					    const { data, error } = await insertWorkoutSet({
+					      workoutExerciseId: we.id,
+					      setNumber: nextSetNumber,
+					      reps: 8,
+					      weight: 0,
+					      intensityType: 'normal',
+					    });
+
+					    if (error || !data) {
+					      console.error(error);
+					      alert('Failed to add set.');
+					      setAddingSetId(null);
+					      return;
+					    }
+
+					    onExercisesChange(
+					      exercises.map(ex =>
+					        ex.id !== we.id
+					          ? ex
+					          : {
+					              ...ex,
+					              workout_sets: [...ex.workout_sets, data],
+					            }
+					      )
+					    );
+					    setAddingSetId(null);
+					  }}
+					  disabled={addingSetId === we.id}
+					/>
+
 
           <ul>
 						{[...we.workout_sets]

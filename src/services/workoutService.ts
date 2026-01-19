@@ -388,6 +388,55 @@ export async function updateWorkoutStatus({
   return { data: null, error: null };
 }
 
+export async function insertWorkoutSet({
+  workoutExerciseId,
+  setNumber,
+  reps = 8,
+  weight = 0,
+  intensityType = 'normal',
+  notes = null,
+}: {
+  workoutExerciseId: string;
+  setNumber: number;
+  reps?: number;
+  weight?: number;
+  intensityType?: string;
+  notes?: string | null;
+}): Promise<ServiceResult<WorkoutSet>> {
+  const { data, error } = await supabase
+    .from('workout_sets')
+    .insert({
+      workout_exercise_id: workoutExerciseId,
+      set_number: setNumber,
+      reps,
+      weight,
+      intensity_type: intensityType,
+      notes,
+    })
+    .select()
+    .single();
+
+  if (error || !data) {
+    return {
+      data: null,
+      error: logAndReturnError('Failed to add workout set.', error),
+    };
+  }
+
+  return {
+    data: {
+      id: data.id,
+      workout_exercise_id: data.workout_exercise_id,
+      set_number: data.set_number,
+      reps: data.reps,
+      weight: data.weight,
+      intensity_type: data.intensity_type,
+      notes: data.notes ?? undefined,
+    },
+    error: null,
+  };
+}
+
 export async function deleteWorkout(
   workoutId: string,
   userId: string
