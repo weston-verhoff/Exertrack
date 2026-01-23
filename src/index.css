@@ -391,6 +391,7 @@ input.exerciseSearch{
 .past-workout-container h2{
 	text-align: center;
 	font-size: 2rem;
+	margin-top:5rem;
 }
 /* === MOBILE STYLES === */
 @media (max-width: 470px) {
