@@ -17,10 +17,12 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 	const [loadingAllPast, setLoadingAllPast] = useState(false);
   const navigate = useNavigate();
+	const futureContainerRef = useRef<HTMLDivElement>(null);
   const futureRef = useRef<HTMLDivElement>(null);
   const [constraints, setConstraints] = useState({ left: 0, right: 0 });
 	const [drawerOpen, setDrawerOpen] = useState(false);
   const { userId, loading: authLoading } = useAuth();
+	const [isOverflowing, setIsOverflowing] = useState(false);
   const [showAllPast, setShowAllPast] = useState(false);
   const [completedTotalCount, setCompletedTotalCount] = useState<number>(0);
 
@@ -65,10 +67,12 @@ export default function Dashboard() {
 
   // ✅ Dynamically calculate drag constraints when workouts change
   useEffect(() => {
-    if (futureRef.current) {
-      const scrollWidth = futureRef.current.scrollWidth;
-      const clientWidth = futureRef.current.clientWidth;
-      setConstraints({ left: -(scrollWidth - clientWidth), right: 0 });
+		if (futureRef.current && futureContainerRef.current) {
+      const contentWidth = futureRef.current.scrollWidth;
+      const containerWidth = futureContainerRef.current.clientWidth;
+      const maxDrag = Math.max(0, contentWidth - containerWidth);
+      setConstraints({ left: -maxDrag, right: 0 });
+      setIsOverflowing(contentWidth > containerWidth);
     }
   }, [workouts]);
 
@@ -179,10 +183,10 @@ export default function Dashboard() {
       ) : (
         <>
           {/* FUTURE WORKOUTS with drag scrolling */}
-					<div className="future-workouts">
+					<div className="future-workouts" ref={futureContainerRef}>
 					<motion.div
 					  ref={futureRef}
-					  className="drag-future-workouts"
+					  className={`drag-future-workouts${isOverflowing ? ' is-overflowing' : ' is-centered'}`}
 					  drag={drawerOpen ? false : "x"}
 					  dragConstraints={constraints}
 					  dragElastic={0.05}

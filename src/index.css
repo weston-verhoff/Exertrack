@@ -295,10 +295,15 @@ input.exerciseSearch{
 	display: flex;
 	gap: 1rem;
 	scrollbar-width: 0;
+	width: max-content;
+	margin: 0 auto;
 	cursor: grab;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   user-select: none;
+}
+.drag-future-workouts.is-overflowing {
+	margin: 0;
 }
 .future-workouts::-webkit-scrollbar{display:none;}
 .past-workouts {
