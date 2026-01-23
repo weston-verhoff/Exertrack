@@ -106,6 +106,20 @@ export default function Dashboard() {
 
   const nextWorkoutId = scheduledWorkouts[0]?.id;
 	const nextWorkout = scheduledWorkouts[0];
+	const hasScheduledWorkouts = scheduledWorkouts.length > 0;
+
+  const renderEmptyWorkoutCard = (className?: string) => (
+    <button
+      type="button"
+      className={`empty-workout-card${className ? ` ${className}` : ''}`}
+      onClick={() => navigate('/plan')}
+    >
+      <span className="empty-workout-card-text">
+        Get started / plan your next workout
+      </span>
+    </button>
+  );
+
 	const loadAllCompletedWorkouts = async () => {
     if (loadingAllPast || showAllPast) return;
     setLoadingAllPast(true);
@@ -154,15 +168,18 @@ export default function Dashboard() {
 					  />
 					)}
 
-	        <WorkoutButton
-	          label="Plan New Session"
-	          icon="➕"
-	          variant="info"
-	          onClick={() => navigate('/plan')}
-	        />
+					{hasScheduledWorkouts && (
+             <WorkoutButton
+               label="Plan New Session"
+               icon="➕"
+               variant="info"
+               onClick={() => navigate('/plan')}
+             />
+           )}
+
 					</div>
 				</div>
-				{nextWorkout && (
+				{nextWorkout ? (
 				  <WorkoutCard
 				    workout={nextWorkout}
 						onDelete={deleteWorkout}
@@ -176,7 +193,9 @@ export default function Dashboard() {
 				    );
 				  }}
 				  />
-				)}
+				) : (
+          renderEmptyWorkoutCard('empty-workout-card--hero')
+        )}
       </div>
       {loading ? (
         <p>Loading workouts...</p>
@@ -204,24 +223,29 @@ export default function Dashboard() {
 					  }}
 					>
 
-            {scheduledWorkouts.map((w) => (
-              <WorkoutCard
-                key={w.id}
-                workout={w}
-                onDelete={deleteWorkout}
+					{scheduledWorkouts.length > 0 ? (
+						scheduledWorkouts.map((w) => (
+							<WorkoutCard
+								key={w.id}
+								workout={w}
+								onDelete={deleteWorkout}
 								variant="future-workout"
 								onStatusChange={handleStatusChange}
 								onDrawerOpen={() => setDrawerOpen(true)}
-							  onDrawerClose={() => setDrawerOpen(false)}
+								onDrawerClose={() => setDrawerOpen(false)}
 								onWorkoutUpdated={updatedWorkout => {
-						    setWorkouts(prev =>
-						      prev.map(w =>
-						        w.id === updatedWorkout.id ? updatedWorkout : w
-						      )
-						    );
-						  }}
-              />
-            ))}
+									setWorkouts(prev =>
+										prev.map(w =>
+											w.id === updatedWorkout.id ? updatedWorkout : w
+										)
+									);
+								}}
+							/>
+						))
+					) : (
+						renderEmptyWorkoutCard()
+					)}
+
           </motion.div>
 					</div>
           {/* COMPLETED WORKOUTS */}
