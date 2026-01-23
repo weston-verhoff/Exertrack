@@ -184,6 +184,15 @@ export default function Dashboard() {
         <>
           {/* FUTURE WORKOUTS with drag scrolling */}
 					<div className="future-workouts" ref={futureContainerRef}>
+					<div className="future-workouts-header">
+						<h2 className="headline font-black">Future Workouts</h2>
+						<WorkoutButton
+		          label="See All"
+		          icon=""
+		          variant="blackText"
+		          onClick={() => navigate('/past')}
+		        />
+					</div>
 					<motion.div
 					  ref={futureRef}
 					  className={`drag-future-workouts${isOverflowing ? ' is-overflowing' : ' is-centered'}`}

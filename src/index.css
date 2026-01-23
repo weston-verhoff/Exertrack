@@ -132,6 +132,8 @@ input[type='checkbox']{
   font-family: var(--font-headline);
   font-size: 2rem;
   margin-bottom: 1rem;
+	margin-top:0px;
+	padding-top:1rem;
 }
 .font-white {
 	color: var(--text-inverse);
@@ -290,8 +292,7 @@ input.exerciseSearch{
 	max-width:100%;
 }
 .drag-future-workouts {
-	padding: 3rem;
-	padding-bottom: 0;
+	padding: 0 3rem;
 	display: flex;
 	gap: 1rem;
 	scrollbar-width: 0;
@@ -301,6 +302,14 @@ input.exerciseSearch{
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   user-select: none;
+}
+.future-workouts-header{
+	color: var(--warm-ink);
+	display: flex;
+	flex-direction:row;
+	padding:1rem 3rem;
+	align-items: baseline;
+	justify-content: center;
 }
 .drag-future-workouts.is-overflowing {
 	margin: 0;
