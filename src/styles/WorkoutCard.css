@@ -1,5 +1,5 @@
 .workout-card {
-  font-family: "inter", sans-serif;
+  font-family: var(--font-body);
   display: flex;
   flex-direction: column;
   min-width: 300px;

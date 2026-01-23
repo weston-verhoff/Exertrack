@@ -272,13 +272,13 @@ input.exerciseSearch{
 		font-style: italic;
 }
 .dashboardHero .workout-card {
-	margin-left: 10rem;
+	margin-left: 5rem;
 }
 .dashboardHero .empty-workout-card {
-	margin-left: 10rem;
+	margin-left: 5rem;
 }
 .empty-workout-card {
-	font-family: "inter", sans-serif;
+	font-family: var(--font-body);
 	min-width: 300px;
 	max-width: 300px;
 	min-height: 300px;
@@ -296,7 +296,7 @@ input.exerciseSearch{
 }
 .empty-workout-card:hover {
 	transform: translateY(-2px);
-	border-color: var(--warm-400);
+	border-color: var(--warm-300);
 	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
 }
 .empty-workout-card:active {
@@ -320,7 +320,6 @@ input.exerciseSearch{
 .dashboard-buttons{
 	display:flex;
 	flex-direction: column;
-	width: 300px;
 	gap:1rem;
 }
 .future-workouts {

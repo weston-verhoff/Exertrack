@@ -162,7 +162,8 @@ export default function Dashboard() {
 					{nextWorkoutId && (
 					  <WorkoutButton
 					    label="Start Next Workout"
-					    icon="▶️"
+							size="lg"
+					    icon=""
 					    variant="accent"
 					    onClick={() => navigate(`/runner/${nextWorkoutId}`)}
 					  />
@@ -171,7 +172,8 @@ export default function Dashboard() {
 					{hasScheduledWorkouts && (
              <WorkoutButton
                label="Plan New Session"
-               icon="➕"
+							 size="lg"
+               icon=""
                variant="info"
                onClick={() => navigate('/plan')}
              />

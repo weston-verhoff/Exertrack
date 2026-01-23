@@ -122,7 +122,7 @@ export function WorkoutDetails({
 					<WorkoutButton
 					  label={addingSetId === we.id ? 'Adding...' : 'Add Set'}
 					  icon=""
-					  variant="whiteText"
+					  variant="unsetText"
 					  onClick={async () => {
 					    if (authLoading || !userId) return;
 					    const nextSetNumber = getNextSetNumber(we.workout_sets);

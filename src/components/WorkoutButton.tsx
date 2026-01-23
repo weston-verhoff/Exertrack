@@ -4,11 +4,12 @@ interface WorkoutButtonProps {
   label: string
   icon?: string
   onClick: () => void
-  variant?: 'accent' | 'info' | 'blackText' | 'whiteText'
+  variant?: 'accent' | 'info' | 'blackText' | 'whiteText' | 'unsetText'
   disabled?: boolean
   loading?: boolean
   loadingLabel?: string
   type?: 'button' | 'submit' | 'reset'
+	size?: 'sm' | 'md' | 'lg'
 }
 
 const variantStyles: Record<string, React.CSSProperties> = {
@@ -29,7 +30,28 @@ const variantStyles: Record<string, React.CSSProperties> = {
 		backgroundColor: 'transparent',
 		color:'white',
 		textDecoration: 'underline',
+	},
+	unsetText: {
+		backgroundColor: 'transparent',
+		color:'inherit',
+		textDecoration: 'underline',
 	}
+}
+
+const sizeStyles: Record<'sm' | 'md' | 'lg', React.CSSProperties> = {
+  sm: {
+    padding: '0.25rem 0.6rem',
+    fontSize: '0.8rem',
+  },
+  md: {
+    padding: '0.4rem 0.8rem',
+    fontSize: '0.9rem',
+  },
+  lg: {
+    padding: '0.8rem 1.1rem',
+    fontSize: '1rem',
+		fontWeight:'bold',
+  },
 }
 
 export function WorkoutButton({
@@ -39,6 +61,7 @@ export function WorkoutButton({
   variant = 'accent',
   disabled = false,
   loading = false,
+	size = 'md',
   loadingLabel,
   type = 'button',
 }: WorkoutButtonProps) {
@@ -46,11 +69,11 @@ export function WorkoutButton({
 
   const baseStyle: React.CSSProperties = {
     ...variantStyles[variant],
-    padding: '0.4rem 0.8rem',
-    fontSize: '0.9rem',
+		...sizeStyles[size],
     border: 'none',
     borderRadius: '4px',
-    boxShadow: variant==='whiteText'||variant==='blackText'? 'none' : (isPressed ? 'inset 0 0px 8px rgba(0, 0, 0, 0.8)' : 'inset -2px -2px rgba(0,0,0,0.25)'),
+		fontFamily: 'var(--font-body)',
+    boxShadow: variant==='whiteText'||variant==='blackText'||variant==='unsetText'? 'none' : (isPressed ? 'inset 0 0px 8px rgba(0, 0, 0, 0.8)' : 'inset -2px -2px rgba(0,0,0,0.25)'),
     transition: 'box-shadow 0.1s ease',
     opacity: disabled || loading ? 0.6 : isPressed ? 0.85 : 1,
     cursor: disabled || loading ? 'not-allowed' : 'pointer'

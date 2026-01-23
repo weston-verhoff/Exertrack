@@ -1,7 +1,7 @@
 :root {
   /* Typography */
-  --font-headline: 'Inter', sans-serif;
-  --font-body: 'Roboto', sans-serif;
+  --font-headline: 'Roboto', sans-serif;
+  --font-body: 'Nunito', sans-serif;
 
   /* Base brand */
   --bg-10: #111111;
