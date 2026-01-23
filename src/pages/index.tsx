@@ -205,7 +205,7 @@ export default function Dashboard() {
         <>
           {/* FUTURE WORKOUTS with drag scrolling */}
 					<div className="future-workouts" ref={futureContainerRef}>
-					<div className="future-workouts-header">
+					<div className="workouts-header">
 						<h2 className="headline font-black">Future Workouts</h2>
 						<WorkoutButton
 		          label="See All"
@@ -252,7 +252,15 @@ export default function Dashboard() {
 					</div>
           {/* COMPLETED WORKOUTS */}
           <section className="past-workout-container">
-            <h2 className="font-white">Finished Workouts</h2>
+					<div className="workouts-header">
+            <h2 className="font-white headline">Finished Workouts</h2>
+						<WorkoutButton
+		          label="See All"
+		          icon=""
+		          variant="whiteText"
+		          onClick={() => navigate('/past')}
+		        />
+						</div>
             {completedWorkouts.length === 0 ? (
               <p>No completed workouts yet.</p>
             ) : (

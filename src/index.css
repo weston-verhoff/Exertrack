@@ -270,6 +270,7 @@ input.exerciseSearch{
 }
 .dashboardHero h1{
 		font-style: italic;
+		text-align: center;
 }
 .dashboardHero .workout-card {
 	margin-left: 5rem;
@@ -340,12 +341,12 @@ input.exerciseSearch{
   -webkit-overflow-scrolling: touch;
   user-select: none;
 }
-.future-workouts-header{
+.workouts-header{
 	color: var(--warm-ink);
 	display: flex;
 	flex-direction:row;
 	padding:1rem 3rem;
-	align-items: baseline;
+	align-items: center;
 	justify-content: center;
 }
 .drag-future-workouts.is-overflowing {
@@ -391,7 +392,6 @@ input.exerciseSearch{
 .past-workout-container h2{
 	text-align: center;
 	font-size: 2rem;
-	margin-top:5rem;
 }
 /* === MOBILE STYLES === */
 @media (max-width: 470px) {
