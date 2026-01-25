@@ -202,6 +202,12 @@ input[type='checkbox']{
   font-weight: bold;
 	text-decoration: none;
 }
+.global-header .logo .logo-image {
+	display: block;
+	height: 24px;
+	width: auto;
+}
+
 .global-header .logo a {
 	text-decoration: none;
 }

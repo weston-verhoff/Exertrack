@@ -3,6 +3,7 @@ import { useState, type FC, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaHome } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
+import logoLight from '../IWYN_logo_light.png';
 
 export function GlobalHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -39,7 +40,7 @@ export function GlobalHeader() {
   return (
     <header className="global-header">
 			<Link className="logo font-white"  to="/" onClick={() => setMenuOpen(false)}>
-				<div style={{ fontStyle: 'italic' }}>IWYN</div>
+				<img src={logoLight} alt="IWYN" className="logo-image" />
 			</Link>
 			<nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
 				{(user ? loggedInLinks : loggedOutLinks).map((link) => (
