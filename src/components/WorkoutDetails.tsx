@@ -3,7 +3,7 @@ import { WorkoutButton } from './WorkoutButton';
 import { supabase } from '../supabase/client'
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
 	deleteWorkoutSet,
   duplicateWorkoutFromExercises,
@@ -26,6 +26,37 @@ interface Props {
 	onExercisesChange: (exercises: WorkoutExercise[]) => void;
 	onDelete: () => void;
 	onClose?: () => void;
+}
+
+type RepsInputProps = {
+  reps: number;
+  onChange: (value: number) => void;
+};
+
+function RepsInput({ reps, onChange }: RepsInputProps) {
+  const [displayValue, setDisplayValue] = useState<string>(String(reps));
+
+  useEffect(() => {
+    if (displayValue === '' && reps === 0) return;
+    const next = String(reps);
+    if (displayValue !== next) {
+      setDisplayValue(next);
+    }
+  }, [displayValue, reps]);
+
+  return (
+    <input
+      type="number"
+      value={displayValue}
+      onChange={e => {
+        const value = e.target.value;
+        setDisplayValue(value);
+        const numeric = value === '' ? 0 : Number(value);
+        onChange(Number.isNaN(numeric) ? 0 : numeric);
+      }}
+      style={{ width: 60 }}
+    />
+  );
 }
 
 export function WorkoutDetails({
@@ -162,30 +193,27 @@ export function WorkoutDetails({
 						{[...we.workout_sets]
 							.sort((a, b) => a.set_number - b.set_number)
 							.map(set => (
-              <li key={set.id}>
+              <li key={set.id ?? `${we.id}-${set.set_number}`}>
                 Set {set.set_number}:{' '}
-                <input
-                  type="number"
-                  value={set.reps}
-									onChange={e => {
-									  const reps = Number(e.target.value);
-
-									  onExercisesChange(
-									    exercises.map(ex =>
-									      ex.id !== we.id
-									        ? ex
-									        : {
-									            ...ex,
-									            workout_sets: ex.workout_sets.map(s =>
-									              s.set_number === set.set_number
-									                ? { ...s, reps }
-									                : s
-									            ),
-									          }
-									    )
-									  );
-									}}
-                  style={{ width: 60 }}
+                <RepsInput
+                  reps={set.reps}
+                  onChange={reps => {
+                    onExercisesChange(
+                      exercises.map(ex =>
+                        ex.id !== we.id
+                          ? ex
+                          : {
+                              ...ex,
+                              workout_sets: ex.workout_sets.map(s =>
+                                s.set_number === set.set_number
+                                  ? { ...s, reps }
+                                  : s
+                              ),
+                            }
+                      )
+                    );
+                  }}
+                  // style={{ width: 60 }}
                 />
                 reps
                 <input
