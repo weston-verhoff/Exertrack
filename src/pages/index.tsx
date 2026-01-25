@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WorkoutButton } from '../components/WorkoutButton';
 import { WorkoutCard } from '../components/WorkoutCard';
@@ -65,16 +65,67 @@ export default function Dashboard() {
     fetchInitialWorkouts(userId);
   }, [authLoading, userId, fetchInitialWorkouts ]);
 
+	const updateDragConstraints = useCallback(() => {
+    if (!futureRef.current || !futureContainerRef.current) {
+      return;
+    }
+
+    const contentWidth = futureRef.current.scrollWidth;
+    const containerWidth = futureContainerRef.current.clientWidth;
+    const maxDrag = Math.max(0, contentWidth - containerWidth);
+    setConstraints({ left: -maxDrag, right: 0 });
+    setIsOverflowing(contentWidth > containerWidth);
+  }, []);
+
   // ✅ Dynamically calculate drag constraints when workouts change
   useEffect(() => {
-		if (futureRef.current && futureContainerRef.current) {
-      const contentWidth = futureRef.current.scrollWidth;
-      const containerWidth = futureContainerRef.current.clientWidth;
-      const maxDrag = Math.max(0, contentWidth - containerWidth);
-      setConstraints({ left: -maxDrag, right: 0 });
-      setIsOverflowing(contentWidth > containerWidth);
+    updateDragConstraints();
+  }, [workouts, updateDragConstraints]);
+
+  // ✅ Recalculate drag constraints when layout sizes change
+  useLayoutEffect(() => {
+    updateDragConstraints();
+
+    if (!futureRef.current || !futureContainerRef.current) {
+      return;
     }
-  }, [workouts]);
+
+    let frameId: number | null = null;
+    const scheduleUpdate = () => {
+      if (frameId !== null) {
+        return;
+      }
+      frameId = window.requestAnimationFrame(() => {
+        frameId = null;
+        updateDragConstraints();
+      });
+    };
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(() => {
+            scheduleUpdate();
+          });
+
+    resizeObserver?.observe(futureRef.current);
+    resizeObserver?.observe(futureContainerRef.current);
+
+    window.addEventListener('resize', scheduleUpdate);
+    window.addEventListener('orientationchange', scheduleUpdate);
+    window.visualViewport?.addEventListener('resize', scheduleUpdate);
+
+    return () => {
+      if (frameId !== null) {
+        window.cancelAnimationFrame(frameId);
+      }
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', scheduleUpdate);
+      window.removeEventListener('orientationchange', scheduleUpdate);
+      window.visualViewport?.removeEventListener('resize', scheduleUpdate);
+    };
+  }, [updateDragConstraints]);
+
 
   const deleteWorkout = async (id: string) => {
     if (!userId) return;
