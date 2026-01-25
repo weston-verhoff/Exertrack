@@ -38,6 +38,38 @@ type BuilderRowProps = {
   onRemove: (exerciseId: string, configId: string) => void;
 };
 
+type BuilderNumberInputProps = {
+  value: number;
+  min?: number;
+  onChange: (value: number) => void;
+};
+
+function BuilderNumberInput({ value, min, onChange }: BuilderNumberInputProps) {
+  const [displayValue, setDisplayValue] = useState<string>(String(value));
+
+  useEffect(() => {
+    if (displayValue === '' && value === 0) return;
+    const next = String(value);
+    if (displayValue !== next) {
+      setDisplayValue(next);
+    }
+  }, [displayValue, value]);
+
+  return (
+    <input
+      type="number"
+      value={displayValue}
+      min={min}
+      onChange={e => {
+        const rawValue = e.target.value;
+        setDisplayValue(rawValue);
+        const numeric = rawValue === '' ? 0 : Number(rawValue);
+        onChange(Number.isNaN(numeric) ? 0 : numeric);
+      }}
+    />
+  );
+}
+
 function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
@@ -68,35 +100,26 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
 
       <div className="builder-row__stats">
         <label className="stat-field">
-          <input
-            type="number"
+          <BuilderNumberInput
             value={exercise.sets.length}
             min={0}
-            onChange={e =>
-              onChange(exercise.id, 'sets', Number(e.target.value) || 0)
-            }
+            onChange={value => onChange(exercise.id, 'sets', value)}
           />
           <span className="stat-label">SETS</span>
         </label>
         <label className="stat-field">
-          <input
-            type="number"
+          <BuilderNumberInput
             value={exercise.sets[0]?.reps ?? 0}
             min={0}
-            onChange={e =>
-              onChange(exercise.id, 'reps', Number(e.target.value) || 0)
-            }
+            onChange={value => onChange(exercise.id, 'reps', value)}
           />
           <span className="stat-label">REPS</span>
         </label>
         <label className="stat-field">
-          <input
-            type="number"
+          <BuilderNumberInput
             value={exercise.sets[0]?.weight ?? 0}
             min={0}
-            onChange={e =>
-              onChange(exercise.id, 'weight', Number(e.target.value) || 0)
-            }
+            onChange={value => onChange(exercise.id, 'weight', value)}
           />
           <span className="stat-label">LBS</span>
         </label>

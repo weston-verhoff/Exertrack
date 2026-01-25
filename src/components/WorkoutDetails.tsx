@@ -3,7 +3,7 @@ import { WorkoutButton } from './WorkoutButton';
 import { supabase } from '../supabase/client'
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type CSSProperties } from 'react'
 import {
 	deleteWorkoutSet,
   duplicateWorkoutFromExercises,
@@ -28,21 +28,22 @@ interface Props {
 	onClose?: () => void;
 }
 
-type RepsInputProps = {
-  reps: number;
+type NumericInputProps = {
+  value: number;
   onChange: (value: number) => void;
+	style?: CSSProperties;
 };
 
-function RepsInput({ reps, onChange }: RepsInputProps) {
-  const [displayValue, setDisplayValue] = useState<string>(String(reps));
+function NumericInput({ value, onChange, style }: NumericInputProps) {
+  const [displayValue, setDisplayValue] = useState<string>(String(value));
 
   useEffect(() => {
-    if (displayValue === '' && reps === 0) return;
-    const next = String(reps);
+    if (displayValue === '' && value === 0) return;
+    const next = String(value);
     if (displayValue !== next) {
       setDisplayValue(next);
     }
-  }, [displayValue, reps]);
+  }, [displayValue, value]);
 
   return (
     <input
@@ -54,7 +55,7 @@ function RepsInput({ reps, onChange }: RepsInputProps) {
         const numeric = value === '' ? 0 : Number(value);
         onChange(Number.isNaN(numeric) ? 0 : numeric);
       }}
-      style={{ width: 60 }}
+      style={style}
     />
   );
 }
@@ -195,9 +196,9 @@ export function WorkoutDetails({
 							.map(set => (
               <li key={set.id ?? `${we.id}-${set.set_number}`}>
                 Set {set.set_number}:{' '}
-                <RepsInput
-                  reps={set.reps}
-                  onChange={reps => {
+								<NumericInput
+                  value={set.reps}
+                  onChange={value => {
                     onExercisesChange(
                       exercises.map(ex =>
                         ex.id !== we.id
@@ -206,39 +207,36 @@ export function WorkoutDetails({
                               ...ex,
                               workout_sets: ex.workout_sets.map(s =>
                                 s.set_number === set.set_number
-                                  ? { ...s, reps }
+                                  ? { ...s, reps: value }
                                   : s
                               ),
                             }
                       )
                     );
                   }}
-                  // style={{ width: 60 }}
+                  style={{ width: 60 }}
                 />
                 reps
-                <input
-                  type="number"
+								<NumericInput
                   value={set.weight}
-									onChange={e => {
-									  const weight = Number(e.target.value);
-
-										onExercisesChange(
-										    exercises.map(ex =>
-										      ex.id !== we.id
-										        ? ex
-										        : {
-										            ...ex,
-										            workout_sets: ex.workout_sets.map(s =>
-										              s.set_number === set.set_number
-										                ? { ...s, weight }
-										                : s
-										            ),
-										          }
-										    )
-										  );
-										}}
-	                  style={{ width: 70, marginLeft: 6 }}
-	                />
+                  onChange={value => {
+                    onExercisesChange(
+                      exercises.map(ex =>
+                        ex.id !== we.id
+                          ? ex
+                          : {
+                              ...ex,
+                              workout_sets: ex.workout_sets.map(s =>
+                                s.set_number === set.set_number
+                                  ? { ...s, weight: value }
+                                  : s
+                              ),
+                            }
+                      )
+                    );
+                  }}
+                  style={{ width: 70, marginLeft: 6 }}
+                />
 	                lbs
 									<button
 									  type="button"
