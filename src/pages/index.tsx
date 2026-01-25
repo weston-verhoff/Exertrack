@@ -157,7 +157,7 @@ export default function Dashboard() {
     <div className="clearfix">
       <div className='dashboardHero'>
 				<div className="dash-content">
-        <h1 className="headline font-white">EzExTrack</h1>
+        <h1 className="headline font-white">IWYN Fitness</h1>
 					<div className="dashboard-buttons">
 					{nextWorkoutId && (
 					  <WorkoutButton

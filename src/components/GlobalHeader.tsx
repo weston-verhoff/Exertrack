@@ -39,7 +39,7 @@ export function GlobalHeader() {
   return (
     <header className="global-header">
 			<Link className="logo font-white"  to="/" onClick={() => setMenuOpen(false)}>
-				<div style={{ fontStyle: 'italic' }}>EzEx</div>
+				<div style={{ fontStyle: 'italic' }}>IWYN</div>
 			</Link>
 			<nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
 				{(user ? loggedInLinks : loggedOutLinks).map((link) => (
