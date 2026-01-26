@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useCallback, useLayoutEffect } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WorkoutButton } from '../components/WorkoutButton';
 import { WorkoutCard } from '../components/WorkoutCard';
@@ -20,10 +20,9 @@ export default function Dashboard() {
   const navigate = useNavigate();
 	const futureContainerRef = useRef<HTMLDivElement>(null);
   const futureRef = useRef<HTMLDivElement>(null);
-  const [constraints, setConstraints] = useState({ left: 0, right: 0 });
 	const [drawerOpen, setDrawerOpen] = useState(false);
   const { userId, loading: authLoading } = useAuth();
-	const [isOverflowing, setIsOverflowing] = useState(false);
+	const [isOverflowing] = useState(false);
   const [showAllPast, setShowAllPast] = useState(false);
   const [completedTotalCount, setCompletedTotalCount] = useState<number>(0);
 
@@ -65,67 +64,6 @@ export default function Dashboard() {
 
     fetchInitialWorkouts(userId);
   }, [authLoading, userId, fetchInitialWorkouts ]);
-
-	const updateDragConstraints = useCallback(() => {
-    if (!futureRef.current || !futureContainerRef.current) {
-      return;
-    }
-
-    const contentWidth = futureRef.current.scrollWidth;
-    const containerWidth = futureContainerRef.current.clientWidth;
-    const maxDrag = Math.max(0, contentWidth - containerWidth);
-    setConstraints({ left: -maxDrag, right: 0 });
-    setIsOverflowing(contentWidth > containerWidth);
-  }, []);
-
-  // ✅ Dynamically calculate drag constraints when workouts change
-  useEffect(() => {
-    updateDragConstraints();
-  }, [workouts, updateDragConstraints]);
-
-  // ✅ Recalculate drag constraints when layout sizes change
-  useLayoutEffect(() => {
-    updateDragConstraints();
-
-    if (!futureRef.current || !futureContainerRef.current) {
-      return;
-    }
-
-    let frameId: number | null = null;
-    const scheduleUpdate = () => {
-      if (frameId !== null) {
-        return;
-      }
-      frameId = window.requestAnimationFrame(() => {
-        frameId = null;
-        updateDragConstraints();
-      });
-    };
-
-    const resizeObserver =
-      typeof ResizeObserver === 'undefined'
-        ? null
-        : new ResizeObserver(() => {
-            scheduleUpdate();
-          });
-
-    resizeObserver?.observe(futureRef.current);
-    resizeObserver?.observe(futureContainerRef.current);
-
-    window.addEventListener('resize', scheduleUpdate);
-    window.addEventListener('orientationchange', scheduleUpdate);
-    window.visualViewport?.addEventListener('resize', scheduleUpdate);
-
-    return () => {
-      if (frameId !== null) {
-        window.cancelAnimationFrame(frameId);
-      }
-      resizeObserver?.disconnect();
-      window.removeEventListener('resize', scheduleUpdate);
-      window.removeEventListener('orientationchange', scheduleUpdate);
-      window.visualViewport?.removeEventListener('resize', scheduleUpdate);
-    };
-  }, [updateDragConstraints]);
 
 
   const deleteWorkout = async (id: string) => {
@@ -274,7 +212,7 @@ export default function Dashboard() {
 					  ref={futureRef}
 					  className={`drag-future-workouts${isOverflowing ? ' is-overflowing' : ' is-centered'}`}
 					  drag={drawerOpen ? false : "x"}
-					  dragConstraints={constraints}
+					  dragConstraints={futureContainerRef}
 					  dragElastic={0.05}
 					  style={{
 					    pointerEvents: drawerOpen ? "none" : "auto",
