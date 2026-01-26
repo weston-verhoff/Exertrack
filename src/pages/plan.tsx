@@ -19,6 +19,8 @@ import { useTemplates } from '../hooks/useTemplates';
 import { supabase } from '../supabase/client';
 import { Layout } from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
+import { Drawer } from '../components/Drawer';
+import { WorkoutButton } from '../components/WorkoutButton';
 import '../styles/plan.css';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
 import {
@@ -387,6 +389,10 @@ export default function PlanSession() {
     }
   };
 
+	const closeCustomDrawer = () => {
+    setAddingCustom(false);
+  };
+
   const handleSaveTemplate = async (configured: BuilderExerciseConfig[]) => {
     if (!userId) {
       throw new Error('No authenticated user.');
@@ -607,7 +613,6 @@ export default function PlanSession() {
                   onChange={e => setSearchQuery(e.target.value)}
                 />
               </div>
-
               <div className="exercise-list">
                 {loadingExercises ? (
                   <p>Loading exercises...</p>
@@ -638,37 +643,14 @@ export default function PlanSession() {
                     </button>
                   ))
                 )}
-              </div>
-							<div className="custom-lift">
-                {addingCustom ? (
-                  <div className="custom-lift__form">
-                    <input
-                      type="text"
-                      placeholder="Exercise name"
-                      value={customName}
-                      onChange={e => setCustomName(e.target.value)}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Target muscle"
-                      value={customMuscle}
-                      onChange={e => setCustomMuscle(e.target.value)}
-                    />
-                    <div className="custom-actions">
-                      <button onClick={addCustomExercise}>Add</button>
-                      <button onClick={() => setAddingCustom(false)}>
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <button
-                    className="custom-lift__trigger"
-                    onClick={() => setAddingCustom(true)}
-                  >
-                    Add a Custom Lift +
-                  </button>
-                )}
+								<WorkoutButton
+									label='Add a Custom Exercise'
+									icon="+"
+									variant="accent"
+									size="lg"
+									onClick={() => setAddingCustom(true)}
+									rounded="full"
+								/>
               </div>
             </div>
           </div>
@@ -696,6 +678,32 @@ export default function PlanSession() {
           </div>
         </div>
       </Layout>
+			<Drawer isOpen={addingCustom} onClose={closeCustomDrawer} width={440}>
+        <div className="custom-drawer__header">
+          <h2>Create a custom lift</h2>
+        </div>
+        <p className="custom-drawer__subtitle">
+          Add a new exercise to your library and drop it into your workout.
+        </p>
+        <div className="custom-lift__form">
+          <input
+            type="text"
+            placeholder="Exercise name"
+            value={customName}
+            onChange={e => setCustomName(e.target.value)}
+          />
+          <input
+            type="text"
+            placeholder="Target muscle"
+            value={customMuscle}
+            onChange={e => setCustomMuscle(e.target.value)}
+          />
+          <div className="custom-actions">
+            <button onClick={addCustomExercise}>Add</button>
+            <button onClick={closeCustomDrawer}>Cancel</button>
+          </div>
+        </div>
+      </Drawer>
     </div>
 	);
 }

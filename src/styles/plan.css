@@ -248,15 +248,7 @@
 }
 
 .custom-lift__trigger {
-  width: 100%;
-	background: var(--primary-150);
-  border: 1px solid var(--primary-ink-strong);
-  border-radius: 8px;
-  padding: 0.5rem 1rem;
-  font-weight: 800;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-top: 1.5rem;
+	margin: 2rem 0 2rem;
 }
 
 .custom-lift__form {
@@ -285,6 +277,24 @@
   border-radius: 12px;
   border: 2px solid var(--neutral-ink);
   cursor: pointer;
+}
+
+.custom-drawer__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.custom-drawer__header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  font-family: var(--font-headline);
+}
+
+.custom-drawer__subtitle {
+  margin: 0;
+  color: var(--text-inverse);
 }
 
 .exercise-list {

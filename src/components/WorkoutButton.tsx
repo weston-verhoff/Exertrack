@@ -10,6 +10,7 @@ interface WorkoutButtonProps {
   loadingLabel?: string
   type?: 'button' | 'submit' | 'reset'
 	size?: 'sm' | 'md' | 'lg'
+	rounded?: 'default' | 'full'
 }
 
 const variantStyles: Record<string, React.CSSProperties> = {
@@ -64,6 +65,7 @@ export function WorkoutButton({
 	size = 'md',
   loadingLabel,
   type = 'button',
+	rounded = 'default',
 }: WorkoutButtonProps) {
   const [isPressed, setIsPressed] = useState(false)
 
@@ -71,7 +73,7 @@ export function WorkoutButton({
     ...variantStyles[variant],
 		...sizeStyles[size],
     border: 'none',
-    borderRadius: '4px',
+    borderRadius: rounded==='full'?'999px':'8px',
 		fontFamily: 'var(--font-body)',
     boxShadow: variant==='whiteText'||variant==='blackText'||variant==='unsetText'? 'none' : (isPressed ? 'inset 0 0px 8px rgba(0, 0, 0, 0.8)' : 'inset -2px -2px rgba(0,0,0,0.25)'),
     transition: 'box-shadow 0.1s ease',
