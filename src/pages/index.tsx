@@ -5,6 +5,7 @@ import { WorkoutCard } from '../components/WorkoutCard';
 import { motion } from 'framer-motion'; // ✅ Import motion
 import { Workout } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
+import iwynFullLogoLight from '../IWYN_full_logo_light.png';
 import {
   fetchAllCompletedWorkouts,
   fetchWorkoutOverview,
@@ -208,7 +209,11 @@ export default function Dashboard() {
     <div className="clearfix">
       <div className='dashboardHero'>
 				<div className="dash-content">
-        <h1 className="headline font-white">IWYN Fitness</h1>
+					<img
+	          src={iwynFullLogoLight}
+	          className="dashboard-logo"
+	          alt="IWYN Fitness"
+	        />
 					<div className="dashboard-buttons">
 					{nextWorkoutId && (
 					  <WorkoutButton

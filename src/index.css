@@ -286,6 +286,11 @@ input.exerciseSearch{
 		font-style: italic;
 		text-align: center;
 }
+.dashboardHero .dashboard-logo {
+	max-width: min(420px, 80vw);
+	height: auto;
+	margin-bottom: 1rem;
+}
 .dashboardHero .workout-card {
 	margin-left: 5rem;
 }
@@ -340,7 +345,7 @@ input.exerciseSearch{
 .future-workouts {
 	background-image: url('orange-bg.png');
 	background-size:cover;
-	max-height: 375px;
+	max-height: 450px;
 	max-width:100%;
 }
 .drag-future-workouts {
@@ -362,6 +367,9 @@ input.exerciseSearch{
 	padding:1rem 3rem;
 	align-items: center;
 	justify-content: center;
+}
+.workouts-header button {
+	flex-shrink:0;
 }
 .drag-future-workouts.is-overflowing {
 	margin: 0;
