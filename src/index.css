@@ -416,9 +416,6 @@ input.exerciseSearch{
 	font-size: 2rem;
 }
 /* === MOBILE STYLES === */
-@media (max-width: 470px) {
-
-}
 @media (max-width: 800px) {
 	.global-header .nav-links {
 		position: fixed;
