@@ -13,6 +13,8 @@ export interface WorkoutWithTemplate extends Workout {
   } | null;
 }
 
+export type ExportWorkout = WorkoutWithTemplate;
+
 export interface WorkoutExerciseSummary {
   id?: string;
   sets: number;
@@ -40,6 +42,7 @@ const WORKOUT_SELECT_FIELDS = `
   status,
   workout_exercises (
     id,
+    exercise_id,
     order,
     exercise:exercise_id (
       id,
@@ -65,6 +68,7 @@ const WORKOUT_SELECT_FIELDS_WITH_TEMPLATE = `
   template:template_id(name),
   workout_exercises (
     id,
+    exercise_id,
     order,
     exercise:exercise_id (
       id,
@@ -588,6 +592,31 @@ export async function fetchAllCompletedWorkouts({
   return { data: completed, error: null };
 }
 
+export async function fetchWorkoutExportData({
+  userId,
+}: {
+  userId: string;
+}): Promise<ServiceResult<ExportWorkout[]>> {
+  const { data, error } = await supabase
+    .from('workouts')
+    .select(WORKOUT_SELECT_FIELDS_WITH_TEMPLATE)
+    .eq('user_id', userId)
+    .or('status.neq.canceled,status.is.null')
+    .order('date', { ascending: true });
+
+  if (error) {
+    return {
+      data: null,
+      error: logAndReturnError('Failed to export workouts.', error),
+    };
+  }
+
+  return {
+    data: (data ?? []).map(item => normalizeWorkout(item, true)),
+    error: null,
+  };
+}
+
 export async function fetchWorkoutById({
   workoutId,
   userId,
@@ -899,6 +928,7 @@ export async function duplicateWorkoutFromExercises({
 export const workoutService = {
   fetchWorkoutOverview,
   fetchAllCompletedWorkouts,
+  fetchWorkoutExportData,
   fetchWorkoutById,
   fetchWorkoutDetail,
   fetchAnalyticsWorkouts,

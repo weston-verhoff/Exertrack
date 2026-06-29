@@ -3,9 +3,9 @@ import React, { useEffect, useState } from 'react'
 import { Layout } from '../components/Layout'
 import { WorkoutCard } from '../components/WorkoutCard'
 import { useAuth } from '../context/AuthContext'
-import { fetchWorkoutExportData } from '../services/workoutExportService'
 import {
   fetchAllCompletedWorkouts,
+  fetchWorkoutExportData,
   fetchWorkoutOverview,
 } from '../services/workoutService'
 import { confirmAndDeleteWorkout } from '../utils/workoutActions'

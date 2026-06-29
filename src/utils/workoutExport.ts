@@ -1,4 +1,4 @@
-import { ExportWorkout } from '../services/workoutExportService';
+import { ExportWorkout } from '../services/workoutService';
 import { WorkoutSet } from '../types/workout';
 
 const formatWorkoutDate = (dateString: string) => {
