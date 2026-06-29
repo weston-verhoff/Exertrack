@@ -3,11 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { Layout } from '../components/Layout'
 import { WorkoutCard } from '../components/WorkoutCard'
 import { useAuth } from '../context/AuthContext'
+import { fetchWorkoutExportData } from '../services/workoutExportService'
 import {
   fetchAllCompletedWorkouts,
   fetchWorkoutOverview,
 } from '../services/workoutService'
 import { confirmAndDeleteWorkout } from '../utils/workoutActions'
+import {
+  buildWorkoutExportFilename,
+  downloadTextFile,
+  formatWorkoutsAsText,
+} from '../utils/workoutExport'
 
 export default function PastWorkouts() {
   const [workouts, setWorkouts] = useState<any[]>([]);
@@ -15,6 +21,8 @@ export default function PastWorkouts() {
 	const [showAllPast, setShowAllPast] = useState(false)
   const [loadingAllPast, setLoadingAllPast] = useState(false)
   const [completedTotalCount, setCompletedTotalCount] = useState<number>(0)
+  const [exportingWorkouts, setExportingWorkouts] = useState(false)
+  const [exportError, setExportError] = useState<string | null>(null)
 	const { userId, loading: authLoading } = useAuth()
 	const handleStatusChange = (id: string, status: string) => {
 	  setWorkouts(prev =>
@@ -115,6 +123,37 @@ export default function PastWorkouts() {
 	  setLoadingAllPast(false)
 	};
 
+  const exportAllWorkouts = async () => {
+    if (!userId || exportingWorkouts) return
+
+    setExportingWorkouts(true)
+    setExportError(null)
+
+    try {
+      const { data, error } = await fetchWorkoutExportData({ userId })
+
+      if (error || !data) {
+        setExportError(error ?? 'Failed to export workouts. Please try again.')
+        return
+      }
+
+      if (data.length === 0) {
+        setExportError('No workouts are available to export.')
+        return
+      }
+
+      downloadTextFile({
+        content: formatWorkoutsAsText(data),
+        filename: buildWorkoutExportFilename(),
+      })
+    } catch (error) {
+      console.error('Failed to export workouts.', error)
+      setExportError('Failed to export workouts. Please try again.')
+    } finally {
+      setExportingWorkouts(false)
+    }
+  }
+
   return (
     <Layout>
 		<div style={{display:'flex', flexDirection:'column'}}>
@@ -144,6 +183,19 @@ export default function PastWorkouts() {
 				</div>
       )}
 			<h2 style={{textAlign:'center'}}>Past Workouts</h2>
+      <div style={{display:'flex', justifyContent:'center', marginBottom:'1rem'}}>
+        <button
+          className="show-all-button"
+          type="button"
+          onClick={exportAllWorkouts}
+          disabled={exportingWorkouts || !userId}
+        >
+          {exportingWorkouts ? 'Exporting...' : 'Export All'}
+        </button>
+      </div>
+      {exportError && (
+        <p role="alert" style={{textAlign:'center'}}>{exportError}</p>
+      )}
       {loading ? (
         <p>Loading...</p>
       ) : completedWorkouts.length === 0 ? (
