@@ -156,7 +156,7 @@
   gap: 0.2rem;
 }
 
-.stat-field input, select {
+.stat-field input, .stat-field select {
   width: 100%;
 	min-width:50px;
   border: 1px solid var(--neutral-ink);
