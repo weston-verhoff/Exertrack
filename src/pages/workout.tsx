@@ -90,7 +90,7 @@ editedExercises.forEach(we => {
 	const muscle = we.exercise?.target_muscle ?? 'Unknown';
 
 	const volume = we.workout_sets.reduce(
-		(sum: number, s: WorkoutSet) => sum + s.reps * s.weight,
+		(sum: number, s: WorkoutSet) => sum + Number(s.reps ?? 0) * Number(s.weight ?? 0),
 		0
 	);
 

@@ -6,12 +6,16 @@ import { fetchWorkoutDetail } from '../services/workoutService'
 interface WorkoutExercise {
   id?: string
   sets: number
-  reps: number
-  weight: number
+  reps: number | null
+  weight: number | null
+  duration_seconds?: number | null
+  distance_value?: number | null
+  distance_unit?: string | null
   notes?: string | null
   exercise: {
     name: string
     target_muscle: string
+    exercise_type: 'strength' | 'cardio'
   }
 }
 
@@ -64,8 +68,9 @@ export default function PastDetail() {
   const calculateVolume = (exs: WorkoutExercise[]) => {
     const volume: Record<string, number> = {}
     exs.forEach(e => {
+      if (e.exercise.exercise_type !== 'strength') return
       const muscle = e.exercise.target_muscle
-      const liftVolume = e.sets * e.reps * (e.weight || 0)
+      const liftVolume = e.sets * Number(e.reps ?? 0) * Number(e.weight ?? 0)
       volume[muscle] = (volume[muscle] || 0) + liftVolume
     })
     setVolumeByMuscle(volume)
@@ -87,7 +92,9 @@ export default function PastDetail() {
           {workout.workout_exercises.map((e: WorkoutExercise) => (
             <li key={e.id}>
               <strong>{e.exercise.name}</strong> ({e.exercise.target_muscle})<br />
-              Sets: {e.sets}, Reps: {e.reps}, Weight: {e.weight}<br />
+              {e.exercise.exercise_type === 'cardio'
+                ? `Segments: ${e.sets}, Duration: ${Math.round((e.duration_seconds ?? 0) / 60)} min${e.distance_value != null ? `, Distance: ${e.distance_value} ${e.distance_unit ?? ''}` : ''}`
+                : `Sets: ${e.sets}, Reps: ${e.reps}, Weight: ${e.weight}`}<br />
               Notes: {e.notes || '—'}
             </li>
           ))}

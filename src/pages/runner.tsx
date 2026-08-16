@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { WorkoutButton } from '../components/WorkoutButton'
 import { Layout } from '../components/Layout';
-import { WorkoutExercise, WorkoutSet } from '../types/workout';
+import { DistanceUnit, WorkoutExercise, WorkoutSet } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
 import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
 
@@ -54,7 +54,7 @@ export default function WorkoutRunner() {
     fetchWorkoutExercises()
   }, [authLoading, userId, workoutId])
 
-  const updateCurrentSet = (field: 'weight' | 'reps' | 'notes', value: any) => {
+  const updateCurrentSet = (field: keyof WorkoutSet, value: any) => {
 	  setExercises(prev =>
 	    prev.map((ex, exIdx) =>
 	      exIdx !== currentIndex
@@ -145,12 +145,15 @@ export default function WorkoutRunner() {
 			  current={currentSetIndex + 1}
 			  total={currentExercise.workout_sets.length}
 			/>
-			<SetEditor
+			{current.exercise?.exercise_type === 'cardio' ? <CardioEditor
+			  set={currentSet}
+			  onChange={updateCurrentSet}
+			/> : <SetEditor
 			  weight={currentSet.weight ?? 0}
-			  reps={currentSet.reps}
+			  reps={currentSet.reps ?? 0}
 			  notes={currentSet.notes ?? ''}
 			  onChange={updateCurrentSet}
-			/>
+			/>}
 		  <ActionButtons
 		    isLast={isLastExercise && isLastSet}
 		    onNextSet={handleNextSet}
@@ -159,6 +162,21 @@ export default function WorkoutRunner() {
 		  />
 		</Layout>
   )
+}
+
+function CardioEditor({ set, onChange }: { set: WorkoutSet; onChange: (field: keyof WorkoutSet, value: any) => void }) {
+  return (
+    <div style={{ display: 'grid', gap: '0.75rem' }}>
+      <label>Duration (minutes)<input type="number" min="0" value={Math.round((set.duration_seconds ?? 0) / 60)} onChange={e => onChange('duration_seconds', Math.max(0, Number(e.target.value)) * 60)} style={{ width: '100%' }} /></label>
+      <label>Distance<input type="number" min="0" step="any" value={set.distance_value ?? ''} onChange={e => onChange('distance_value', e.target.value === '' ? null : Math.max(0, Number(e.target.value)))} style={{ width: '100%' }} /></label>
+      <label>Unit<select value={set.distance_unit ?? 'mi'} onChange={e => onChange('distance_unit', e.target.value as DistanceUnit)} style={{ width: '100%' }}><option value="mi">Miles</option><option value="km">Kilometers</option><option value="m">Meters</option><option value="yd">Yards</option></select></label>
+      <label>Calories<input type="number" min="0" value={set.calories ?? ''} onChange={e => onChange('calories', e.target.value === '' ? null : Math.max(0, Number(e.target.value)))} style={{ width: '100%' }} /></label>
+      <label>Average heart rate<input type="number" min="0" value={set.average_heart_rate ?? ''} onChange={e => onChange('average_heart_rate', e.target.value === '' ? null : Math.max(0, Number(e.target.value)))} style={{ width: '100%' }} /></label>
+      <label>Resistance<input type="number" min="0" step="any" value={set.resistance ?? ''} onChange={e => onChange('resistance', e.target.value === '' ? null : Math.max(0, Number(e.target.value)))} style={{ width: '100%' }} /></label>
+      <label>Incline<input type="number" min="0" step="any" value={set.incline ?? ''} onChange={e => onChange('incline', e.target.value === '' ? null : Math.max(0, Number(e.target.value)))} style={{ width: '100%' }} /></label>
+      <label>Notes<textarea value={set.notes ?? ''} onChange={e => onChange('notes', e.target.value)} style={{ width: '100%', minHeight: '60px' }} /></label>
+    </div>
+  );
 }
 function ExerciseHeader({ name, targetMuscle }: { name: string; targetMuscle: string }) {
   return (

@@ -23,6 +23,7 @@ import { Drawer } from '../components/Drawer';
 import { WorkoutButton } from '../components/WorkoutButton';
 import '../styles/plan.css';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
+import { DistanceUnit, ExerciseType } from '../types/workout';
 import {
   createWorkoutFromBuilder,
   fetchTemplateBuilderExercises,
@@ -30,12 +31,14 @@ import {
   updateWorkoutFromBuilder,
 } from '../services/workoutService';
 
+type BuilderField = 'sets' | 'reps' | 'weight' | 'duration_seconds' | 'distance_value' | 'distance_unit';
+
 type BuilderRowProps = {
   exercise: BuilderExerciseConfig;
   onChange: (
     id: string,
-    field: 'sets' | 'reps' | 'weight',
-    value: number
+    field: BuilderField,
+    value: number | DistanceUnit
   ) => void;
   onRemove: (exerciseId: string, configId: string) => void;
 };
@@ -107,8 +110,24 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
             min={0}
             onChange={value => onChange(exercise.id, 'sets', value)}
           />
-          <span className="stat-label">SETS</span>
+          <span className="stat-label">{exercise.exercise_type === 'cardio' ? 'LAPS' : 'SETS'}</span>
         </label>
+        {exercise.exercise_type === 'cardio' ? <>
+        <label className="stat-field">
+          <BuilderNumberInput value={Math.round((exercise.sets[0]?.duration_seconds ?? 0) / 60)} min={0} onChange={value => onChange(exercise.id, 'duration_seconds', value * 60)} />
+          <span className="stat-label">MIN</span>
+        </label>
+        <label className="stat-field">
+          <BuilderNumberInput value={exercise.sets[0]?.distance_value ?? 0} min={0} onChange={value => onChange(exercise.id, 'distance_value', value)} />
+          <span className="stat-label">DIST</span>
+        </label>
+        <label className="stat-field">
+          <select value={exercise.sets[0]?.distance_unit ?? 'mi'} onChange={event => onChange(exercise.id, 'distance_unit', event.target.value as DistanceUnit)}>
+            <option value="mi">mi</option><option value="km">km</option><option value="m">m</option><option value="yd">yd</option>
+          </select>
+          <span className="stat-label">UNIT</span>
+        </label>
+        </> : <>
         <label className="stat-field">
           <BuilderNumberInput
             value={exercise.sets[0]?.reps ?? 0}
@@ -125,6 +144,7 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
           />
           <span className="stat-label">LBS</span>
         </label>
+        </>}
       </div>
 
       <span className="drag-handle" {...attributes} {...listeners}>
@@ -164,6 +184,7 @@ export default function PlanSession() {
   >([]);
   const [customName, setCustomName] = useState('');
   const [customMuscle, setCustomMuscle] = useState('');
+  const [customExerciseType, setCustomExerciseType] = useState<ExerciseType>('strength');
   const [addingCustom, setAddingCustom] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -275,11 +296,14 @@ export default function PlanSession() {
         exercise_id: exercise.id,
         name: exercise.name,
         target_muscle: exercise.target_muscle,
+        exercise_type: exercise.exercise_type ?? 'strength',
         order: prev.length,
-        sets: Array.from({ length: 3 }, (_, idx) => ({
+        sets: Array.from({ length: exercise.exercise_type === 'cardio' ? 1 : 3 }, (_, idx) => ({
           set_number: idx + 1,
-          reps: 8,
-          weight: 0,
+          reps: exercise.exercise_type === 'cardio' ? null : 8,
+          weight: exercise.exercise_type === 'cardio' ? null : 0,
+          duration_seconds: exercise.exercise_type === 'cardio' ? 1800 : null,
+          distance_unit: exercise.exercise_type === 'cardio' ? 'mi' : null,
           intensity_type: 'normal',
         })),
       };
@@ -290,8 +314,8 @@ export default function PlanSession() {
 
   const handleChangeExercise = (
     id: string,
-    field: 'sets' | 'reps' | 'weight',
-    value: number
+    field: BuilderField,
+    value: number | DistanceUnit
   ) => {
     setSelectedExercisesData(prev =>
       prev.map(ex => {
@@ -300,7 +324,7 @@ export default function PlanSession() {
         const nextSets = [...ex.sets];
 
         if (field === 'sets') {
-          const count = Math.max(0, value);
+          const count = Math.max(0, Number(value));
           if (count > nextSets.length) {
             nextSets.push(
               ...Array.from({ length: count - nextSets.length }, (_, idx) => ({
@@ -308,6 +332,10 @@ export default function PlanSession() {
                 reps: nextSets[0]?.reps ?? 8,
                 weight: nextSets[0]?.weight ?? 0,
                 intensity_type: 'normal',
+                duration_seconds: ex.exercise_type === 'cardio' ? nextSets[0]?.duration_seconds ?? 1800 : null,
+                distance_value: ex.exercise_type === 'cardio' ? nextSets[0]?.distance_value ?? null : null,
+                distance_unit: ex.exercise_type === 'cardio' ? nextSets[0]?.distance_unit ?? 'mi' : null,
+                calories: ex.exercise_type === 'cardio' ? nextSets[0]?.calories ?? null : null,
               }))
             );
           } else {
@@ -319,17 +347,24 @@ export default function PlanSession() {
         }
 
         if (field === 'reps') {
-          const reps = Math.max(0, value);
+          const reps = Math.max(0, Number(value));
           nextSets.forEach(set => {
             set.reps = reps;
           });
         }
 
         if (field === 'weight') {
-          const weight = Math.max(0, value);
+          const weight = Math.max(0, Number(value));
           nextSets.forEach(set => {
             set.weight = weight;
           });
+        }
+
+        if (field === 'duration_seconds' || field === 'distance_value') {
+          nextSets.forEach(set => { set[field] = Math.max(0, Number(value)); });
+        }
+        if (field === 'distance_unit') {
+          nextSets.forEach(set => { set.distance_unit = value as DistanceUnit; });
         }
 
         return { ...ex, sets: nextSets };
@@ -373,6 +408,7 @@ export default function PlanSession() {
           target_muscle: customMuscle,
           is_custom: true,
           user_id: userId,
+          exercise_type: customExerciseType,
         },
       ])
       .select();
@@ -384,6 +420,7 @@ export default function PlanSession() {
       addExercise(newExercise);
       setCustomName('');
       setCustomMuscle('');
+      setCustomExerciseType('strength');
       setAddingCustom(false);
       await refetch();
     }
@@ -408,6 +445,14 @@ export default function PlanSession() {
         exercise_id: ex.exercise_id,
         sets: ex.sets.length,
         reps: ex.sets[0]?.reps ?? 8,
+        weight: ex.sets[0]?.weight ?? null,
+        duration_seconds: ex.sets[0]?.duration_seconds ?? null,
+        distance_value: ex.sets[0]?.distance_value ?? null,
+        distance_unit: ex.sets[0]?.distance_unit ?? null,
+        calories: ex.sets[0]?.calories ?? null,
+        average_heart_rate: ex.sets[0]?.average_heart_rate ?? null,
+        resistance: ex.sets[0]?.resistance ?? null,
+        incline: ex.sets[0]?.incline ?? null,
         order: i,
       }));
 
@@ -638,6 +683,7 @@ export default function PlanSession() {
                         </span>
                         <span className="exercise-pill__muscle">
                           {exercise.target_muscle}
+                          {' · '}{exercise.exercise_type === 'cardio' ? 'Cardio' : 'Strength'}
                         </span>
                       </span>
                     </button>
@@ -680,10 +726,10 @@ export default function PlanSession() {
       </Layout>
 			<Drawer isOpen={addingCustom} onClose={closeCustomDrawer} width={440}>
         <div className="custom-drawer__header">
-          <h2>Create a custom lift</h2>
+          <h2>Create a custom exercise</h2>
         </div>
         <p className="custom-drawer__subtitle">
-          Add a new exercise to your library and drop it into your workout.
+          Add a strength or cardio exercise to your library and workout.
         </p>
         <div className="custom-lift__form">
           <input
@@ -692,6 +738,10 @@ export default function PlanSession() {
             value={customName}
             onChange={e => setCustomName(e.target.value)}
           />
+          <select value={customExerciseType} onChange={event => setCustomExerciseType(event.target.value as ExerciseType)}>
+            <option value="strength">Strength</option>
+            <option value="cardio">Cardio</option>
+          </select>
           <input
             type="text"
             placeholder="Target muscle"

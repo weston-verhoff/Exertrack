@@ -88,6 +88,7 @@ export function WorkoutDetails({
       exercise_id: we.exercise?.id ?? we.exercise_id,
       name: we.exercise?.name ?? '',
       target_muscle: we.exercise?.target_muscle ?? '',
+      exercise_type: we.exercise?.exercise_type ?? 'strength',
       order: we.order ?? index,
       sets: we.workout_sets.map(set => ({
         set_number: set.set_number,
@@ -95,6 +96,13 @@ export function WorkoutDetails({
         weight: set.weight,
         intensity_type: set.intensity_type,
         notes: set.notes,
+        duration_seconds: set.duration_seconds,
+        distance_value: set.distance_value,
+        distance_unit: set.distance_unit,
+        calories: set.calories,
+        average_heart_rate: set.average_heart_rate,
+        resistance: set.resistance,
+        incline: set.incline,
       })),
     }));
 
@@ -110,7 +118,7 @@ export function WorkoutDetails({
 
   const volumeByExercise = exercises.map(we => {
     const volume = we.workout_sets.reduce(
-      (sum: number, s: WorkoutSet) => sum + s.reps * s.weight,
+      (sum: number, s: WorkoutSet) => sum + Number(s.reps ?? 0) * Number(s.weight ?? 0),
       0
     );
 
@@ -125,7 +133,7 @@ export function WorkoutDetails({
   exercises.forEach(we => {
     const muscle = we.exercise?.target_muscle ?? 'Unknown';
     const volume = we.workout_sets.reduce(
-      (sum: number, s: WorkoutSet) => sum + s.reps * s.weight,
+      (sum: number, s: WorkoutSet) => sum + Number(s.reps ?? 0) * Number(s.weight ?? 0),
       0
     );
     muscleSummary[muscle] = (muscleSummary[muscle] || 0) + volume;
@@ -152,7 +160,7 @@ export function WorkoutDetails({
         <div key={we.id} className="exercise-item">
           <strong>{we.exercise?.name ?? 'Unknown'}</strong>
 					<WorkoutButton
-					  label={addingSetId === we.id ? 'Adding...' : 'Add Set'}
+					  label={addingSetId === we.id ? 'Adding...' : we.exercise?.exercise_type === 'cardio' ? 'Add Segment' : 'Add Set'}
 					  icon=""
 					  variant="unsetText"
 					  onClick={async () => {
@@ -162,8 +170,10 @@ export function WorkoutDetails({
 					    const { data, error } = await insertWorkoutSet({
 					      workoutExerciseId: we.id,
 					      setNumber: nextSetNumber,
-					      reps: 8,
-					      weight: 0,
+					      reps: we.exercise?.exercise_type === 'cardio' ? null : 8,
+					      weight: we.exercise?.exercise_type === 'cardio' ? null : 0,
+					      durationSeconds: we.exercise?.exercise_type === 'cardio' ? 1800 : null,
+					      distanceUnit: we.exercise?.exercise_type === 'cardio' ? 'mi' : null,
 					      intensityType: 'normal',
 					    });
 
@@ -195,9 +205,15 @@ export function WorkoutDetails({
 							.sort((a, b) => a.set_number - b.set_number)
 							.map(set => (
               <li key={set.id ?? `${we.id}-${set.set_number}`}>
+				{we.exercise?.exercise_type === 'cardio' ? <>
+				Segment {set.set_number}:{' '}
+				<NumericInput value={Math.round((set.duration_seconds ?? 0) / 60)} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, duration_seconds: Math.max(0, value) * 60 } : s) })))} style={{ width: 60 }} /> min{' '}
+				<NumericInput value={set.distance_value ?? 0} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, distance_value: Math.max(0, value) } : s) })))} style={{ width: 70 }} />{' '}
+				<select value={set.distance_unit ?? 'mi'} onChange={event => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, distance_unit: event.target.value as any } : s) })))}><option value="mi">mi</option><option value="km">km</option><option value="m">m</option><option value="yd">yd</option></select>
+				</> : <>
                 Set {set.set_number}:{' '}
 								<NumericInput
-                  value={set.reps}
+                  value={set.reps ?? 0}
                   onChange={value => {
                     onExercisesChange(
                       exercises.map(ex =>
@@ -218,7 +234,7 @@ export function WorkoutDetails({
                 />
                 reps
 								<NumericInput
-                  value={set.weight}
+                  value={set.weight ?? 0}
                   onChange={value => {
                     onExercisesChange(
                       exercises.map(ex =>
@@ -238,6 +254,7 @@ export function WorkoutDetails({
                   style={{ width: 70, marginLeft: 6 }}
                 />
 	                lbs
+				</>}
 									<button
 									  type="button"
 									  onClick={async () => {

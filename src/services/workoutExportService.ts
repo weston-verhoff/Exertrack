@@ -25,6 +25,7 @@ const EXPORT_WORKOUT_SELECT_FIELDS = `
       id,
       name,
       target_muscle
+      ,exercise_type
     ),
     workout_sets (
       id,
@@ -34,6 +35,7 @@ const EXPORT_WORKOUT_SELECT_FIELDS = `
       weight,
       intensity_type,
       notes
+      ,duration_seconds, distance_value, distance_unit, calories, average_heart_rate, resistance, incline
     )
   )
 `;
@@ -63,6 +65,7 @@ const normalizeWorkoutExercises = (exercises: any[] = []): WorkoutExercise[] =>
           id: we.exercise_id ?? '',
           name: 'Unknown Exercise',
           target_muscle: 'Unknown',
+          exercise_type: 'strength',
         },
       workout_sets: (we.workout_sets ?? [])
         .slice()

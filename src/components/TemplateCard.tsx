@@ -5,10 +5,14 @@ import '../styles/WorkoutCard.css';
 interface TemplateExercise {
   sets: number;
   reps: number;
+  duration_seconds?: number | null;
+  distance_value?: number | null;
+  distance_unit?: string | null;
   order: number;
   exercise: {
     name: string;
     target_muscle: string;
+    exercise_type: 'strength' | 'cardio';
   };
 }
 
@@ -48,7 +52,9 @@ export function TemplateCard({ template, onRename, onDelete, onUse }: Props) {
               <span className="lift-name">{ex.exercise?.name ?? 'Unknown'}</span>
               <br />
               <span>
-                {ex.sets} sets | {ex.reps} reps
+                {ex.exercise.exercise_type === 'cardio'
+                  ? `${ex.sets} segment${ex.sets === 1 ? '' : 's'} | ${Math.round((ex.duration_seconds ?? 0) / 60)} min${ex.distance_value != null ? ` | ${ex.distance_value} ${ex.distance_unit ?? ''}` : ''}`
+                  : `${ex.sets} sets | ${ex.reps} reps`}
               </span>
             </div>
           ))}

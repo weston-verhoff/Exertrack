@@ -1,5 +1,5 @@
 import { supabase } from '../supabase/client';
-import { Workout, WorkoutExercise, WorkoutSet } from '../types/workout';
+import { DistanceUnit, Workout, WorkoutExercise, WorkoutSet } from '../types/workout';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
 
 export type ServiceResult<T> = {
@@ -16,12 +16,18 @@ export interface WorkoutWithTemplate extends Workout {
 export interface WorkoutExerciseSummary {
   id?: string;
   sets: number;
-  reps: number;
-  weight: number;
+  reps: number | null;
+  weight: number | null;
+  duration_seconds?: number | null;
+  distance_value?: number | null;
+  distance_unit?: DistanceUnit | null;
+  calories?: number | null;
+  workout_sets?: WorkoutSet[];
   notes?: string | null;
   exercise: {
     name: string;
     target_muscle: string;
+    exercise_type: 'strength' | 'cardio';
   };
 }
 
@@ -45,6 +51,7 @@ const WORKOUT_SELECT_FIELDS = `
       id,
       name,
       target_muscle
+      ,exercise_type
     ),
     workout_sets (
       id,
@@ -54,6 +61,7 @@ const WORKOUT_SELECT_FIELDS = `
       weight,
       intensity_type,
       notes
+      ,duration_seconds, distance_value, distance_unit, calories, average_heart_rate, resistance, incline
     )
   )
 `;
@@ -70,6 +78,7 @@ const WORKOUT_SELECT_FIELDS_WITH_TEMPLATE = `
       id,
       name,
       target_muscle
+      ,exercise_type
     ),
     workout_sets (
       id,
@@ -79,6 +88,7 @@ const WORKOUT_SELECT_FIELDS_WITH_TEMPLATE = `
       weight,
       intensity_type,
       notes
+      ,duration_seconds, distance_value, distance_unit, calories, average_heart_rate, resistance, incline
     )
   )
 `;
@@ -93,7 +103,9 @@ const WORKOUT_DETAIL_FIELDS = `
     reps,
     weight,
     notes,
-    exercise:exercise_id(name, target_muscle)
+    duration_seconds, distance_value, distance_unit, calories,
+    exercise:exercise_id(name, target_muscle, exercise_type),
+    workout_sets(set_number, reps, weight, duration_seconds, distance_value, distance_unit, calories)
   )
 `;
 
@@ -104,7 +116,9 @@ const WORKOUT_ANALYTICS_FIELDS = `
     sets,
     reps,
     weight,
-    exercise:exercise_id(name, target_muscle)
+    duration_seconds, distance_value, distance_unit, calories,
+    exercise:exercise_id(name, target_muscle, exercise_type),
+    workout_sets(set_number, reps, weight, duration_seconds, distance_value, distance_unit, calories)
   )
 `;
 
@@ -163,6 +177,7 @@ const normalizeSummaryExercises = (
       normalizeExercise(we.exercise) ?? {
         name: 'Unknown',
         target_muscle: 'Unknown',
+        exercise_type: 'strength',
       },
   }));
 
@@ -195,6 +210,13 @@ const buildWorkoutSetRows = (
         set_number: set.set_number,
         reps: set.reps,
         weight: set.weight,
+        duration_seconds: set.duration_seconds ?? null,
+        distance_value: set.distance_value ?? null,
+        distance_unit: set.distance_unit ?? null,
+        calories: set.calories ?? null,
+        average_heart_rate: set.average_heart_rate ?? null,
+        resistance: set.resistance ?? null,
+        incline: set.incline ?? null,
         intensity_type: set.intensity_type ?? 'normal',
         notes: set.notes ?? null,
       }))
@@ -207,8 +229,12 @@ const buildWorkoutExerciseRows = (exercises: BuilderExerciseConfig[]) =>
     exercise_id: ex.exercise_id,
     order: ex.order,
     sets: ex.sets.length,
-    reps: ex.sets[0]?.reps ?? 0,
-    weight: ex.sets[0]?.weight ?? 0,
+    reps: ex.exercise_type === 'strength' ? ex.sets[0]?.reps ?? 0 : null,
+    weight: ex.exercise_type === 'strength' ? ex.sets[0]?.weight ?? 0 : null,
+    duration_seconds: ex.exercise_type === 'cardio' ? ex.sets.reduce((sum, set) => sum + Number(set.duration_seconds ?? 0), 0) : null,
+    distance_value: ex.exercise_type === 'cardio' && ex.sets.length === 1 ? ex.sets[0]?.distance_value ?? null : null,
+    distance_unit: ex.exercise_type === 'cardio' && ex.sets.length === 1 ? ex.sets[0]?.distance_unit ?? null : null,
+    calories: ex.exercise_type === 'cardio' ? ex.sets.reduce((sum, set) => sum + Number(set.calories ?? 0), 0) : null,
   }));
 
 const buildWorkoutSetInsertRows = (
@@ -226,6 +252,13 @@ const buildWorkoutSetInsertRows = (
       set_number: set.set_number,
       reps: set.reps,
       weight: set.weight,
+      duration_seconds: set.duration_seconds ?? null,
+      distance_value: set.distance_value ?? null,
+      distance_unit: set.distance_unit ?? null,
+      calories: set.calories ?? null,
+      average_heart_rate: set.average_heart_rate ?? null,
+      resistance: set.resistance ?? null,
+      incline: set.incline ?? null,
       intensity_type: set.intensity_type ?? 'normal',
       notes: set.notes ?? null,
     }));
@@ -243,16 +276,26 @@ const normalizeBuilderExercises = (
         ex.sets.length > 0
           ? ex.sets.map((set, setIdx) => ({
               set_number: setIdx + 1,
-              reps: Number(set.reps ?? 0),
-              weight: Number(set.weight ?? 0),
+              reps: ex.exercise_type === 'strength' ? Number(set.reps ?? 0) : null,
+              weight: ex.exercise_type === 'strength' ? Number(set.weight ?? 0) : null,
+              duration_seconds: ex.exercise_type === 'cardio' ? Number(set.duration_seconds ?? 0) : null,
+              distance_value: ex.exercise_type === 'cardio' && set.distance_value != null ? Number(set.distance_value) : null,
+              distance_unit: ex.exercise_type === 'cardio' ? set.distance_unit ?? null : null,
+              calories: ex.exercise_type === 'cardio' && set.calories != null ? Number(set.calories) : null,
+              average_heart_rate: ex.exercise_type === 'cardio' && set.average_heart_rate != null ? Number(set.average_heart_rate) : null,
+              resistance: ex.exercise_type === 'cardio' && set.resistance != null ? Number(set.resistance) : null,
+              incline: ex.exercise_type === 'cardio' && set.incline != null ? Number(set.incline) : null,
               intensity_type: set.intensity_type ?? 'normal',
               notes: set.notes ?? undefined,
             }))
           : [
               {
                 set_number: 1,
-                reps: Number(ex.sets[0]?.reps ?? 0),
-                weight: Number(ex.sets[0]?.weight ?? 0),
+                reps: ex.exercise_type === 'strength' ? 8 : null,
+                weight: ex.exercise_type === 'strength' ? 0 : null,
+                duration_seconds: ex.exercise_type === 'cardio' ? 1800 : null,
+                distance_value: null,
+                distance_unit: ex.exercise_type === 'cardio' ? 'mi' : null,
                 intensity_type: 'normal',
                 notes: undefined,
               },
@@ -395,13 +438,21 @@ export async function insertWorkoutSet({
   weight = 0,
   intensityType = 'normal',
   notes = null,
+  durationSeconds = null,
+  distanceValue = null,
+  distanceUnit = null,
+  calories = null,
 }: {
   workoutExerciseId: string;
   setNumber: number;
-  reps?: number;
-  weight?: number;
+  reps?: number | null;
+  weight?: number | null;
   intensityType?: string;
   notes?: string | null;
+  durationSeconds?: number | null;
+  distanceValue?: number | null;
+  distanceUnit?: DistanceUnit | null;
+  calories?: number | null;
 }): Promise<ServiceResult<WorkoutSet>> {
   const { data, error } = await supabase
     .from('workout_sets')
@@ -412,6 +463,10 @@ export async function insertWorkoutSet({
       weight,
       intensity_type: intensityType,
       notes,
+      duration_seconds: durationSeconds,
+      distance_value: distanceValue,
+      distance_unit: distanceUnit,
+      calories,
     })
     .select()
     .single();
@@ -432,6 +487,10 @@ export async function insertWorkoutSet({
       weight: data.weight,
       intensity_type: data.intensity_type,
       notes: data.notes ?? undefined,
+      duration_seconds: data.duration_seconds,
+      distance_value: data.distance_value,
+      distance_unit: data.distance_unit,
+      calories: data.calories,
     },
     error: null,
   };
@@ -669,11 +728,20 @@ export async function fetchTemplateBuilderExercises(
       exercise_id,
       sets,
       reps,
+      weight,
+      duration_seconds,
+      distance_value,
+      distance_unit,
+      calories,
+      average_heart_rate,
+      resistance,
+      incline,
       order,
       exercise:exercises!template_exercises_exercise_id_fkey (
         id,
         name,
         target_muscle
+        ,exercise_type
       )
     `
     )
@@ -692,11 +760,19 @@ export async function fetchTemplateBuilderExercises(
     exercise_id: item.exercise_id,
     name: item.exercise?.name ?? '',
     target_muscle: item.exercise?.target_muscle ?? '',
+    exercise_type: item.exercise?.exercise_type ?? 'strength',
     order: item.order ?? i,
     sets: Array.from({ length: item.sets ?? 3 }, (_, idx) => ({
       set_number: idx + 1,
-      reps: item.reps ?? 8,
-      weight: 0,
+      reps: item.exercise?.exercise_type === 'cardio' ? null : item.reps ?? 8,
+      weight: item.exercise?.exercise_type === 'cardio' ? null : item.weight ?? 0,
+      duration_seconds: item.exercise?.exercise_type === 'cardio' ? item.duration_seconds ?? 1800 : null,
+      distance_value: item.distance_value ?? null,
+      distance_unit: item.distance_unit ?? (item.exercise?.exercise_type === 'cardio' ? 'mi' : null),
+      calories: item.calories ?? null,
+      average_heart_rate: item.average_heart_rate ?? null,
+      resistance: item.resistance ?? null,
+      incline: item.incline ?? null,
       intensity_type: 'normal',
     })),
   }));
@@ -717,12 +793,14 @@ export async function fetchWorkoutBuilderExercises(
         id,
         name,
         target_muscle
+        ,exercise_type
       ),
       workout_sets (
         set_number,
         reps,
         weight,
         intensity_type
+        ,notes, duration_seconds, distance_value, distance_unit, calories, average_heart_rate, resistance, incline
       )
     `
     )
@@ -749,6 +827,7 @@ export async function fetchWorkoutBuilderExercises(
     exercise_id: item.exercise_id,
     name: item.exercise?.name ?? '',
     target_muscle: item.exercise?.target_muscle ?? '',
+    exercise_type: item.exercise?.exercise_type ?? 'strength',
     order: item.order ?? i,
     sets:
       item.workout_sets?.length > 0
@@ -757,12 +836,22 @@ export async function fetchWorkoutBuilderExercises(
             reps: set.reps ?? 0,
             weight: set.weight ?? 0,
             intensity_type: set.intensity_type ?? 'normal',
+            notes: set.notes ?? undefined,
+            duration_seconds: set.duration_seconds ?? null,
+            distance_value: set.distance_value ?? null,
+            distance_unit: set.distance_unit ?? null,
+            calories: set.calories ?? null,
+            average_heart_rate: set.average_heart_rate ?? null,
+            resistance: set.resistance ?? null,
+            incline: set.incline ?? null,
           }))
         : [
             {
               set_number: 1,
-              reps: 8,
-              weight: 0,
+              reps: item.exercise?.exercise_type === 'cardio' ? null : 8,
+              weight: item.exercise?.exercise_type === 'cardio' ? null : 0,
+              duration_seconds: item.exercise?.exercise_type === 'cardio' ? 1800 : null,
+              distance_unit: item.exercise?.exercise_type === 'cardio' ? 'mi' : null,
               intensity_type: 'normal',
             },
           ],

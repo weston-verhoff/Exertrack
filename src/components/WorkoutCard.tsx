@@ -2,18 +2,12 @@ import { useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import { WorkoutButton } from './WorkoutButton';
 import '../styles/WorkoutCard.css';
-import { Workout } from '../types/workout';
+import { Workout, WorkoutSet as WorkoutSetType } from '../types/workout';
+import { formatDuration } from '../utils/cardio';
 import { Drawer } from './Drawer'
 import { WorkoutDetails } from './WorkoutDetails';
 import { saveWorkout } from '../services/workoutService';
 import { useAuth } from '../context/AuthContext';
-
-interface WorkoutSet {
-  set_number: number;
-  reps: number;
-  weight: number;
-  intensity_type?: string;
-}
 
 type WorkoutCardVariant = 'future-workout' | 'past-workout' | 'highlighted';
 
@@ -30,11 +24,20 @@ interface Props {
   onDrawerClose?: () => void;
 }
 
-function summarizeSets(sets: WorkoutSet[]) {
+function summarizeSets(sets: WorkoutSetType[], isCardio: boolean) {
   if (!sets || sets.length === 0) return 'No sets logged';
 
-  const reps = sets.map(s => s.reps);
-  const weights = sets.map(s => s.weight);
+  if (isCardio) {
+    const duration = sets.reduce((sum, set) => sum + Number(set.duration_seconds ?? 0), 0);
+    const distances = sets.filter(set => set.distance_value != null);
+    const distance = distances.length > 0 && new Set(distances.map(set => set.distance_unit)).size === 1
+      ? ` | ${distances.reduce((sum, set) => sum + Number(set.distance_value), 0)} ${distances[0].distance_unit}`
+      : '';
+    return `${sets.length} segment${sets.length === 1 ? '' : 's'} | ${formatDuration(duration)}${distance}`;
+  }
+
+  const reps = sets.map(s => Number(s.reps ?? 0));
+  const weights = sets.map(s => Number(s.weight ?? 0));
 
   const minReps = Math.min(...reps);
   const maxReps = Math.max(...reps);
@@ -128,7 +131,7 @@ const closeDrawerAfterSave = () => {
 			          {we.exercise?.name ?? 'Unknown'}
 			        </span>
 			        <br />
-			        <span>{summarizeSets(we.workout_sets)}</span>
+			        <span>{summarizeSets(we.workout_sets, we.exercise?.exercise_type === 'cardio')}</span>
 			      </div>
 			    ))}
 			</div>

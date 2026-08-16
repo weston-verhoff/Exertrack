@@ -19,7 +19,7 @@ export default function Recap() {
 
       const { data, error } = await supabase
         .from('workout_exercises')
-        .select('*, exercise:exercise_id(name, target_muscle)')
+        .select('*, exercise:exercise_id(name, target_muscle, exercise_type)')
         .eq('workout_id', workoutId)
         .order('order', { ascending: true })
 
@@ -47,6 +47,7 @@ export default function Recap() {
   const calculateVolume = (data: any[]) => {
     const volume: Record<string, number> = {}
     data.forEach(e => {
+      if (e.exercise.exercise_type !== 'strength') return
       const muscle = e.exercise.target_muscle
       const liftVolume = e.sets * e.reps * (e.weight || 0)
       volume[muscle] = (volume[muscle] || 0) + liftVolume
@@ -66,7 +67,9 @@ export default function Recap() {
           {exercises.map(e => (
             <li key={e.id}>
               <strong>{e.exercise.name}</strong> ({e.exercise.target_muscle})<br />
-              Sets: {e.sets}, Reps: {e.reps}, Weight: {e.weight}<br />
+              {e.exercise.exercise_type === 'cardio'
+                ? `Segments: ${e.sets}, Duration: ${Math.round((e.duration_seconds ?? 0) / 60)} min${e.distance_value != null ? `, Distance: ${e.distance_value} ${e.distance_unit ?? ''}` : ''}`
+                : `Sets: ${e.sets}, Reps: ${e.reps}, Weight: ${e.weight}`}<br />
               Notes: {e.notes || '—'}
             </li>
           ))}

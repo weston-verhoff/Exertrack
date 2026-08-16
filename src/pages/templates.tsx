@@ -9,10 +9,14 @@ interface TemplateExercise {
   id: string
   sets: number
   reps: number
+  duration_seconds?: number | null
+  distance_value?: number | null
+  distance_unit?: string | null
   order: number
   exercise: {
     name: string
     target_muscle: string
+    exercise_type: 'strength' | 'cardio'
   }
 }
 
@@ -41,8 +45,11 @@ export default function TemplatesPage() {
             id,
             sets,
             reps,
+            duration_seconds,
+            distance_value,
+            distance_unit,
             order,
-            exercise:exercise_id(id, name, target_muscle)
+            exercise:exercise_id(id, name, target_muscle, exercise_type)
           )
         `)
         .eq('user_id', userId)
@@ -58,6 +65,9 @@ export default function TemplatesPage() {
             id: te.id,
             sets: te.sets,
             reps: te.reps,
+            duration_seconds: te.duration_seconds,
+            distance_value: te.distance_value,
+            distance_unit: te.distance_unit,
             order: te.order,
             exercise: Array.isArray(te.exercise) ? te.exercise[0] : te.exercise
           }))
