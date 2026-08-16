@@ -2,7 +2,7 @@
   width: 100%;
   display: flex;
   justify-content: center;
-  background: linear-gradient(135deg, var(--warm-100) 0%, var(--warm-200) 55%, var(--warm-450) 100%);
+  background: var(--warm-80);
   min-height: 100vh;
   padding: 6rem 2rem 3rem;
   box-sizing: border-box;
@@ -28,6 +28,7 @@
   margin: 0;
   font-size: 2.2rem;
   font-family: var(--font-headline);
+  color: var(--warm-ink)
 }
 
 .plan-title p {
@@ -100,7 +101,7 @@
   grid-template-columns: 64px 1fr 1.1fr 44px;
   align-items: stretch;
   gap: 0.5rem;
-  background: var(--neutral-100);
+  background: var(--warm-100);
   border-radius: 8px;
   padding: 0.5rem;
 	border: 1px solid var(--neutral-150);
@@ -174,7 +175,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--neutral-175);
+  background: var(--warm-200);
   border-radius: 8px;
   font-size: 1.2rem;
   cursor: grab;
@@ -303,20 +304,21 @@
 }
 
 .exercise-pill {
-  display: flex;
-  gap: 0.6rem;
-  align-items: center;
-  padding: 0.65rem 1.5rem 0.65rem 0.75rem;
-  border: 1px solid var(--primary-ink);
-  border-radius: 999px;
-  background: var(--primary-soft);
-  cursor: pointer;
-  font-weight: 700;
+	display: flex;
+	gap: 0.6rem;
+	align-items: center;
+	padding: 0.65rem 1.5rem 0.65rem 0.75rem;
+	border: 1px solid var(--primary-ink);
+	border-radius: 999px;
+	background: var(--warm-100);
+	cursor: pointer;
+	font-weight: 700;
 	transition: box-shadow 0.2s ease, background 0.1s ease;
 	width: auto;
-  text-align: left;
-  font-family: inherit;
-  color: inherit;
+	text-align: left;
+	font-family: inherit;
+	color: inherit;
+	box-shadow: inset 0px 0px 8px -4px #000;
 }
 .exercise-pill:hover{
 	box-shadow: 0 8px 12px var(--shadow-soft);
@@ -325,16 +327,17 @@
 
 .add-chip {
 	border: 1px solid var(--neutral-ink);
-  background: var(--neutral-125);
-  color: var(--neutral-ink);
-  font-weight: 800;
-  border-radius: 50%;
-  width: 44px;
-  height: 44px;
-  cursor: pointer;
-  font-size: 1.2rem;
-  display: grid;
-  place-items: center;
+	background: var(--warm-450);
+	box-shadow: inset 0px 0px 8px -4px #000;
+	color: var(--neutral-ink);
+	font-weight: 800;
+	border-radius: 50%;
+	width: 44px;
+	height: 44px;
+	cursor: pointer;
+	font-size: 1.2rem;
+	display: grid;
+	place-items: center;
 	flex-shrink: 0;
 }
 
@@ -346,11 +349,12 @@
 
 .exercise-pill__name {
   font-size: 0.95rem;
+  color: var(--text-strong)
 }
 
 .exercise-pill__muscle {
   font-size: 0.8rem;
-  color: var(--text-soft);
+  color: var(--warm-text);
 }
 
 .template-import {

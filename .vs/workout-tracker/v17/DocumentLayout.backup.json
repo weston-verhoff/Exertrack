@@ -48,7 +48,7 @@
               "RelativeDocumentMoniker": "src\\styles\\plan.css",
               "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\plan.css",
               "RelativeToolTip": "src\\styles\\plan.css",
-              "ViewState": "AgIAAC8AAAAAAAAAAAAtwEgAAAAWAAAAAAAAAA==",
+              "ViewState": "AgIAAIoAAAAAAAAAAAAtwJ4AAAAnAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
               "WhenOpened": "2026-08-16T05:40:15.069Z",
               "EditorCaption": ""
@@ -63,8 +63,7 @@
               "RelativeToolTip": "src\\pages\\plan.tsx",
               "ViewState": "AgIAAGUAAAAAAAAAAAAewHwAAAB0AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-08-16T05:30:59.64Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-08-16T05:30:59.64Z"
             },
             {
               "$type": "Document",
@@ -76,8 +75,7 @@
               "RelativeToolTip": "src\\utils\\workoutExport.ts",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-06-29T21:56:48.883Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T21:56:48.883Z"
             },
             {
               "$type": "Document",
@@ -89,8 +87,7 @@
               "RelativeToolTip": "src\\services\\workoutExportService.ts",
               "ViewState": "AgIAADsAAAAAAAAAAAAewE4AAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-06-29T18:05:05.965Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T18:05:05.965Z"
             },
             {
               "$type": "Document",
@@ -102,8 +99,7 @@
               "RelativeToolTip": "src\\pages\\past.tsx",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAoAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-06-29T17:55:31.935Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T17:55:31.935Z"
             }
           ]
         }
