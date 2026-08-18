@@ -1,6 +1,15 @@
 import React, { Suspense, lazy } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { GlobalHeader } from './components/GlobalHeader';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  matchPath,
+  useLocation,
+} from 'react-router-dom';
+import {
+  GlobalHeader,
+  type GlobalHeaderVariant,
+} from './components/GlobalHeader';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import './index.css';
@@ -16,11 +25,24 @@ const PastDetail = lazy(() => import('./pages/past_detail'));
 const WorkoutRecap = lazy(() => import('./pages/workout'));
 const Login = lazy(() => import('./pages/login'));
 
+const orangeHeaderRoutes = ['/plan', '/templates/:id/edit'] as const;
+
+function RouteAwareGlobalHeader() {
+  const { pathname } = useLocation();
+  const variant: GlobalHeaderVariant = orangeHeaderRoutes.some((route) =>
+    matchPath({ path: route, end: true }, pathname)
+  )
+    ? 'orange'
+    : 'blue';
+
+  return <GlobalHeader variant={variant} />;
+}
+
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <GlobalHeader />
+        <RouteAwareGlobalHeader />
 
         <main>
           <Suspense fallback={<div className="page-loading">Loading...</div>}>

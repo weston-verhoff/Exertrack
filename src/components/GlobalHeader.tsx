@@ -4,8 +4,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaHome } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import logoLight from '../IWYN_logo_light.png';
+import logoDark from '../IWYN_logo_dark.png';
 
-export function GlobalHeader() {
+export type GlobalHeaderVariant = 'blue' | 'orange';
+
+type GlobalHeaderProps = {
+  variant?: GlobalHeaderVariant;
+};
+
+export function GlobalHeader({ variant = 'blue' }: GlobalHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
 	const HomeIcon = FaHome as unknown as FC<{ size?: number }>;
   const { user, signOut } = useAuth();
@@ -38,9 +45,13 @@ export function GlobalHeader() {
   };
 
   return (
-    <header className="global-header">
+    <header className={`global-header global-header--${variant}`}>
 			<Link className="logo font-white"  to="/" onClick={() => setMenuOpen(false)}>
-				<img src={logoLight} alt="IWYN" className="logo-image" />
+				<img
+          src={variant === 'orange' ? logoDark : logoLight}
+          alt="IWYN"
+          className="logo-image"
+        />
 			</Link>
 			<nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
 				{(user ? loggedInLinks : loggedOutLinks).map((link) => (

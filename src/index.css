@@ -251,6 +251,25 @@ select{
   cursor: pointer;
 }
 
+.global-header--orange {
+	background-color: var(--warm-200);
+	color: var(--text-strong);
+}
+
+.global-header--orange .nav-links a,
+.global-header--orange .nav-links .sign-out-button,
+.global-header--orange .hamburger {
+	color: var(--text-strong);
+}
+
+.global-header--orange .nav-links .sign-out-button {
+	border-color: var(--text-strong);
+}
+
+.global-header--orange .nav-links .sign-out-button:hover {
+	background-color: rgba(31, 31, 31, 0.1);
+}
+
 .global-header .overlay {
   position: fixed;
   top: 0;
@@ -461,6 +480,24 @@ input.exerciseSearch{
 	}
 	.global-header .nav-links a:hover {
 		background-color: rgba(255, 255, 255, 0.1);
+	}
+
+	.global-header--orange .nav-links {
+		background: var(--warm-450);
+	}
+
+	.global-header--orange .nav-links a,
+	.global-header--orange .nav-links .active,
+	.global-header--orange .nav-links .sign-out-button {
+		color: var(--text-strong);
+	}
+
+	.global-header--orange .nav-links .sign-out-button {
+		border-color: var(--text-strong);
+	}
+
+	.global-header--orange .nav-links a:hover {
+		background-color: rgba(31, 31, 31, 0.1);
 	}
 	.dashboardHero {
 		flex-direction: column;
