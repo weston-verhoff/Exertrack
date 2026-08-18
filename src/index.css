@@ -252,7 +252,7 @@ select{
 }
 
 .global-header--orange {
-	background-color: var(--warm-450);
+	background-color: var(--warm-200);
 	border-bottom:1px solid var(--warm-ink)
 }
 

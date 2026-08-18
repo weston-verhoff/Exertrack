@@ -107,7 +107,7 @@
 }
 
 .remove-chip {
-  border: 0.5px solid var(--neutral-200);
+  outline: 0.5px solid var(--neutral-200);
   background: var(--danger-pill);
   color: var(--neutral-ink);
   font-weight: 800;
@@ -115,6 +115,7 @@
   cursor: pointer;
   font-size: 1.2rem;
   padding:16px;
+  border:none;
 }
 
 .builder-row__info {
@@ -153,11 +154,12 @@
 }
 
 .stat-field input, .stat-field select {
-  width: 100%;
+  width:100%;
   border: 1px solid var(--neutral-ink);
   border-radius: 4px;
   font-size: 1rem;
   padding: 0.3rem 0.35rem;
+  min-width:50px;
 }
 
 .stat-label {
@@ -169,7 +171,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--warm-200);
+  background: var(--warm-300);
   border-radius: 4px;
   font-size: 1.2rem;
   cursor: grab;
@@ -323,7 +325,7 @@
 
 .add-chip {
 	outline: 1px solid var(--neutral-ink);
-	background: var(--warm-450);
+	background: var(--warm-200);
 	box-shadow: inset 0px 0px 8px -4px #000;
 	color: var(--neutral-ink);
 	font-weight: 800;
@@ -335,6 +337,10 @@
 	display: grid;
 	place-items: center;
 	flex-shrink: 0;
+	transition: background 0.1s ease;
+}
+.exercise-pill:hover .add-chip {
+	background: var(--warm-450);
 }
 
 .exercise-pill__meta {
@@ -399,16 +405,17 @@
 
 @media (max-width: 680px) {
   .plan-page {
-    padding: 5rem 1rem 2rem;
+    padding: 6rem 2rem 3rem;
   }
 
   .builder-row {
    gap:0.5rem;
    width:100%;
   }
-  .builder-row__stats .stat-field{min-width:min-content;}
+  .builder-row__stats {flex-wrap:wrap;min-width:90px;justify-content:end;}
+  .builder-row__stats .stat-field{width:min-content;}
   .stat-field > select{min-width:45px;}
-  .stat-field > input{min-width:30px;}
+  .stat-field > input{min-width:40px;}
   .drag-handle{padding:0.5rem;}
   .remove-chip{padding:0.5rem;}
   .builder-row__info{
