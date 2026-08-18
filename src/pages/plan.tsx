@@ -87,14 +87,11 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
   };
 
   return (
-    <div ref={setNodeRef} style={style} className="builder-row">
-      <button
-        className="remove-chip"
-        onClick={() => onRemove(exercise.exercise_id, exercise.id)}
-        aria-label={`Remove ${exercise.name}`}
-      >
-        ✕
-      </button>
+      <div ref={setNodeRef} style={style} className="builder-row">
+      <span className="drag-handle" {...attributes} {...listeners}>
+        ☰
+      </span>
+      
 
       <div className="builder-row__info">
         <div className="builder-row__name">{exercise.name}</div>
@@ -146,10 +143,13 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
         </label>
         </>}
       </div>
-
-      <span className="drag-handle" {...attributes} {...listeners}>
-        ☰
-      </span>
+      <button
+        className="remove-chip"
+        onClick={() => onRemove(exercise.exercise_id, exercise.id)}
+        aria-label={`Remove ${exercise.name}`}
+      >
+        ✕
+      </button>
     </div>
   );
 }
@@ -695,7 +695,7 @@ export default function PlanSession() {
 									variant="accent"
 									size="lg"
 									onClick={() => setAddingCustom(true)}
-									rounded="full"
+									rounded="default"
 								/>
               </div>
             </div>

@@ -2,10 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\src",
+    "\\src\\components",
     "\\src\\pages",
     "\\src\\styles",
     "\\src\\utils"
   ],
-  "SelectedNode": "\\src\\styles\\variables.css",
+  "SelectedNode": "\\src\\components\\GlobalHeader.tsx",
   "PreviewInSolutionExplorer": false
 }
