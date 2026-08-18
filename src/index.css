@@ -252,14 +252,14 @@ select{
 }
 
 .global-header--orange {
-	background-color: var(--warm-200);
-	color: var(--text-strong);
+	background-color: var(--warm-450);
+	border-bottom:1px solid var(--warm-ink)
 }
 
 .global-header--orange .nav-links a,
 .global-header--orange .nav-links .sign-out-button,
 .global-header--orange .hamburger {
-	color: var(--text-strong);
+	color: var(--warm-ink);
 }
 
 .global-header--orange .nav-links .sign-out-button {
