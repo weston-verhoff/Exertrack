@@ -148,7 +148,7 @@ const closeDrawerAfterSave = () => {
 			<WorkoutButton
 				label="Delete"
 				icon="🗑"
-				variant="accent"
+				variant="destructive"
 				onClick={() => onDelete(workout.id)}
 			/>
 		</div>

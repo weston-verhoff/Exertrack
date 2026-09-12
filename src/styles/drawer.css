@@ -1,10 +1,12 @@
 .drawer-panel {
+  --color-text-context: var(--color-text-inverse);
+  --color-status-danger-context: var(--color-status-danger-on-dark);
   position: fixed;
   top: 0;
   right: 0;
   height: 100vh;
-	background: var(--bg-10, var(--neutral-strong));
-  color: var(--text-inverse);
+	background: var(--color-bg-drawer);
+  color: var(--color-text-inverse);
   z-index: 1001;
   box-shadow: -4px 0 12px var(--shadow-strong);
   display: flex;
@@ -41,7 +43,7 @@
 .drawer-backdrop {
   position: fixed;
   inset: 0;
-  background: var(--overlay-dim);
+  background: var(--color-overlay-backdrop);
   z-index: 1000;
   transition: opacity 0.25s ease;
 }
@@ -52,14 +54,14 @@
 
   background: none;
   border: none;
-  color: var(--text-inverse);
+  color: var(--color-text-inverse);
   font-size: 1.25rem;
   padding: 0.75rem 1rem;
   cursor: pointer;
 	border-radius: 999px;
 }
 .drawer-close:hover {
-  background: rgba(255,255,255,0.1);
+  background: var(--color-hover-on-dark);
 	transition: background 0.2s ease-out;
 }
 .drawer-content {

@@ -4,6 +4,14 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+if (process.env.NODE_ENV === 'development') {
+  require('./styles/theme-test.css');
+
+  if (new URLSearchParams(window.location.search).get('theme') === 'test') {
+    document.documentElement.dataset.theme = 'test';
+  }
+}
+
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );

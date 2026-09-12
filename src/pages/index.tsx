@@ -158,7 +158,7 @@ export default function Dashboard() {
 					    label="Start Next Workout"
 							size="lg"
 					    icon=""
-					    variant="accent"
+					    variant="primary"
 					    onClick={() => navigate(`/runner/${nextWorkoutId}`)}
 					  />
 					)}
@@ -168,7 +168,7 @@ export default function Dashboard() {
                label="Plan New Session"
 							 size="lg"
                icon=""
-               variant="info"
+               variant="secondary"
                onClick={() => navigate('/plan')}
              />
            )}

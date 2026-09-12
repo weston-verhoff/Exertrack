@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import {
   Chart as ChartJS,
@@ -18,6 +18,49 @@ import { DistanceUnit } from '../types/workout'
 
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend)
+
+const chartColorTokens = {
+  strength: '--color-chart-strength',
+  strengthFill: '--color-chart-fill-strength',
+  cardio: '--color-chart-cardio',
+  cardioFill: '--color-chart-fill-cardio',
+  distance: '--color-chart-distance',
+  distanceFill: '--color-chart-fill-distance'
+} as const
+
+function useChartSemanticColors() {
+  const [themeRevision, setThemeRevision] = useState(0)
+
+  useEffect(() => {
+    if (typeof MutationObserver === 'undefined') return
+
+    const observer = new MutationObserver(() => {
+      setThemeRevision(revision => revision + 1)
+    })
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme']
+    })
+
+    return () => observer.disconnect()
+  }, [])
+
+  return useMemo(() => {
+    void themeRevision
+    const styles = getComputedStyle(document.documentElement)
+    const read = (token: string) => styles.getPropertyValue(token).trim()
+
+    return {
+      strength: read(chartColorTokens.strength),
+      strengthFill: read(chartColorTokens.strengthFill),
+      cardio: read(chartColorTokens.cardio),
+      cardioFill: read(chartColorTokens.cardioFill),
+      distance: read(chartColorTokens.distance),
+      distanceFill: read(chartColorTokens.distanceFill)
+    }
+  }, [themeRevision])
+}
 
 interface WorkoutExercise {
   sets: number
@@ -45,6 +88,7 @@ export default function AnalyticsPage() {
   const [selectedMuscle, setSelectedMuscle] = useState<string>('all')
   const [loading, setLoading] = useState(true)
   const { userId, loading: authLoading } = useAuth()
+  const chartColors = useChartSemanticColors()
 
   useEffect(() => {
     async function fetchWorkouts() {
@@ -94,8 +138,8 @@ export default function AnalyticsPage() {
       {
         label: selectedMuscle === 'all' ? 'Total Volume' : `${selectedMuscle} Volume`,
         data: Object.values(volumeByDate),
-        borderColor: 'rgba(75,192,192,1)',
-        backgroundColor: 'rgba(75,192,192,0.2)',
+        borderColor: chartColors.strength,
+        backgroundColor: chartColors.strengthFill,
         tension: 0.3
       }
     ]
@@ -117,8 +161,8 @@ export default function AnalyticsPage() {
   const cardioChartData = {
     labels: Object.keys(cardioByDate),
     datasets: [
-      { label: 'Cardio Minutes', data: Object.values(cardioByDate).map(value => value.minutes), borderColor: '#ff7a00', backgroundColor: 'rgba(255,122,0,.2)', tension: 0.3 },
-      { label: 'Distance (km)', data: Object.values(cardioByDate).map(value => value.kilometers), borderColor: '#4bc0c0', backgroundColor: 'rgba(75,192,192,.2)', tension: 0.3 }
+      { label: 'Cardio Minutes', data: Object.values(cardioByDate).map(value => value.minutes), borderColor: chartColors.cardio, backgroundColor: chartColors.cardioFill, tension: 0.3 },
+      { label: 'Distance (km)', data: Object.values(cardioByDate).map(value => value.kilometers), borderColor: chartColors.distance, backgroundColor: chartColors.distanceFill, tension: 0.3 }
     ]
   }
 

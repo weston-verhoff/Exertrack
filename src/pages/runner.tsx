@@ -122,7 +122,7 @@ export default function WorkoutRunner() {
 			<Layout padded maxWidth="md">
 			  <h1 className="headline">Workout Runner</h1>
 			  <p>✅ All exercises completed.</p>
-			  <WorkoutButton label="End Workout →" onClick={finishWorkout} variant="info" />
+			  <WorkoutButton label="End Workout →" onClick={finishWorkout} variant="primary" />
 			</Layout>
     )
   }
@@ -182,7 +182,7 @@ function ExerciseHeader({ name, targetMuscle }: { name: string; targetMuscle: st
   return (
     <div style={{ marginBottom: '1rem' }}>
       <h2>{name}</h2>
-      <p style={{ color: 'var(--neutral-225)' }}>{targetMuscle}</p>
+      <p style={{ color: 'var(--color-text-subtle)' }}>{targetMuscle}</p>
     </div>
   )
 }
@@ -201,9 +201,9 @@ function SetProgress({
         const isCompleted = setNumber < current
         const isCurrent = setNumber === current
 
-				let color = 'var(--neutral-125)'
-        if (isCompleted) color = 'var(--info-color)'
-        else if (isCurrent) color = 'var(--success-strong)'
+				let color = 'var(--color-set-pending)'
+        if (isCompleted) color = 'var(--color-set-complete)'
+        else if (isCurrent) color = 'var(--color-set-current)'
 
         return (
           <div
@@ -280,12 +280,12 @@ function ActionButtons({
 }) {
   return (
     <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-      <WorkoutButton label="← Back" onClick={onBackSet} variant="info" />
+      <WorkoutButton label="← Back" onClick={onBackSet} variant="secondary" />
       {isLast ? (
-        <WorkoutButton label="End Workout →" onClick={onFinish} variant="info" />
+        <WorkoutButton label="End Workout →" onClick={onFinish} variant="primary" />
       ) : (
         <>
-          <WorkoutButton label="Next Set →" onClick={onNextSet} variant="info" />
+          <WorkoutButton label="Next Set →" onClick={onNextSet} variant="primary" />
         </>
       )}
     </div>
@@ -295,12 +295,12 @@ function WorkoutProgressBar({ current, total }: { current: number; total: number
   const percent = Math.round((current / total) * 100)
 
   return (
-    <div style={{ marginBottom: '1rem', backgroundColor: 'var(--bg-30)', padding: '0.75rem', borderRadius: '0.5rem' }}>
+    <div style={{ marginBottom: '1rem', backgroundColor: 'var(--color-bg-runner-panel)', padding: '0.75rem', borderRadius: '0.5rem' }}>
       <div
         style={{
           height: '16px',
           width: '100%',
-          backgroundColor: 'var(--neutral-75)',
+          backgroundColor: 'var(--color-workout-progress-track)',
           borderRadius: '8px',
           overflow: 'hidden'
         }}
@@ -309,7 +309,7 @@ function WorkoutProgressBar({ current, total }: { current: number; total: number
           style={{
             height: '100%',
             width: `${percent}%`,
-            backgroundColor: 'var(--info-color)',
+            backgroundColor: 'var(--color-workout-progress-fill)',
             transition: 'width 0.3s ease',
 						borderRadius: '8px'
           }}

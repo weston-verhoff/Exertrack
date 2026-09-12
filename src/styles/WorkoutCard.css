@@ -10,20 +10,20 @@
 }
 
 .future-workout{
-	background-color: var(--warm-50);
-	border: 1px solid var(--warm-ink);
+	background-color: var(--color-workout-future-bg);
+	border: 1px solid var(--color-workout-future-border);
 }
 .past-workout{
-	background-color: var(--primary-400);
-	border: 1px solid var(--primary-border);
+	background-color: var(--color-workout-past-bg);
+	border: 1px solid var(--color-border-primary-strong);
 }
 .template-workout{
-	background-color: var(--primary-400);
-	border: 1px solid var(--primary-border);
+	background-color: var(--color-workout-template-bg);
+	border: 1px solid var(--color-border-primary-strong);
 }
 .highlighted{
-	background-color: var(--primary-350);
-	border: 1px solid var(--primary-border);
+	background-color: var(--color-workout-highlighted-bg);
+	border: 1px solid var(--color-border-primary-strong);
 }
 
 .workout-head {
@@ -39,15 +39,15 @@
 }
 
 .future-workout .workout-head {
-	background-color: var(--warm-425);
-  color: var(--text-inverse);
+	background-color: var(--color-workout-future-header);
+  color: var(--color-text-inverse);
 }
 .past-workout .workout-head {
-	background-color: var(--primary-300);
+	background-color: var(--color-workout-past-header);
 }
 
 .template-workout .workout-head {
-	background-color: var(--primary-300);
+	background-color: var(--color-workout-template-header);
 
 	font-weight:bold;
 	text-transform: capitalize;
@@ -61,12 +61,12 @@
 }
 
 .highlighted .workout-head {
-	background-color: var(--primary-hero);
-	color: var(--text-inverse);
+	background-color: var(--color-workout-highlighted-header);
+	color: var(--color-text-inverse);
 }
 .workout-head a{
   font-weight: 400;
-  color: var(--text-inverse);
+  color: var(--color-text-inverse);
 }
 .workout-btns {
   display: flex;
@@ -79,24 +79,24 @@
   border-radius: 8px;
   border: none;
   font-weight: bold;
-  box-shadow: inset -2px -2px rgba(0,0,0,0.25);
+  box-shadow: inset -2px -2px var(--shadow-button-inset);
 }
 .btn:hover{
-  box-shadow:inset -2px -2px 1px rgba(0,0,0,0.4);
+  box-shadow:inset -2px -2px 1px var(--shadow-button-hover-inset);
 }
 .btn:active{filter: brightness(95%);}
 .start-btn{
   flex-grow:1;
-  background-color: var(--success-color);
+  background-color: var(--color-action-start-bg);
 }
 
 .delete-btn{
-	background-color: var(--danger);
-  color: var(--text-inverse);
+	background-color: var(--color-action-destructive);
+  color: var(--color-action-destructive-text);
 	font-weight:bold;
 }
 .lifts{
-	color: var(--neutral-ink);
+	color: var(--color-text-black);
   margin: 1rem;
   display: flex;
   flex-direction: column;

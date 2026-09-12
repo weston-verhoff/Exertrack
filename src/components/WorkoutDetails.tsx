@@ -300,8 +300,8 @@ export function WorkoutDetails({
 									    height: 18,
 									    borderRadius: '50%',
 									    border: 'none',
-									    backgroundColor: 'var(--danger)',
-									    color: '#fff',
+									    backgroundColor: 'var(--color-action-destructive)',
+									    color: 'var(--color-action-destructive-text)',
 									    fontSize: 12,
 									    cursor: 'pointer',
 									  }}
@@ -317,29 +317,29 @@ export function WorkoutDetails({
 	      <WorkoutButton
 	        label={isSaving ? 'Saving...' : 'Save Changes'}
 	        icon="💾"
-	        variant="info"
+	        variant="primary"
 	        onClick={onSave}
 	        disabled={isSaving}
 	        data-testid="save-workout"
 	      />
 
 				{statusMessage && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--accent-color)' }}>
+        <p style={{ marginTop: '0.5rem', color: 'var(--color-text-context)' }}>
           {statusMessage}
         </p>
       )}
       {errorMessage && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--danger-highlight)' }}>
+        <p style={{ marginTop: '0.5rem', color: 'var(--color-status-danger-context)' }}>
           {errorMessage}
         </p>
       )}
 			{duplicateMessage && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--accent-color)' }}>
+        <p style={{ marginTop: '0.5rem', color: 'var(--color-text-context)' }}>
           {duplicateMessage}
         </p>
       )}
       {duplicateError && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--danger-highlight)' }}>
+        <p style={{ marginTop: '0.5rem', color: 'var(--color-status-danger-context)' }}>
           {duplicateError}
         </p>
       )}
@@ -369,13 +369,13 @@ export function WorkoutDetails({
 	          <>
 	            <WorkoutButton
 	              label="Start Workout"
-              variant="info"
+              variant="primary"
               onClick={() => navigate(`/runner/${workoutId}`)}
             />
 						<WorkoutButton
 						  label="Mark Completed"
 						  icon="✅"
-						  variant="info"
+						  variant="secondary"
 						  onClick={async () => {
 								if (authLoading || !userId) return;
 								const { error } = await updateWorkoutStatus({
@@ -402,7 +402,7 @@ export function WorkoutDetails({
 					<WorkoutButton
 						  label="Move to Scheduled"
 						  icon="✅"
-						  variant="info"
+						  variant="secondary"
 						  onClick={async () => {
               if (authLoading || !userId) return;
 							const { error } = await updateWorkoutStatus({
@@ -428,13 +428,13 @@ export function WorkoutDetails({
         <WorkoutButton
           label="Edit Workout"
           icon="✏️"
-          variant="info"
+          variant="secondary"
           onClick={() => navigate(`/plan?importWorkout=${workoutId}`)}
         />
 				<WorkoutButton
           label={isDuplicating ? 'Duplicating...' : 'Duplicate Workout'}
           icon="📄"
-          variant="info"
+          variant="secondary"
           onClick={async () => {
             if (authLoading || !userId) return;
             setIsDuplicating(true);
@@ -468,7 +468,7 @@ export function WorkoutDetails({
         <WorkoutButton
           label="Create Template"
           icon="📦"
-          variant="info"
+          variant="secondary"
           onClick={async () => {
             const name = window.prompt('Name your template:');
             if (!name) return;
@@ -529,7 +529,7 @@ export function WorkoutDetails({
         <WorkoutButton
           label="Delete Workout"
           icon="X"
-          variant="accent"
+          variant="destructive"
           onClick={async () => {
             onDelete();
           }}

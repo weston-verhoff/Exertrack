@@ -4,7 +4,7 @@ interface WorkoutButtonProps {
   label: string
   icon?: string
   onClick: () => void
-  variant?: 'accent' | 'info' | 'blackText' | 'whiteText' | 'unsetText'
+  variant?: 'primary' | 'secondary' | 'destructive' | 'blackText' | 'whiteText' | 'unsetText'
   disabled?: boolean
   loading?: boolean
   loadingLabel?: string
@@ -14,26 +14,30 @@ interface WorkoutButtonProps {
 }
 
 const variantStyles: Record<string, React.CSSProperties> = {
-  accent: {
-    backgroundColor: 'var(--accent-color)',
-    color: 'white'
+  primary: {
+    backgroundColor: 'var(--color-action-primary)',
+    color: 'var(--color-action-primary-text)'
   },
-  info: {
-    backgroundColor: 'var(--info-color)',
-    color: 'white'
+  secondary: {
+    backgroundColor: 'var(--color-action-secondary)',
+    color: 'var(--color-action-secondary-text)'
+  },
+  destructive: {
+    backgroundColor: 'var(--color-action-destructive)',
+    color: 'var(--color-action-destructive-text)'
   },
 	blackText: {
-		backgroundColor: 'transparent',
-		color:'black',
+		backgroundColor: 'var(--color-action-secondary-bg)',
+		color:'var(--color-action-secondary-text-on-light)',
 		textDecoration: 'underline',
 	},
 	whiteText: {
-		backgroundColor: 'transparent',
-		color:'white',
+		backgroundColor: 'var(--color-action-secondary-bg)',
+		color:'var(--color-action-secondary-text-on-dark)',
 		textDecoration: 'underline',
 	},
 	unsetText: {
-		backgroundColor: 'transparent',
+		backgroundColor: 'var(--color-action-secondary-bg)',
 		color:'inherit',
 		textDecoration: 'underline',
 	}
@@ -59,7 +63,7 @@ export function WorkoutButton({
   label,
   icon,
   onClick,
-  variant = 'accent',
+	variant = 'primary',
   disabled = false,
   loading = false,
 	size = 'md',
@@ -75,7 +79,7 @@ export function WorkoutButton({
     border: 'none',
     borderRadius: rounded==='full'?'999px':'8px',
 		fontFamily: 'var(--font-body)',
-    boxShadow: variant==='whiteText'||variant==='blackText'||variant==='unsetText'? 'none' : (isPressed ? 'inset 0 0px 8px rgba(0, 0, 0, 0.8)' : 'inset -2px -2px rgba(0,0,0,0.25)'),
+    boxShadow: variant==='whiteText'||variant==='blackText'||variant==='unsetText'? 'none' : (isPressed ? 'inset 0 0px 8px var(--shadow-button-pressed)' : 'inset -2px -2px var(--shadow-button-inset)'),
     transition: 'box-shadow 0.1s ease',
     opacity: disabled || loading ? 0.6 : isPressed ? 0.85 : 1,
     cursor: disabled || loading ? 'not-allowed' : 'pointer'
