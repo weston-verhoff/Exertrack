@@ -300,8 +300,8 @@ export function WorkoutDetails({
 									    height: 18,
 									    borderRadius: '50%',
 									    border: 'none',
-									    backgroundColor: 'var(--color-action-destructive)',
-									    color: 'var(--color-action-destructive-text)',
+									    backgroundColor: 'var(--color-interactive-danger)',
+									    color: 'var(--color-on-interactive-danger)',
 									    fontSize: 12,
 									    cursor: 'pointer',
 									  }}
@@ -324,22 +324,22 @@ export function WorkoutDetails({
 	      />
 
 				{statusMessage && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--color-text-context)' }}>
+        <p style={{ marginTop: '0.5rem', color: 'inherit' }}>
           {statusMessage}
         </p>
       )}
       {errorMessage && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--color-status-danger-context)' }}>
+        <p style={{ marginTop: '0.5rem', color: 'var(--color-on-inverse-danger)' }}>
           {errorMessage}
         </p>
       )}
 			{duplicateMessage && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--color-text-context)' }}>
+        <p style={{ marginTop: '0.5rem', color: 'inherit' }}>
           {duplicateMessage}
         </p>
       )}
       {duplicateError && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--color-status-danger-context)' }}>
+        <p style={{ marginTop: '0.5rem', color: 'var(--color-on-inverse-danger)' }}>
           {duplicateError}
         </p>
       )}

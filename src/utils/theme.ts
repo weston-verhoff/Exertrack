@@ -1,9 +1,11 @@
-export type AppTheme = 'default' | 'blue-pink';
+export const APP_THEMES = ['default', 'blue-pink', 'monokai'] as const;
+
+export type AppTheme = (typeof APP_THEMES)[number];
 
 const THEME_STORAGE_KEY = 'iwyn-theme';
 
 export const isAppTheme = (value: unknown): value is AppTheme =>
-  value === 'default' || value === 'blue-pink';
+  typeof value === 'string' && APP_THEMES.some((theme) => theme === value);
 
 export const applyTheme = (theme: AppTheme) => {
   document.documentElement.dataset.theme = theme;

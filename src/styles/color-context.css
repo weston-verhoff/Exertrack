@@ -1,0 +1,54 @@
+/* Reusable complete color contexts. Structural CSS still owns border width/style. */
+.color-context {
+  background-color: var(--_context-surface);
+  color: var(--_context-content);
+  border-color: var(--_context-border);
+}
+
+.color-context--canvas {
+  --_context-surface: var(--color-surface-canvas);
+  --_context-content: var(--color-on-canvas);
+  --_context-border: var(--color-border-subtle);
+}
+
+.color-context--default {
+  --_context-surface: var(--color-surface-default);
+  --_context-content: var(--color-on-surface);
+  --_context-border: var(--color-border-default);
+}
+
+.color-context--raised {
+  --_context-surface: var(--color-surface-raised);
+  --_context-content: var(--color-on-surface);
+  --_context-border: var(--color-border-subtle);
+}
+
+.color-context--inverse {
+  --_context-surface: var(--color-surface-inverse);
+  --_context-content: var(--color-on-inverse);
+  --_context-border: var(--color-border-on-inverse);
+}
+
+.color-context--selected {
+  --_context-surface: var(--color-interactive-selected);
+  --_context-content: var(--color-on-interactive-selected);
+  --_context-border: var(--color-border-selected);
+}
+
+.color-context--info {
+  --_context-surface: var(--color-feedback-info-surface);
+  --_context-content: var(--color-on-feedback-info);
+  --_context-border: var(--color-feedback-info-border);
+}
+
+.color-context--success {
+  --_context-surface: var(--color-feedback-success-surface);
+  --_context-content: var(--color-on-feedback-success);
+  --_context-border: var(--color-feedback-success-border);
+}
+
+.color-context--danger {
+  --_context-surface: var(--color-feedback-danger-surface);
+  --_context-content: var(--color-on-feedback-danger);
+  --_context-border: var(--color-feedback-danger-border);
+}

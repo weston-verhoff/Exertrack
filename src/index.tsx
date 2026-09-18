@@ -3,7 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import './styles/theme-default.css';
 import './styles/theme-blue-pink.css';
+import './styles/theme-monokai.css';
+import './styles/color-context.css';
 import { bootstrapTheme } from './utils/theme';
 
 bootstrapTheme();

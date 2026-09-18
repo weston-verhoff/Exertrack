@@ -16,6 +16,8 @@ export function Layout({
 }: LayoutProps) {
   const classNames = [
     'layout',
+    'color-context',
+    'color-context--raised',
     padded ? 'layout--padded' : '',
     scrollable ? 'layout--scrollable' : '',
     maxWidth ? `layout--${maxWidth}` : '',

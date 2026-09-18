@@ -63,7 +63,7 @@ export default function Login() {
   };
 
   return (
-    <div className="auth-container">
+    <div className="auth-container color-context color-context--inverse">
       <h1>Login</h1>
       <form onSubmit={handleSubmit} className="auth-form">
         <label>

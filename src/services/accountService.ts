@@ -1,7 +1,7 @@
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../supabase/client';
 import { ExerciseType } from '../types/workout';
-import { AppTheme } from '../utils/theme';
+import { AppTheme, isAppTheme } from '../utils/theme';
 import { ServiceResult } from './workoutService';
 
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -41,7 +41,7 @@ export const getAccountSettings = (user: User): AccountSettings => {
     startOfWeek: startOfWeek >= 0 && startOfWeek <= 6 ? (startOfWeek as Weekday) : 1,
     distanceSystem: metadata.distance_system === 'metric' ? 'metric' : 'imperial',
     weightSystem: metadata.weight_system === 'metric' ? 'metric' : 'imperial',
-    theme: metadata.theme === 'blue-pink' ? 'blue-pink' : 'default',
+    theme: isAppTheme(metadata.theme) ? metadata.theme : 'default',
   };
 };
 

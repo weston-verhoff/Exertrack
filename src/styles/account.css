@@ -1,13 +1,13 @@
 .account-page {
   min-height: 100vh;
   padding-top: 56px;
-  color: var(--color-text-strong);
+  color: var(--color-on-canvas);
 }
 
 .account-hero {
   padding: 2.5rem 1.5rem 3rem;
-  background: var(--color-bg-dashboard-hero) var(--image-bg-dashboard-hero) center / cover;
-  color: var(--color-text-inverse);
+  background: var(--color-surface-inverse) var(--image-surface-hero) center / cover;
+  color: var(--color-on-inverse);
   text-align: center;
 }
 
@@ -32,9 +32,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-border-hero);
+  border: 1px solid var(--color-border-on-inverse);
   border-radius: 12px;
-  background: var(--color-surface-hero-translucent);
+  background: var(--color-surface-inverse-subtle);
 }
 
 .account-stat-card span {
@@ -68,7 +68,6 @@
   justify-content: space-between;
   border: 1px solid var(--color-border-subtle);
   border-radius: 12px;
-  background: var(--color-bg-elevated);
   box-shadow: 0 8px 20px var(--shadow-subtle);
 }
 
@@ -89,7 +88,7 @@
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
   font-weight: 700;
   text-align: left;
   text-decoration: none;
@@ -98,11 +97,11 @@
 
 .account-sidebar a:hover,
 .account-sidebar button:hover {
-  background: var(--color-action-subtle-bg);
+  background: var(--color-interactive-subtle);
 }
 
 .account-sidebar__actions button {
-  color: var(--color-status-danger-text);
+  color: var(--color-on-feedback-danger);
 }
 
 .account-content {
@@ -149,7 +148,7 @@
 .account-section__heading select,
 .exercise-editor select {
   padding: 0.55rem 0.75rem;
-  border: 1px solid var(--color-border-control-outline);
+  border: 1px solid var(--color-border-default);
 }
 
 .account-chart {
@@ -157,7 +156,6 @@
   padding: 1.25rem;
   border: 1px solid var(--color-border-subtle);
   border-radius: 12px;
-  background: var(--color-bg-elevated);
   box-shadow: 0 8px 20px var(--shadow-subtle);
 }
 
@@ -173,9 +171,9 @@
   padding: 0 1rem;
   align-items: center;
   gap: 0.65rem;
-  border: 1px solid var(--color-border-control-outline);
+  border: 1px solid var(--color-border-default);
   border-radius: 2rem;
-  background: var(--color-bg-input);
+  background: var(--color-surface-default);
 }
 
 .account-search input {
@@ -198,16 +196,18 @@
   padding: 0.45rem 0.8rem 0.45rem 0.45rem;
   align-items: center;
   gap: 0.55rem;
-  border: 1px solid var(--color-border-control-outline);
+  border: 1px solid var(--color-border-default);
   border-radius: 999px;
-  background: var(--color-bg-control);
-  color: var(--color-text-strong);
+  background: var(--color-surface-sunken);
+  color: var(--color-on-surface);
   text-align: left;
   cursor: pointer;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .exercise-chip:hover {
-  background: var(--color-bg-control-hover);
+  background: var(--color-surface-raised);
+  box-shadow: 0 8px 12px var(--shadow-soft);
 }
 
 .exercise-chip__icon {
@@ -215,7 +215,8 @@
   width: 2rem;
   height: 2rem;
   place-items: center;
-  border: 2px solid var(--color-border-default);
+  border: 0.5px solid var(--color-border-default);
+  background: var(--color-surface-default);
   border-radius: 50%;
 }
 
@@ -226,7 +227,7 @@
 
 .exercise-chip small {
   margin-top: 0.1rem;
-  color: var(--color-text-muted);
+  color: var(--color-content-muted);
 }
 
 .exercise-editor {
@@ -235,9 +236,9 @@
   gap: 1rem;
   margin-top: 1rem;
   padding: 1.25rem;
-  border: 1px solid var(--color-border-interactive);
+  border: 1px solid var(--color-border-focus);
   border-radius: 12px;
-  background: var(--color-bg-elevated);
+  background: var(--color-surface-raised);
 }
 
 .exercise-editor h3,
@@ -258,7 +259,7 @@
 .account-settings input {
   width: 100%;
   padding: 0.7rem 1rem;
-  border: 1px solid var(--color-border-control-outline);
+  border: 1px solid var(--color-border-default);
   text-align: left;
 }
 
@@ -269,17 +270,17 @@
 
 .exercise-editor__actions button {
   padding: 0.7rem 1rem;
-  border: 1px solid var(--color-border-interactive);
+  border: 1px solid var(--color-border-focus);
   border-radius: 8px;
-  background: var(--color-action-primary);
-  color: var(--color-action-primary-text);
+  background: var(--color-interactive-primary);
+  color: var(--color-on-interactive-primary);
   font-weight: 700;
   cursor: pointer;
 }
 
 .exercise-editor__actions .secondary {
-  background: var(--color-bg-control);
-  color: var(--color-text-primary);
+  background: var(--color-surface-sunken);
+  color: var(--color-on-surface);
 }
 
 .account-settings {
@@ -303,26 +304,51 @@
   font-weight: 700;
 }
 
-.segmented-control {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  overflow: hidden;
-  border-radius: 999px;
-  background: var(--color-bg-control);
+.segmented-control-group {
+  position: relative;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.25rem;
 }
 
-.segmented-control--week {
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(var(--segmented-columns), minmax(0, 1fr));
+  overflow: hidden;
+  border: 1px solid var(--color-border-default);
+  background: var(--color-surface-sunken);
+}
+
+.segmented-control--single {
+  border-radius: 999px;
+}
+
+.segmented-control--first {
+  border-radius: 999px 999px 8px 8px;
+}
+
+.segmented-control--middle {
+  border-radius: 8px;
+}
+
+.segmented-control--last {
+  border-radius: 8px 8px 999px 999px;
 }
 
 .segmented-control button {
+  min-width: 0;
   min-height: 44px;
   padding: 0.6rem;
   border: 0;
   border-right: 1px solid var(--color-border-subtle);
   background: transparent;
-  color: var(--color-text-primary);
+  color: var(--color-on-surface);
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .segmented-control button:last-child {
@@ -330,21 +356,39 @@
 }
 
 .segmented-control button[aria-pressed='true'] {
-  background: var(--color-text-secondary);
-  color: var(--color-text-inverse);
+  background: var(--color-interactive-selected);
+  color: var(--color-on-interactive-selected);
   font-weight: 800;
+}
+
+.segmented-control__measure {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  width: max-content;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
+  visibility: hidden;
+}
+
+.segmented-control__measure-option {
+  display: inline-block;
+  min-width: 44px;
+  padding: 0.6rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
 
 .account-message {
   margin: 0.75rem 0;
-  color: var(--color-status-success);
+  color: var(--color-on-feedback-success);
 }
 
 .account-message--error {
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  background: var(--color-status-danger-bg);
-  color: var(--color-status-danger-text);
 }
 
 .account-loading {
@@ -427,12 +471,4 @@
     padding: 0.75rem;
   }
 
-  .segmented-control--week {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    border-radius: 12px;
-  }
-
-  .segmented-control:not(.segmented-control--week) {
-    border-radius: 12px;
-  }
 }

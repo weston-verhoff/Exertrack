@@ -16,8 +16,8 @@ export default function StatusButton({
   idleLabel = 'Submit',
   successLabel = '✅ Saved!',
   width = '200px',
-  accentColor = 'var(--color-action-secondary)',
-  successColor = 'var(--color-status-success)'
+  accentColor = 'var(--color-interactive-secondary)',
+  successColor = 'var(--color-interactive-positive)'
 }: StatusButtonProps) {
   const [status, setStatus] = useState<ButtonState>('idle')
 
@@ -37,7 +37,7 @@ export default function StatusButton({
   const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.style.transform = 'scale(0.96)'
     e.currentTarget.style.backgroundColor =
-      status === 'success' ? 'var(--color-status-success)' : 'var(--color-border-subtle)'
+      status === 'success' ? 'var(--color-interactive-positive-hover)' : 'var(--color-border-subtle)'
   }
 
   const handleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -62,7 +62,7 @@ export default function StatusButton({
 			  border: 'none',
 			  borderRadius: '4px',
 			  textAlign: 'center',
-			  color: status === 'success' ? 'var(--color-text-inverse)' : 'var(--color-text-black)',
+			  color: status === 'success' ? 'var(--color-on-interactive-positive)' : 'var(--color-on-interactive-secondary)',
 			  backgroundColor: status === 'success' ? successColor : accentColor,
 			  transition: 'transform 0.1s ease-in-out, background-color 0.2s ease-in-out',
 			  opacity: status === 'success' ? 1 : 0.85,
@@ -70,7 +70,7 @@ export default function StatusButton({
 			  cursor: 'pointer',
 			  outline: 'none',
 			  userSelect: 'none',
-			  WebkitTapHighlightColor: 'var(--color-bg-transparent)'
+			  WebkitTapHighlightColor: 'var(--color-transparent)'
 			}}
     >
       {status === 'success' ? successLabel : idleLabel}

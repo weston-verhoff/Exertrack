@@ -12,6 +12,7 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { FaArrowUp, FaPen, FaSearch } from 'react-icons/fa';
+import { ResponsiveSegmentedControl } from '../components/ResponsiveSegmentedControl';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -60,6 +61,31 @@ const WEEKDAYS: Array<{ value: Weekday; label: string }> = [
   { value: 5, label: 'Fri' },
   { value: 6, label: 'Sat' },
   { value: 0, label: 'Sun' },
+];
+
+const DISTANCE_OPTIONS: Array<{
+  value: AccountSettings['distanceSystem'];
+  label: string;
+}> = [
+  { value: 'imperial', label: 'Miles, Yards, Feet' },
+  { value: 'metric', label: 'Kilometers, Meters, Centimeters' },
+];
+
+const WEIGHT_OPTIONS: Array<{
+  value: AccountSettings['weightSystem'];
+  label: string;
+}> = [
+  { value: 'imperial', label: 'Pounds (lbs) & Ounces (oz)' },
+  { value: 'metric', label: 'Kilograms (kg) & Grams (g)' },
+];
+
+const THEME_OPTIONS: Array<{
+  value: AccountSettings['theme'];
+  label: string;
+}> = [
+  { value: 'default', label: 'Up & Up' },
+  { value: 'blue-pink', label: 'Neon' },
+  { value: 'monokai', label: 'Monokai' },
 ];
 
 const SECTION_LINKS = [
@@ -151,8 +177,8 @@ export default function AccountPage() {
 
     const entries = Array.from(volumeByDate.entries()).sort(([a], [b]) => a.localeCompare(b));
     const styles = getComputedStyle(document.documentElement);
-    const lineColor = styles.getPropertyValue('--color-chart-strength').trim();
-    const fillColor = styles.getPropertyValue('--color-chart-fill-strength').trim();
+    const lineColor = styles.getPropertyValue('--color-chart-series-1').trim();
+    const fillColor = styles.getPropertyValue('--color-chart-series-1-fill').trim();
 
     return {
       labels: entries.map(([date]) =>
@@ -281,7 +307,7 @@ export default function AccountPage() {
       </section>
 
       <div className="account-shell">
-        <aside className="account-sidebar" aria-label="Account page navigation">
+        <aside className="account-sidebar color-context color-context--raised" aria-label="Account page navigation">
           <nav>
             {SECTION_LINKS.map(link => (
               <a key={link.href} href={link.href}>{link.label}</a>
@@ -296,7 +322,7 @@ export default function AccountPage() {
         </aside>
 
         <main className="account-content">
-          {pageError && <p className="account-message account-message--error" role="alert">{pageError}</p>}
+          {pageError && <p className="account-message account-message--error color-context color-context--danger" role="alert">{pageError}</p>}
 
           <section id="recent-workouts" className="account-section">
             <h2>Recent Workouts</h2>
@@ -339,7 +365,7 @@ export default function AccountPage() {
                 </select>
               </label>
             </div>
-            <div className="account-chart" aria-label="Strength volume chart">
+            <div className="account-chart color-context color-context--raised" aria-label="Strength volume chart">
               {workouts.length ? (
                 <Line
                   data={chartData}
@@ -456,42 +482,38 @@ export default function AccountPage() {
 
             <fieldset>
               <legend>Start of Week</legend>
-              <div className="segmented-control segmented-control--week">
-                {WEEKDAYS.map(day => (
-                  <button
-                    key={day.value}
-                    type="button"
-                    aria-pressed={settings.startOfWeek === day.value}
-                    onClick={() => updateSetting('startOfWeek', day.value)}
-                  >
-                    {day.label}
-                  </button>
-                ))}
-              </div>
+              <ResponsiveSegmentedControl
+                options={WEEKDAYS}
+                value={settings.startOfWeek}
+                onChange={value => updateSetting('startOfWeek', value)}
+              />
             </fieldset>
 
             <fieldset>
               <legend>Preferred Distance</legend>
-              <div className="segmented-control">
-                <button type="button" aria-pressed={settings.distanceSystem === 'imperial'} onClick={() => updateSetting('distanceSystem', 'imperial')}>Miles, Yards, Feet</button>
-                <button type="button" aria-pressed={settings.distanceSystem === 'metric'} onClick={() => updateSetting('distanceSystem', 'metric')}>Kilometers, Meters, Centimeters</button>
-              </div>
+              <ResponsiveSegmentedControl
+                options={DISTANCE_OPTIONS}
+                value={settings.distanceSystem}
+                onChange={value => updateSetting('distanceSystem', value)}
+              />
             </fieldset>
 
             <fieldset>
               <legend>Preferred Weights</legend>
-              <div className="segmented-control">
-                <button type="button" aria-pressed={settings.weightSystem === 'imperial'} onClick={() => updateSetting('weightSystem', 'imperial')}>Pounds (lbs) &amp; Ounces (oz)</button>
-                <button type="button" aria-pressed={settings.weightSystem === 'metric'} onClick={() => updateSetting('weightSystem', 'metric')}>Kilograms (kg) &amp; Grams (g)</button>
-              </div>
+              <ResponsiveSegmentedControl
+                options={WEIGHT_OPTIONS}
+                value={settings.weightSystem}
+                onChange={value => updateSetting('weightSystem', value)}
+              />
             </fieldset>
 
             <fieldset>
               <legend>Color Theme</legend>
-              <div className="segmented-control">
-                <button type="button" aria-pressed={settings.theme === 'default'} onClick={() => updateSetting('theme', 'default')}>Up &amp; Up</button>
-                <button type="button" aria-pressed={settings.theme === 'blue-pink'} onClick={() => updateSetting('theme', 'blue-pink')}>Neon</button>
-              </div>
+              <ResponsiveSegmentedControl
+                options={THEME_OPTIONS}
+                value={settings.theme}
+                onChange={value => updateSetting('theme', value)}
+              />
             </fieldset>
             {settingsStatus && <p className="account-message" role="status">{settingsStatus}</p>}
           </section>

@@ -1,4 +1,9 @@
 .workout-card {
+  --_card-surface: var(--color-surface-default);
+  --_card-content: var(--color-on-surface);
+  --_card-border: var(--color-border-default);
+  --_card-header-surface: var(--color-surface-raised);
+  --_card-header-content: var(--color-on-surface);
   font-family: var(--font-body);
   display: flex;
   flex-direction: column;
@@ -7,26 +12,38 @@
   border-radius: 1rem;
   overflow: hidden;
   min-height: 300px;
+  background-color: var(--_card-surface);
+  border: 1px solid var(--_card-border);
+  color: var(--_card-content);
+  box-shadow: 0 8px 18px var(--shadow-soft);
 }
 
 .future-workout{
-	background-color: var(--color-workout-future-bg);
-	border: 1px solid var(--color-workout-future-border);
+	--_card-border: var(--color-border-accent-secondary);
+	--_card-header-surface: var(--color-accent-secondary);
+	--_card-header-content: var(--color-on-accent-secondary);
 }
 .past-workout{
-	background-color: var(--color-workout-past-bg);
-	border: 1px solid var(--color-border-primary-strong);
+	--_card-border: var(--color-feedback-info-border);
+	--_card-header-surface: var(--color-interactive-secondary);
+	--_card-header-content: var(--color-on-interactive-secondary);
 }
 .template-workout{
-	background-color: var(--color-workout-template-bg);
-	border: 1px solid var(--color-border-primary-strong);
+	--_card-surface: var(--color-surface-default);
+	--_card-content: var(--color-on-surface);
+	--_card-border: var(--color-border-accent-primary);
+	--_card-header-surface: var(--color-accent-primary-subtle);
+	--_card-header-content: var(--color-on-accent-primary-subtle);
 }
 .highlighted{
-	background-color: var(--color-workout-highlighted-bg);
-	border: 1px solid var(--color-border-primary-strong);
+	--_card-border: var(--color-feedback-success-border);
+	--_card-header-surface: var(--color-interactive-positive);
+	--_card-header-content: var(--color-on-interactive-positive);
 }
 
 .workout-head {
+	background-color: var(--_card-header-surface);
+	color: var(--_card-header-content);
 	font-weight:bold;
 	text-transform: uppercase;
 	display: flex;
@@ -38,17 +55,7 @@
 	box-sizing: border-box;
 }
 
-.future-workout .workout-head {
-	background-color: var(--color-workout-future-header);
-  color: var(--color-text-inverse);
-}
-.past-workout .workout-head {
-	background-color: var(--color-workout-past-header);
-}
-
 .template-workout .workout-head {
-	background-color: var(--color-workout-template-header);
-
 	font-weight:bold;
 	text-transform: capitalize;
 	display: flex;
@@ -60,16 +67,12 @@
 	box-sizing: border-box;
 }
 
-.highlighted .workout-head {
-	background-color: var(--color-workout-highlighted-header);
-	color: var(--color-text-on-brand-primary);
-}
 .workout-head a{
   font-weight: 400;
-  color: var(--color-text-inverse);
+  color: var(--_card-header-content);
 }
 .highlighted .workout-head a {
-	color: var(--color-text-on-brand-primary);
+	color: var(--_card-header-content);
 }
 .workout-btns {
   display: flex;
@@ -92,16 +95,17 @@
 }
 .btn:active{filter: brightness(95%);}
 .start-btn{
-  background-color: var(--color-action-start-bg);
+  background-color: var(--color-interactive-positive);
+  color: var(--color-on-interactive-positive);
 }
 
 .delete-btn{
-	background-color: var(--color-action-destructive);
-  color: var(--color-action-destructive-text);
+	background-color: var(--color-interactive-danger);
+  color: var(--color-on-interactive-danger);
 	font-weight:bold;
 }
 .lifts{
-	color: var(--color-text-black);
+	color: var(--_card-content);
   margin: 1rem;
   display: flex;
   flex-direction: column;

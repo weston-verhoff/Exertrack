@@ -636,12 +636,12 @@ export default function PlanSession() {
               </button>
 
               {statusMessage && (
-                <p className="status-message status-message--info">
+                <p className="status-message status-message--info color-context color-context--info">
                   {statusMessage}
                 </p>
               )}
               {errorMessage && (
-                <p className="status-message status-message--error">
+                <p className="status-message status-message--error color-context color-context--danger">
                   {errorMessage}
                 </p>
               )}

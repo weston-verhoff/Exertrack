@@ -15,34 +15,34 @@ interface WorkoutButtonProps {
 
 const variantStyles: Record<string, React.CSSProperties> = {
   primary: {
-    backgroundColor: 'var(--color-action-primary)',
-    color: 'var(--color-action-primary-text)'
+    backgroundColor: 'var(--color-interactive-primary)',
+    color: 'var(--color-on-interactive-primary)'
   },
   secondary: {
-    backgroundColor: 'var(--color-action-secondary)',
-    color: 'var(--color-action-secondary-text)'
+    backgroundColor: 'var(--color-interactive-secondary)',
+    color: 'var(--color-on-interactive-secondary)'
   },
   destructive: {
-    backgroundColor: 'var(--color-action-destructive)',
-    color: 'var(--color-action-destructive-text)'
+    backgroundColor: 'var(--color-interactive-danger)',
+    color: 'var(--color-on-interactive-danger)'
   },
 	blackText: {
-		backgroundColor: 'var(--color-action-secondary-bg)',
-		color:'var(--color-action-secondary-text-on-light)',
+		backgroundColor: 'var(--color-transparent)',
+		color:'var(--color-on-surface)',
 		textDecoration: 'underline',
 	},
 	whiteText: {
-		backgroundColor: 'var(--color-action-secondary-bg)',
-		color:'var(--color-action-secondary-text-on-dark)',
+		backgroundColor: 'var(--color-transparent)',
+		color:'var(--color-on-inverse)',
 		textDecoration: 'underline',
 	},
 	completedSectionLink: {
-		backgroundColor: 'var(--color-action-secondary-bg)',
-		color:'var(--color-action-completed-section-link)',
+		backgroundColor: 'var(--color-transparent)',
+		color:'var(--color-on-canvas)',
 		textDecoration: 'underline',
 	},
 	unsetText: {
-		backgroundColor: 'var(--color-action-secondary-bg)',
+		backgroundColor: 'var(--color-transparent)',
 		color:'inherit',
 		textDecoration: 'underline',
 	}

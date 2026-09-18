@@ -1,0 +1,145 @@
+/* Monokai is the reference hierarchy for every theme's semantic mapping. */
+[data-theme='monokai'] {
+  color-scheme: dark;
+
+  /* Reference palette */
+  --ref-neutral-canvas: #272822;
+  --ref-neutral-default: #32332d;
+  --ref-neutral-raised: #3e3d32;
+  --ref-neutral-sunken: #20211c;
+  --ref-neutral-inverse: #161712;
+  --ref-border-subtle: #49483e;
+  --ref-border-default: #5c5b50;
+  --ref-border-strong: #75715e;
+  --ref-text-primary: #f8f8f2;
+  --ref-text-secondary: #cfcfc2;
+  --ref-text-muted: #a6a69a;
+  --ref-pink-bg: #3f2631;
+  --ref-pink-surface: #552537;
+  --ref-pink-hover: #6d2942;
+  --ref-pink-border: #a92558;
+  --ref-pink-text: #ff679d;
+  --ref-purple-bg: #322a3f;
+  --ref-purple-surface: #403250;
+  --ref-purple-border: #7657a8;
+  --ref-purple-text: #c7a7ff;
+  --ref-blue-bg: #20383b;
+  --ref-blue-surface: #28474b;
+  --ref-blue-border: #438b96;
+  --ref-blue-text: #8ee7f4;
+  --ref-green-bg: #303a22;
+  --ref-green-surface: #3c4926;
+  --ref-green-border: #72972a;
+  --ref-green-text: #c4ed6b;
+  --ref-yellow-bg: #3d3925;
+  --ref-yellow-surface: #4d4729;
+  --ref-yellow-border: #8f8746;
+  --ref-yellow-text: #e6db74;
+  --ref-orange: #fd971f;
+  --ref-transparent: rgba(0, 0, 0, 0);
+  --ref-overlay-inverse-95: rgba(39, 40, 34, 0.95);
+  --ref-overlay-backdrop: rgba(0, 0, 0, 0.55);
+  --ref-wash-inverse-8: rgba(248, 248, 242, 0.08);
+  --ref-wash-inverse-10: rgba(102, 217, 239, 0.1);
+  --ref-shadow-8: rgba(0, 0, 0, 0.08);
+  --ref-shadow-14: rgba(0, 0, 0, 0.14);
+  --ref-shadow-18: rgba(0, 0, 0, 0.18);
+  --ref-shadow-25: rgba(0, 0, 0, 0.25);
+  --ref-shadow-40: rgba(0, 0, 0, 0.4);
+  --ref-shadow-50: rgba(0, 0, 0, 0.5);
+  --ref-shadow-80: rgba(0, 0, 0, 0.8);
+  --ref-shadow-100: rgba(0, 0, 0, 1);
+
+  /* Neutral foundations */
+  --color-surface-canvas: var(--ref-neutral-canvas);
+  --color-surface-default: var(--ref-neutral-default);
+  --color-surface-raised: var(--ref-neutral-raised);
+  --color-surface-sunken: var(--ref-neutral-sunken);
+  --color-surface-inverse: var(--ref-neutral-inverse);
+  --color-surface-inverse-subtle: var(--ref-wash-inverse-8);
+  --color-surface-overlay: var(--ref-overlay-inverse-95);
+  --color-on-canvas: var(--ref-text-primary);
+  --color-on-surface: var(--ref-text-primary);
+  --color-content-secondary: var(--ref-text-secondary);
+  --color-content-muted: var(--ref-text-muted);
+  --color-on-inverse: var(--ref-text-primary);
+  --color-on-inverse-muted: var(--ref-text-secondary);
+  --color-on-inverse-danger: var(--ref-pink-text);
+
+  /* Borders */
+  --color-border-subtle: var(--ref-border-subtle);
+  --color-border-default: var(--ref-border-default);
+  --color-border-strong: var(--ref-border-strong);
+  --color-border-focus: var(--ref-blue-border);
+  --color-border-on-inverse: var(--ref-border-strong);
+
+  /* Accent families */
+  --color-accent-primary: var(--ref-pink-surface);
+  --color-on-accent-primary: var(--ref-text-primary);
+  --color-accent-primary-subtle: var(--ref-pink-bg);
+  --color-on-accent-primary-subtle: var(--ref-pink-text);
+  --color-border-accent-primary: var(--ref-pink-border);
+  --color-hover-on-accent-primary: var(--ref-wash-inverse-10);
+  --color-accent-secondary: var(--ref-yellow-surface);
+  --color-on-accent-secondary: var(--ref-text-primary);
+  --color-accent-secondary-subtle: var(--ref-yellow-bg);
+  --color-on-accent-secondary-subtle: var(--ref-yellow-text);
+  --color-border-accent-secondary: var(--ref-yellow-border);
+  --color-hover-on-accent-secondary: var(--ref-wash-inverse-10);
+
+  /* Interactive states */
+  --color-interactive-primary: var(--ref-pink-surface);
+  --color-on-interactive-primary: var(--ref-text-primary);
+  --color-interactive-primary-hover: var(--ref-pink-hover);
+  --color-interactive-secondary: var(--ref-blue-surface);
+  --color-on-interactive-secondary: var(--ref-blue-text);
+  --color-interactive-secondary-hover: var(--ref-blue-bg);
+  --color-interactive-subtle: var(--ref-blue-bg);
+  --color-on-interactive-subtle: var(--ref-blue-text);
+  --color-interactive-subtle-hover: var(--ref-blue-surface);
+  --color-interactive-selected: var(--ref-text-secondary);
+  --color-on-interactive-selected: var(--ref-neutral-canvas);
+  --color-border-selected: var(--ref-text-primary);
+  --color-interactive-positive: var(--ref-green-bg);
+  --color-on-interactive-positive: var(--ref-green-text);
+  --color-interactive-positive-hover: var(--ref-green-surface);
+  --color-border-positive: var(--ref-green-border);
+  --color-interactive-danger: var(--ref-pink-surface);
+  --color-on-interactive-danger: var(--ref-text-primary);
+  --color-interactive-danger-hover: var(--ref-pink-hover);
+
+  /* Feedback */
+  --color-feedback-info-surface: var(--ref-blue-bg);
+  --color-on-feedback-info: var(--ref-blue-text);
+  --color-feedback-info-border: var(--ref-blue-border);
+  --color-feedback-success-surface: var(--ref-green-bg);
+  --color-on-feedback-success: var(--ref-green-text);
+  --color-feedback-success-border: var(--ref-green-border);
+  --color-feedback-danger-surface: var(--ref-pink-bg);
+  --color-on-feedback-danger: var(--ref-pink-text);
+  --color-feedback-danger-border: var(--ref-pink-border);
+
+  /* Effects and data visualization */
+  --color-transparent: var(--ref-transparent);
+  --color-overlay-backdrop: var(--ref-overlay-backdrop);
+  --color-hover-on-inverse: var(--ref-wash-inverse-10);
+  --color-chart-series-1: var(--ref-green-text);
+  --color-chart-series-2: var(--ref-blue-text);
+  --color-chart-series-3: var(--ref-orange);
+  --color-chart-series-1-fill: rgba(166, 226, 46, 0.2);
+  --color-chart-series-2-fill: rgba(102, 217, 239, 0.2);
+  --color-chart-series-3-fill: rgba(253, 151, 31, 0.2);
+  --shadow-subtle: var(--ref-shadow-8);
+  --shadow-soft: var(--ref-shadow-14);
+  --shadow-medium: var(--ref-shadow-18);
+  --shadow-strong: var(--ref-shadow-50);
+  --shadow-button-inset: var(--ref-shadow-25);
+  --shadow-button-hover-inset: var(--ref-shadow-40);
+  --shadow-button-pressed: var(--ref-shadow-80);
+  --shadow-control-inset: var(--ref-shadow-100);
+
+  /* Theme artwork */
+  --image-surface-canvas: none;
+  --image-surface-hero: none;
+  --image-surface-accent: none;
+}

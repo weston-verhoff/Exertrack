@@ -113,7 +113,7 @@ const closeDrawerAfterSave = () => {
 				<WorkoutButton
 				  label="Details"
 				  icon=""
-				  variant={variant !== 'past-workout' ? 'whiteText' : 'blackText'}
+				  variant="unsetText"
 					onClick={() => {
 						resetDraftState();
 				    setDrawerOpen(true);

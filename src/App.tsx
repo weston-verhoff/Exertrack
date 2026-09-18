@@ -4,15 +4,12 @@ import {
   Navigate,
   Routes,
   Route,
-  matchPath,
   useLocation,
 } from 'react-router-dom';
-import {
-  GlobalHeader,
-  type GlobalHeaderVariant,
-} from './components/GlobalHeader';
+import { GlobalHeader } from './components/GlobalHeader';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { getGlobalHeaderVariant } from './utils/header';
 import './index.css';
 
 const Dashboard = lazy(() => import('./pages/index'));
@@ -26,17 +23,10 @@ const PastDetail = lazy(() => import('./pages/past_detail'));
 const WorkoutRecap = lazy(() => import('./pages/workout'));
 const Login = lazy(() => import('./pages/login'));
 
-const orangeHeaderRoutes = ['/plan', '/templates/:id/edit'] as const;
-
 function RouteAwareGlobalHeader() {
   const { pathname } = useLocation();
-  const variant: GlobalHeaderVariant = orangeHeaderRoutes.some((route) =>
-    matchPath({ path: route, end: true }, pathname)
-  )
-    ? 'orange'
-    : 'blue';
 
-  return <GlobalHeader variant={variant} />;
+  return <GlobalHeader variant={getGlobalHeaderVariant(pathname)} />;
 }
 
 function App() {

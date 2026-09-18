@@ -1,5 +1,6 @@
 // src/pages/past.tsx
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { WorkoutCard } from '../components/WorkoutCard'
 import { useAuth } from '../context/AuthContext'
@@ -16,6 +17,7 @@ import {
 } from '../utils/workoutExport'
 
 export default function PastWorkouts() {
+  const navigate = useNavigate()
   const [workouts, setWorkouts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true)
 	const [showAllPast, setShowAllPast] = useState(false)
@@ -160,8 +162,18 @@ export default function PastWorkouts() {
 			<h2 style={{textAlign:'center'}}>Future Workouts</h2>
 			{loading ? (
         <p>Loading...</p>
-      ) : workouts.length === 0 ? (
-        <p>No past workouts found.</p>
+      ) : scheduledWorkouts.length === 0 ? (
+        <div className="past-workouts" style={{marginBottom:"4rem"}}>
+          <button
+            type="button"
+            className="empty-workout-card"
+            onClick={() => navigate('/plan')}
+          >
+            <span className="empty-workout-card-text">
+              Get started / plan your next workout
+            </span>
+          </button>
+        </div>
       ) : (
 				<div className="past-workouts" style={{marginBottom:"4rem"}}>
 					{scheduledWorkouts.map((w) => (
