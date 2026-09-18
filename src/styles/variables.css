@@ -1,7 +1,7 @@
 :root {
   /* Typography */
   --font-headline: 'Roboto', sans-serif;
-  --font-body: 'Nunito', sans-serif;
+  --font-body: 'Roboto', sans-serif;
 
   /* Primitive colors: neutral */
   --neutral-0: #ffffff;
@@ -32,6 +32,32 @@
   --blue-500: #2196f3;
   --blue-600: #1446de;
   --blue-750: #1e3a8a;
+
+  /* Primitive colors: pink */
+  --pink-50: #fff0f7;
+  --pink-100: #ffd6e9;
+  --pink-200: #ffadd4;
+  --pink-300: #ff75b5;
+  --pink-400: #ff3b96;
+  --pink-500: #ff007b;
+  --pink-600: #d90068;
+  --pink-700: #b00055;
+  --pink-800: #85003f;
+  --pink-900: #59002a;
+  --pink-950: #330018;
+
+  /* Primitive colors: cyan */
+  --cyan-50: #effcff;
+  --cyan-100: #d7f6ff;
+  --cyan-200: #afefff;
+  --cyan-300: #70e2ff;
+  --cyan-400: #26d2ff;
+  --cyan-500: #00c8ff;
+  --cyan-600: #009fcc;
+  --cyan-700: #00799e;
+  --cyan-800: #005878;
+  --cyan-900: #003b52;
+  --cyan-950: #002431;
 
   /* Primitive colors: orange */
   --orange-50: #fff7ed;
@@ -64,7 +90,10 @@
   --alpha-transparent: rgba(0, 0, 0, 0);
   --blue-100-a95: rgba(219, 234, 254, 0.95);
   --overlay-navy-95: rgba(14, 23, 55, 0.95);
+  --overlay-black-95: rgba(0, 0, 0, 0.95);
   --overlay-black-45: rgba(0, 0, 0, 0.45);
+  --wash-cyan-10: rgba(0, 200, 255, 0.1);
+  --wash-pink-10: rgba(255, 0, 123, 0.1);
   --wash-white-8: rgba(255, 255, 255, 0.08);
   --wash-white-10: rgba(255, 255, 255, 0.1);
   --wash-white-60: rgba(255, 255, 255, 0.6);
@@ -99,6 +128,9 @@
   --color-brand-accent: var(--orange-200);
 
   /* General backgrounds */
+  --color-bg-page: var(--neutral-0);
+  --color-bg-dashboard-hero: var(--navy-850);
+  --color-bg-future-section: var(--orange-75);
   --color-bg-input: var(--neutral-0);
   --color-bg-elevated: var(--blue-100-a95);
   --color-bg-control: var(--neutral-50);
@@ -115,6 +147,11 @@
   --color-bg-template-action: var(--blue-50);
   --color-bg-transparent: var(--alpha-transparent);
 
+  /* Theme artwork */
+  --image-bg-page: url('../full-background.png');
+  --image-bg-dashboard-hero: url('../darkblue-hero-bg.png');
+  --image-bg-future-section: url('../orange-bg.png');
+
   /* Text */
   --color-text-primary: var(--navy-850);
   --color-text-strong: var(--neutral-850);
@@ -123,11 +160,14 @@
   --color-text-subtle: var(--neutral-500);
   --color-text-black: var(--neutral-1000);
   --color-text-inverse: var(--neutral-0);
+  --color-text-on-brand-primary: var(--neutral-0);
+  --color-text-on-brand-accent: var(--neutral-1000);
   --color-text-on-dark-soft: var(--blue-100);
   --color-text-on-dark-muted: var(--blue-200);
   --color-text-action-subtle: var(--blue-750);
   --color-text-warm-strong: var(--orange-950);
   --color-text-warm-secondary: var(--orange-900);
+  --color-text-completed-section: var(--neutral-0);
   --color-text-context: var(--color-text-primary);
 
   /* Borders */
@@ -147,13 +187,14 @@
   --color-border-hero: var(--wash-white-60);
 
   /* Actions */
-  --color-action-primary: var(--blue-500);
+  --color-action-primary: var(--orange-600);
   --color-action-primary-text: var(--neutral-0);
   --color-action-secondary: var(--blue-500);
   --color-action-secondary-text: var(--neutral-0);
   --color-action-secondary-bg: var(--alpha-transparent);
   --color-action-secondary-text-on-light: var(--neutral-1000);
   --color-action-secondary-text-on-dark: var(--neutral-0);
+  --color-action-completed-section-link: var(--neutral-0);
   --color-action-destructive: var(--red-500);
   --color-action-destructive-text: var(--neutral-0);
   --color-action-destructive-compact: var(--red-400);

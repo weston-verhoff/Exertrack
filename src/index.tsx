@@ -3,14 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+import './styles/theme-blue-pink.css';
+import { bootstrapTheme } from './utils/theme';
 
-if (process.env.NODE_ENV === 'development') {
-  require('./styles/theme-test.css');
-
-  if (new URLSearchParams(window.location.search).get('theme') === 'test') {
-    document.documentElement.dataset.theme = 'test';
-  }
-}
+bootstrapTheme();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

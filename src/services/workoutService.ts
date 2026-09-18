@@ -704,7 +704,7 @@ export async function fetchAnalyticsWorkouts({
   const { data, error } = await supabase
     .from('workouts')
     .select(WORKOUT_ANALYTICS_FIELDS)
-    .neq('status', 'canceled')
+    .eq('status', 'completed')
     .eq('user_id', userId)
     .order('date', { ascending: true });
 

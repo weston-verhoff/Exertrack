@@ -4,7 +4,7 @@ interface WorkoutButtonProps {
   label: string
   icon?: string
   onClick: () => void
-  variant?: 'primary' | 'secondary' | 'destructive' | 'blackText' | 'whiteText' | 'unsetText'
+  variant?: 'primary' | 'secondary' | 'destructive' | 'blackText' | 'whiteText' | 'completedSectionLink' | 'unsetText'
   disabled?: boolean
   loading?: boolean
   loadingLabel?: string
@@ -34,6 +34,11 @@ const variantStyles: Record<string, React.CSSProperties> = {
 	whiteText: {
 		backgroundColor: 'var(--color-action-secondary-bg)',
 		color:'var(--color-action-secondary-text-on-dark)',
+		textDecoration: 'underline',
+	},
+	completedSectionLink: {
+		backgroundColor: 'var(--color-action-secondary-bg)',
+		color:'var(--color-action-completed-section-link)',
 		textDecoration: 'underline',
 	},
 	unsetText: {
@@ -79,7 +84,8 @@ export function WorkoutButton({
     border: 'none',
     borderRadius: rounded==='full'?'999px':'8px',
 		fontFamily: 'var(--font-body)',
-    boxShadow: variant==='whiteText'||variant==='blackText'||variant==='unsetText'? 'none' : (isPressed ? 'inset 0 0px 8px var(--shadow-button-pressed)' : 'inset -2px -2px var(--shadow-button-inset)'),
+		fontWeight: 700,
+    boxShadow: variant==='whiteText'||variant==='completedSectionLink'||variant==='blackText'||variant==='unsetText'? 'none' : (isPressed ? 'inset 0 0px 8px var(--shadow-button-pressed)' : 'inset -2px -2px var(--shadow-button-inset)'),
     transition: 'box-shadow 0.1s ease',
     opacity: disabled || loading ? 0.6 : isPressed ? 0.85 : 1,
     cursor: disabled || loading ? 'not-allowed' : 'pointer'
@@ -94,7 +100,7 @@ export function WorkoutButton({
       onClick={isDisabled ? undefined : onClick}
       onMouseDown={() => {
         if (isDisabled) return;
-        if (variant === 'whiteText' || variant === 'blackText') return;
+        if (variant === 'whiteText' || variant === 'completedSectionLink' || variant === 'blackText') return;
         setIsPressed(true);
       }}
       onMouseUp={() => setIsPressed(false)}

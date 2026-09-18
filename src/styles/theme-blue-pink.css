@@ -1,0 +1,84 @@
+/*
+ * Development-only blue/pink test theme.
+ * The palette is based on the IWYN logo artwork. This remains an architecture
+ * validation theme rather than an approved production visual design.
+ */
+[data-theme='blue-pink'] {
+    /* Brand */
+    --color-brand-primary: var(--pink-500);
+    --color-brand-accent: var(--cyan-200);
+    /* Actions */
+    --color-action-primary: var(--pink-600);
+    --color-action-primary-text: var(--neutral-0);
+    --color-action-secondary: var(--cyan-500);
+    --color-action-secondary-text: var(--neutral-1000);
+    --color-action-subtle-bg: var(--cyan-100);
+    --color-action-subtle-hover: var(--cyan-50);
+    --color-action-subtle-text: var(--cyan-800);
+    --color-action-add-bg: var(--color-brand-accent);
+    --color-action-add-hover: var(--cyan-600);
+    /* Major surfaces */
+    --color-bg-page: var(--neutral-0);
+    --color-bg-dashboard-hero: var(--pink-900);
+    --color-bg-future-section: var(--pink-100);
+    --color-bg-input: var(--neutral-0);
+    --color-bg-elevated: var(--cyan-50);
+    --color-bg-control: var(--cyan-50);
+    --color-bg-control-hover: var(--cyan-100);
+    --color-bg-nav-mobile: var(--neutral-1000);
+    --color-bg-drawer: var(--neutral-1000);
+    --color-bg-plan-page: var(--cyan-50);
+    --color-bg-plan-card: var(--neutral-0);
+    --color-bg-plan-header: var(--cyan-500);
+    --color-bg-builder-row: var(--cyan-100);
+    --color-bg-empty: var(--cyan-50);
+    --color-bg-drag-handle: var(--cyan-300);
+    --color-bg-template-action: var(--pink-50);
+    /* Replace default-theme artwork with solid palette surfaces. */
+    --image-bg-page: none;
+    --image-bg-dashboard-hero: none;
+    --image-bg-future-section: none;
+    /* Text */
+    --color-text-primary: var(--neutral-950);
+    --color-text-strong: var(--neutral-1000);
+    --color-text-secondary: var(--neutral-750);
+    --color-text-muted: var(--neutral-700);
+    --color-text-on-dark-soft: var(--cyan-100);
+    --color-text-on-dark-muted: var(--cyan-200);
+    --color-text-action-subtle: var(--cyan-800);
+    --color-text-warm-strong: var(--pink-900);
+    --color-text-warm-secondary: var(--pink-800);
+    --color-text-completed-section: var(--neutral-950);
+    --color-text-on-brand-primary: var(--neutral-1000);
+    --color-text-on-brand-accent: var(--neutral-1000);
+    --color-action-completed-section-link: var(--neutral-950);
+    /* Borders */
+    --color-border-layout: var(--neutral-1000);
+    --color-border-primary-strong: var(--neutral-950);
+    --color-border-interactive: var(--cyan-700);
+    --color-border-warm: var(--pink-300);
+    --color-border-warm-strong: var(--pink-800);
+    --color-border-plan-header: var(--cyan-700);
+    --color-border-on-dark-soft: var(--cyan-200);
+    /* Headers */
+    --color-header-default-bg: var(--overlay-black-95);
+    --color-header-default-text: var(--neutral-0);
+    --color-header-plan-bg: var(--color-brand-accent);
+    --color-header-plan-text: var(--neutral-1000);
+    --color-header-plan-mobile-bg: var(--color-brand-primary);
+    /* Workout-card variants. Runner/set state colors intentionally inherit. */
+    --color-workout-future-bg: var(--pink-50);
+    --color-workout-future-header: var(--pink-600);
+    --color-workout-future-border: var(--pink-800);
+    --color-workout-past-bg: var(--cyan-50);
+    --color-workout-past-header: var(--cyan-300);
+    --color-workout-template-bg: var(--neutral-0);
+    --color-workout-template-header: var(--pink-200);
+    --color-workout-highlighted-bg: var(--pink-50);
+    --color-workout-highlighted-header: var(--color-brand-primary);
+    /* Effects */
+    --color-overlay-header: var(--overlay-black-95);
+    --color-overlay-auth: var(--overlay-black-95);
+    --color-hover-on-dark: var(--wash-cyan-10);
+    --color-hover-on-warm: var(--wash-pink-10);
+}

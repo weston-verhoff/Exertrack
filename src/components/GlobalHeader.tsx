@@ -29,7 +29,7 @@ export function GlobalHeader({ variant = 'blue' }: GlobalHeaderProps) {
     { to: '/plan', label: 'Plan a Session' },
     { to: '/past', label: 'Workouts' },
     { to: '/templates', label: 'Templates' },
-    { to: '/analytics', label: 'Analytics' },
+    { to: '/account', label: 'Account' },
   ];
   const loggedOutLinks: Array<{ to: string; label: ReactNode }> = [];
 

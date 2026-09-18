@@ -62,17 +62,23 @@
 
 .highlighted .workout-head {
 	background-color: var(--color-workout-highlighted-header);
-	color: var(--color-text-inverse);
+	color: var(--color-text-on-brand-primary);
 }
 .workout-head a{
   font-weight: 400;
   color: var(--color-text-inverse);
 }
+.highlighted .workout-head a {
+	color: var(--color-text-on-brand-primary);
+}
 .workout-btns {
   display: flex;
   flex-direction: row;
-  gap: 1rem;
+  gap: 0.25rem;
   margin: auto 1rem 1rem;
+}
+.workout-btns > button:first-child {
+  flex-grow: 1;
 }
 .btn{
   padding: 8px;
@@ -86,7 +92,6 @@
 }
 .btn:active{filter: brightness(95%);}
 .start-btn{
-  flex-grow:1;
   background-color: var(--color-action-start-bg);
 }
 

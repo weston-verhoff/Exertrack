@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
 import {
   BrowserRouter,
+  Navigate,
   Routes,
   Route,
   matchPath,
@@ -20,7 +21,7 @@ const Templates = lazy(() => import('./pages/templates'));
 const WorkoutRunner = lazy(() => import('./pages/runner'));
 const Recap = lazy(() => import('./pages/recap'));
 const PastWorkouts = lazy(() => import('./pages/past'));
-const Analytics = lazy(() => import('./pages/analytics'));
+const Account = lazy(() => import('./pages/account'));
 const PastDetail = lazy(() => import('./pages/past_detail'));
 const WorkoutRecap = lazy(() => import('./pages/workout'));
 const Login = lazy(() => import('./pages/login'));
@@ -105,13 +106,14 @@ function App() {
                 }
               />
               <Route
-                path="/analytics"
+                path="/account"
                 element={
                   <ProtectedRoute>
-                    <Analytics />
+                    <Account />
                   </ProtectedRoute>
                 }
               />
+              <Route path="/analytics" element={<Navigate to="/account" replace />} />
               <Route
                 path="/past/:id"
                 element={

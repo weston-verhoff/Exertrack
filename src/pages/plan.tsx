@@ -692,7 +692,7 @@ export default function PlanSession() {
 								<WorkoutButton
 									label='Add a Custom Exercise'
 									icon="+"
-									variant="secondary"
+									variant="primary"
 									size="lg"
 									onClick={() => setAddingCustom(true)}
 									rounded="default"

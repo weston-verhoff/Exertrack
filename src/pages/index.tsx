@@ -247,11 +247,11 @@ export default function Dashboard() {
           {/* COMPLETED WORKOUTS */}
           <section className="past-workout-container">
 					<div className="workouts-header">
-            <h2 className="font-white headline">Finished Workouts</h2>
+			<h2 className="completed-workouts-heading headline">Finished Workouts</h2>
 						<WorkoutButton
 		          label="See All"
 		          icon=""
-		          variant="whiteText"
+		          variant="completedSectionLink"
 		          onClick={() => navigate('/past')}
 		        />
 						</div>

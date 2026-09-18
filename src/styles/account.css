@@ -1,0 +1,438 @@
+.account-page {
+  min-height: 100vh;
+  padding-top: 56px;
+  color: var(--color-text-strong);
+}
+
+.account-hero {
+  padding: 2.5rem 1.5rem 3rem;
+  background: var(--color-bg-dashboard-hero) var(--image-bg-dashboard-hero) center / cover;
+  color: var(--color-text-inverse);
+  text-align: center;
+}
+
+.account-hero h1 {
+  margin: 0 0 1.75rem;
+  font-family: var(--font-headline);
+  font-size: clamp(2rem, 5vw, 3rem);
+}
+
+.account-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.25rem;
+  width: min(100%, 1080px);
+  margin: 0 auto;
+}
+
+.account-stat-card {
+  display: flex;
+  min-height: 170px;
+  padding: 1.5rem;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--color-border-hero);
+  border-radius: 12px;
+  background: var(--color-surface-hero-translucent);
+}
+
+.account-stat-card span {
+  max-width: 11rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.account-stat-card strong {
+  margin-top: 0.5rem;
+  font-size: clamp(2.75rem, 6vw, 4.25rem);
+  line-height: 1;
+}
+
+.account-shell {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 820px);
+  gap: 2rem;
+  width: min(calc(100% - 3rem), 1080px);
+  margin: 2rem auto 5rem;
+  align-items: start;
+}
+
+.account-sidebar {
+  position: sticky;
+  top: 88px;
+  display: flex;
+  min-height: 420px;
+  padding: 1.25rem;
+  flex-direction: column;
+  justify-content: space-between;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 12px;
+  background: var(--color-bg-elevated);
+  box-shadow: 0 8px 20px var(--shadow-subtle);
+}
+
+.account-sidebar nav,
+.account-sidebar__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.account-sidebar a,
+.account-sidebar button {
+  display: flex;
+  width: 100%;
+  padding: 0.75rem;
+  align-items: center;
+  gap: 0.5rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-text-primary);
+  font-weight: 700;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.account-sidebar a:hover,
+.account-sidebar button:hover {
+  background: var(--color-action-subtle-bg);
+}
+
+.account-sidebar__actions button {
+  color: var(--color-status-danger-text);
+}
+
+.account-content {
+  min-width: 0;
+}
+
+.account-section {
+  margin-bottom: 3rem;
+  scroll-margin-top: 90px;
+}
+
+.account-section h2 {
+  margin: 0 0 1rem;
+  font-family: var(--font-headline);
+  font-size: 1.8rem;
+}
+
+.account-recent-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.account-recent-grid .workout-card {
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+}
+
+.account-section__heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.account-section__heading label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.account-section__heading select,
+.exercise-editor select {
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--color-border-control-outline);
+}
+
+.account-chart {
+  height: 380px;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 12px;
+  background: var(--color-bg-elevated);
+  box-shadow: 0 8px 20px var(--shadow-subtle);
+}
+
+.account-chart p {
+  display: grid;
+  height: 100%;
+  margin: 0;
+  place-items: center;
+}
+
+.account-search {
+  display: flex;
+  padding: 0 1rem;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid var(--color-border-control-outline);
+  border-radius: 2rem;
+  background: var(--color-bg-input);
+}
+
+.account-search input {
+  width: 100%;
+  padding: 0.75rem 0;
+  border: 0;
+  outline: 0;
+  text-align: left;
+}
+
+.exercise-chip-list {
+  display: flex;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.exercise-chip {
+  display: inline-flex;
+  padding: 0.45rem 0.8rem 0.45rem 0.45rem;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--color-border-control-outline);
+  border-radius: 999px;
+  background: var(--color-bg-control);
+  color: var(--color-text-strong);
+  text-align: left;
+  cursor: pointer;
+}
+
+.exercise-chip:hover {
+  background: var(--color-bg-control-hover);
+}
+
+.exercise-chip__icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 2px solid var(--color-border-default);
+  border-radius: 50%;
+}
+
+.exercise-chip strong,
+.exercise-chip small {
+  display: block;
+}
+
+.exercise-chip small {
+  margin-top: 0.1rem;
+  color: var(--color-text-muted);
+}
+
+.exercise-editor {
+  display: grid;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 1rem;
+  margin-top: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-border-interactive);
+  border-radius: 12px;
+  background: var(--color-bg-elevated);
+}
+
+.exercise-editor h3,
+.exercise-editor__actions {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.exercise-editor label,
+.account-settings label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+
+.exercise-editor input,
+.account-settings input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--color-border-control-outline);
+  text-align: left;
+}
+
+.exercise-editor__actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.exercise-editor__actions button {
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--color-border-interactive);
+  border-radius: 8px;
+  background: var(--color-action-primary);
+  color: var(--color-action-primary-text);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.exercise-editor__actions .secondary {
+  background: var(--color-bg-control);
+  color: var(--color-text-primary);
+}
+
+.account-settings {
+  padding-bottom: 2rem;
+}
+
+.account-name-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.account-settings fieldset {
+  margin: 1.5rem 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.account-settings legend {
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.segmented-control {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--color-bg-control);
+}
+
+.segmented-control--week {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+
+.segmented-control button {
+  min-height: 44px;
+  padding: 0.6rem;
+  border: 0;
+  border-right: 1px solid var(--color-border-subtle);
+  background: transparent;
+  color: var(--color-text-primary);
+  cursor: pointer;
+}
+
+.segmented-control button:last-child {
+  border-right: 0;
+}
+
+.segmented-control button[aria-pressed='true'] {
+  background: var(--color-text-secondary);
+  color: var(--color-text-inverse);
+  font-weight: 800;
+}
+
+.account-message {
+  margin: 0.75rem 0;
+  color: var(--color-status-success);
+}
+
+.account-message--error {
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: var(--color-status-danger-bg);
+  color: var(--color-status-danger-text);
+}
+
+.account-loading {
+  margin-top: 8rem;
+  text-align: center;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 850px) {
+  .account-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .account-shell {
+    display: block;
+  }
+
+  .account-sidebar {
+    position: static;
+    min-height: 0;
+    margin-bottom: 2rem;
+  }
+
+  .account-sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .account-sidebar__actions {
+    margin-top: 1rem;
+    flex-direction: row;
+  }
+}
+
+@media (max-width: 620px) {
+  .account-page {
+    padding-top: 64px;
+  }
+
+  .account-hero {
+    padding-inline: 1rem;
+  }
+
+  .account-stat-grid,
+  .account-recent-grid,
+  .account-name-grid,
+  .exercise-editor {
+    grid-template-columns: 1fr;
+  }
+
+  .account-stat-card {
+    min-height: 135px;
+  }
+
+  .account-shell {
+    width: min(calc(100% - 2rem), 1080px);
+  }
+
+  .account-section__heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .account-section__heading label {
+    justify-content: space-between;
+  }
+
+  .account-chart {
+    height: 300px;
+    padding: 0.75rem;
+  }
+
+  .segmented-control--week {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-radius: 12px;
+  }
+
+  .segmented-control:not(.segmented-control--week) {
+    border-radius: 12px;
+  }
+}
