@@ -12,8 +12,10 @@ import {
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
 import { FaArrowUp, FaPen, FaSearch } from 'react-icons/fa';
+import { Drawer } from '../components/Drawer';
 import { ResponsiveSegmentedControl } from '../components/ResponsiveSegmentedControl';
 import { WorkoutCard } from '../components/WorkoutCard';
+import { SwitchField } from '../components/SwitchField';
 import { useAuth } from '../context/AuthContext';
 import {
   AccountSettings,
@@ -36,6 +38,9 @@ import {
   getWeeklySummary,
 } from '../utils/accountMetrics';
 import { applyTheme } from '../utils/theme';
+import { getDistanceUnitOptions, normalizeDistanceUnit } from '../utils/unitPreferences';
+import { DistanceUnit } from '../types/workout';
+import { useSystemAlerts } from '../context/SystemAlertContext';
 import '../styles/account.css';
 
 const ArrowUpIcon = FaArrowUp as unknown as React.FC<{ 'aria-hidden'?: boolean }>;
@@ -84,7 +89,8 @@ const THEME_OPTIONS: Array<{
   label: string;
 }> = [
   { value: 'default', label: 'Up & Up' },
-  { value: 'blue-pink', label: 'Neon' },
+  { value: 'baseball', label: 'Baseball' },
+  { value: 'neon', label: 'Neon' },
   { value: 'monokai', label: 'Monokai' },
 ];
 
@@ -104,10 +110,46 @@ export default function AccountPage() {
   const [selectedMuscle, setSelectedMuscle] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [editingExercise, setEditingExercise] = useState<CustomExercise | null>(null);
+  const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [pageError, setPageError] = useState<string | null>(null);
   const [settingsStatus, setSettingsStatus] = useState<string | null>(null);
   const [exerciseStatus, setExerciseStatus] = useState<string | null>(null);
+  const { dismissAlertGroup, showAlert } = useSystemAlerts();
+
+  useEffect(() => {
+    if (pageError) showAlert(pageError, { tone: 'error' });
+  }, [pageError, showAlert]);
+
+  useEffect(() => {
+    if (!settingsStatus) return;
+    const isSaving = /saving/i.test(settingsStatus);
+    const isSaved = /saved/i.test(settingsStatus);
+    if (!isSaving && !isSaved) {
+      dismissAlertGroup('account-settings-save');
+      showAlert(settingsStatus, { tone: 'error' });
+      return;
+    }
+    showAlert(settingsStatus, {
+      tone: isSaved ? 'success' : 'info',
+      replaceKey: 'account-settings-save',
+    });
+  }, [dismissAlertGroup, settingsStatus, showAlert]);
+
+  useEffect(() => {
+    if (!exerciseStatus) return;
+    const isSaving = /saving/i.test(exerciseStatus);
+    const isUpdated = /updated/i.test(exerciseStatus);
+    if (!isSaving && !isUpdated) {
+      dismissAlertGroup('exercise-save');
+      showAlert(exerciseStatus, { tone: 'error' });
+      return;
+    }
+    showAlert(exerciseStatus, {
+      tone: isUpdated ? 'success' : 'info',
+      replaceKey: 'exercise-save',
+    });
+  }, [dismissAlertGroup, exerciseStatus, showAlert]);
 
   const loadAccountData = useCallback(async (currentUserId: string) => {
     setLoading(true);
@@ -236,15 +278,25 @@ export default function AccountPage() {
 
   const handleExerciseSave = async (event: FormEvent) => {
     event.preventDefault();
-    if (!editingExercise || !userId) return;
+    if (!editingExercise || !userId || !settings) return;
     if (!editingExercise.name.trim() || !editingExercise.target_muscle.trim()) {
       setExerciseStatus('Name and target muscle are required.');
       return;
     }
 
+    const normalizedExercise = {
+      ...editingExercise,
+      default_distance_unit:
+        editingExercise.exercise_type === 'cardio'
+          ? normalizeDistanceUnit(editingExercise.default_distance_unit, settings.distanceSystem)
+          : null,
+      track_laps:
+        editingExercise.exercise_type === 'cardio' && editingExercise.track_laps,
+    };
+
     setExerciseStatus('Saving...');
     const { data, error } = await updateCustomExercise({
-      exercise: editingExercise,
+      exercise: normalizedExercise,
       userId,
     });
     if (error || !data) {
@@ -257,8 +309,27 @@ export default function AccountPage() {
         .map(exercise => (exercise.id === data.id ? data : exercise))
         .sort((a, b) => a.name.localeCompare(b.name))
     );
-    setEditingExercise(null);
+    setEditingExercise(data);
+    setExerciseDrawerOpen(false);
     setExerciseStatus('Exercise updated.');
+  };
+
+  const openExerciseDrawer = (exercise: CustomExercise) => {
+    const distanceSystem = settings?.distanceSystem ?? 'imperial';
+    setEditingExercise({
+      ...exercise,
+      default_distance_unit:
+        exercise.exercise_type === 'cardio'
+          ? normalizeDistanceUnit(exercise.default_distance_unit, distanceSystem)
+          : null,
+    });
+    setExerciseStatus(null);
+    setExerciseDrawerOpen(true);
+  };
+
+  const closeExerciseDrawer = () => {
+    setExerciseDrawerOpen(false);
+    setExerciseStatus(null);
   };
 
   const deleteRecentWorkout = async (workoutId: string) => {
@@ -322,8 +393,6 @@ export default function AccountPage() {
         </aside>
 
         <main className="account-content">
-          {pageError && <p className="account-message account-message--error color-context color-context--danger" role="alert">{pageError}</p>}
-
           <section id="recent-workouts" className="account-section">
             <h2>Recent Workouts</h2>
             {loading ? (
@@ -395,56 +464,13 @@ export default function AccountPage() {
               />
             </label>
 
-            {editingExercise && (
-              <form className="exercise-editor" onSubmit={handleExerciseSave}>
-                <h3>Edit custom exercise</h3>
-                <label>
-                  <span>Name</span>
-                  <input
-                    value={editingExercise.name}
-                    onChange={event => setEditingExercise({ ...editingExercise, name: event.target.value })}
-                  />
-                </label>
-                <label>
-                  <span>Target muscle</span>
-                  <input
-                    value={editingExercise.target_muscle}
-                    onChange={event => setEditingExercise({ ...editingExercise, target_muscle: event.target.value })}
-                  />
-                </label>
-                <label>
-                  <span>Exercise type</span>
-                  <select
-                    value={editingExercise.exercise_type}
-                    onChange={event =>
-                      setEditingExercise({
-                        ...editingExercise,
-                        exercise_type: event.target.value as 'strength' | 'cardio',
-                      })
-                    }
-                  >
-                    <option value="strength">Strength</option>
-                    <option value="cardio">Cardio</option>
-                  </select>
-                </label>
-                <div className="exercise-editor__actions">
-                  <button type="submit">Save Exercise</button>
-                  <button type="button" className="secondary" onClick={() => setEditingExercise(null)}>Cancel</button>
-                </div>
-              </form>
-            )}
-
-            {exerciseStatus && <p className="account-message" role="status">{exerciseStatus}</p>}
             <div className="exercise-chip-list">
               {filteredExercises.map(exercise => (
                 <button
                   key={exercise.id}
                   type="button"
                   className="exercise-chip"
-                  onClick={() => {
-                    setEditingExercise({ ...exercise });
-                    setExerciseStatus(null);
-                  }}
+                  onClick={() => openExerciseDrawer(exercise)}
                 >
                   <span className="exercise-chip__icon"><PenIcon aria-hidden={true} /></span>
                   <span>
@@ -515,10 +541,99 @@ export default function AccountPage() {
                 onChange={value => updateSetting('theme', value)}
               />
             </fieldset>
-            {settingsStatus && <p className="account-message" role="status">{settingsStatus}</p>}
           </section>
         </main>
       </div>
+
+      {editingExercise && (
+        <Drawer
+          isOpen={exerciseDrawerOpen}
+          onClose={closeExerciseDrawer}
+          width={440}
+        >
+          <form className="exercise-editor exercise-editor--drawer" onSubmit={handleExerciseSave}>
+            <div className="exercise-editor__header">
+              <h2>Edit custom exercise</h2>
+              <p>Update how this exercise appears throughout your workouts.</p>
+            </div>
+            <label>
+              <span>Name</span>
+              <input
+                value={editingExercise.name}
+                onChange={event => setEditingExercise({ ...editingExercise, name: event.target.value })}
+              />
+            </label>
+            <label>
+              <span>Target muscle</span>
+              <input
+                value={editingExercise.target_muscle}
+                onChange={event => setEditingExercise({ ...editingExercise, target_muscle: event.target.value })}
+              />
+            </label>
+            <label>
+              <span>Exercise type</span>
+              <select
+                value={editingExercise.exercise_type}
+                onChange={event =>
+                  setEditingExercise({
+                    ...editingExercise,
+                    exercise_type: event.target.value as 'strength' | 'cardio',
+                    default_distance_unit:
+                      event.target.value === 'cardio'
+                        ? normalizeDistanceUnit(
+                            editingExercise.default_distance_unit,
+                            settings.distanceSystem
+                          )
+                        : null,
+                    track_laps:
+                      event.target.value === 'cardio' && editingExercise.track_laps,
+                  })
+                }
+              >
+                <option value="strength">Strength</option>
+                <option value="cardio">Cardio</option>
+              </select>
+            </label>
+            {editingExercise.exercise_type === 'cardio' && (
+              <>
+                <label>
+                  <span>Default distance unit</span>
+                  <select
+                    value={normalizeDistanceUnit(
+                      editingExercise.default_distance_unit,
+                      settings.distanceSystem
+                    )}
+                    onChange={event =>
+                      setEditingExercise({
+                        ...editingExercise,
+                        default_distance_unit: event.target.value as DistanceUnit,
+                      })
+                    }
+                  >
+                    {getDistanceUnitOptions(settings.distanceSystem).map(option => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
+                <SwitchField
+                  checked={editingExercise.track_laps}
+                  label="Track laps"
+                  onChange={trackLaps =>
+                    setEditingExercise({
+                      ...editingExercise,
+                      track_laps: trackLaps,
+                    })
+                  }
+                />
+              </>
+            )}
+            <div className="exercise-editor__actions">
+              <button type="submit">Save Exercise</button>
+              <button type="button" className="secondary" onClick={closeExerciseDrawer}>Cancel</button>
+            </div>
+          </form>
+        </Drawer>
+      )}
     </div>
   );
 }

@@ -11,6 +11,9 @@ import {
 	insertWorkoutSet,
 } from '../services/workoutService';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
+import { getAccountSettings } from '../services/accountService';
+import { getDefaultDistanceUnit, getWeightUnitLabel } from '../utils/unitPreferences';
+import { useSystemAlerts } from '../context/SystemAlertContext';
 
 interface Props {
   workoutId: string;
@@ -76,7 +79,15 @@ export function WorkoutDetails({
 	onClose,
 }: Props) {
   const navigate = useNavigate();
-	const { userId, loading: authLoading } = useAuth();
+	const { showAlert } = useSystemAlerts();
+	const { user, userId, loading: authLoading } = useAuth();
+	const accountSettings = user ? getAccountSettings(user) : null;
+	const fallbackDistanceUnit = getDefaultDistanceUnit(
+		accountSettings?.distanceSystem ?? 'imperial'
+	);
+	const weightUnitLabel = getWeightUnitLabel(
+		accountSettings?.weightSystem ?? 'imperial'
+	);
 	const [isDuplicating, setIsDuplicating] = useState(false);
   const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
 	const [removingSetId, setRemovingSetId] = useState<string | null>(null);
@@ -89,6 +100,7 @@ export function WorkoutDetails({
       name: we.exercise?.name ?? '',
       target_muscle: we.exercise?.target_muscle ?? '',
       exercise_type: we.exercise?.exercise_type ?? 'strength',
+      track_laps: Boolean(we.exercise?.track_laps),
       order: we.order ?? index,
       sets: we.workout_sets.map(set => ({
         set_number: set.set_number,
@@ -156,11 +168,16 @@ export function WorkoutDetails({
 
       <h2>🏋️ Exercises</h2>
 
-      {exercises.map(we => (
+      {exercises.map(we => {
+        const isCardio = we.exercise?.exercise_type === 'cardio';
+        const tracksLaps = isCardio && Boolean(we.exercise?.track_laps);
+
+        return (
         <div key={we.id} className="exercise-item">
           <strong>{we.exercise?.name ?? 'Unknown'}</strong>
+					{(!isCardio || tracksLaps) && (
 					<WorkoutButton
-					  label={addingSetId === we.id ? 'Adding...' : we.exercise?.exercise_type === 'cardio' ? 'Add Segment' : 'Add Set'}
+					  label={addingSetId === we.id ? 'Adding...' : isCardio ? 'Add Segment' : 'Add Set'}
 					  icon=""
 					  variant="unsetText"
 					  onClick={async () => {
@@ -170,16 +187,20 @@ export function WorkoutDetails({
 					    const { data, error } = await insertWorkoutSet({
 					      workoutExerciseId: we.id,
 					      setNumber: nextSetNumber,
-					      reps: we.exercise?.exercise_type === 'cardio' ? null : 8,
-					      weight: we.exercise?.exercise_type === 'cardio' ? null : 0,
-					      durationSeconds: we.exercise?.exercise_type === 'cardio' ? 1800 : null,
-					      distanceUnit: we.exercise?.exercise_type === 'cardio' ? 'mi' : null,
+					      reps: isCardio ? null : 8,
+					      weight: isCardio ? null : 0,
+					      durationSeconds: isCardio ? 1800 : null,
+					      distanceUnit: isCardio
+					        ? we.workout_sets[0]?.distance_unit ??
+					          we.exercise?.default_distance_unit ??
+					          fallbackDistanceUnit
+					        : null,
 					      intensityType: 'normal',
 					    });
 
 					    if (error || !data) {
 					      console.error(error);
-					      alert('Failed to add set.');
+					      showAlert('Failed to add set.', { tone: 'error' });
 					      setAddingSetId(null);
 					      return;
 					    }
@@ -198,6 +219,7 @@ export function WorkoutDetails({
 					  }}
 					  disabled={addingSetId === we.id}
 					/>
+					)}
 
 
           <ul>
@@ -205,11 +227,13 @@ export function WorkoutDetails({
 							.sort((a, b) => a.set_number - b.set_number)
 							.map(set => (
               <li key={set.id ?? `${we.id}-${set.set_number}`}>
-				{we.exercise?.exercise_type === 'cardio' ? <>
-				Segment {set.set_number}:{' '}
+				{isCardio ? <>
+				{tracksLaps && <>Segment {set.set_number}:{' '}</>}
 				<NumericInput value={Math.round((set.duration_seconds ?? 0) / 60)} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, duration_seconds: Math.max(0, value) * 60 } : s) })))} style={{ width: 60 }} /> min{' '}
 				<NumericInput value={set.distance_value ?? 0} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, distance_value: Math.max(0, value) } : s) })))} style={{ width: 70 }} />{' '}
-				<select value={set.distance_unit ?? 'mi'} onChange={event => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, distance_unit: event.target.value as any } : s) })))}><option value="mi">mi</option><option value="km">km</option><option value="m">m</option><option value="yd">yd</option></select>
+				<span aria-label="Distance unit">
+				  {set.distance_unit ?? we.exercise?.default_distance_unit ?? fallbackDistanceUnit}
+				</span>
 				</> : <>
                 Set {set.set_number}:{' '}
 								<NumericInput
@@ -253,8 +277,9 @@ export function WorkoutDetails({
                   }}
                   style={{ width: 70, marginLeft: 6 }}
                 />
-	                lbs
+	                {weightUnitLabel}
 				</>}
+								{(!isCardio || tracksLaps) && (
 									<button
 									  type="button"
 									  onClick={async () => {
@@ -264,7 +289,7 @@ export function WorkoutDetails({
 									      const { error } = await deleteWorkoutSet({ setId });
 									      if (error) {
 									        console.error(error);
-									        alert('Failed to remove set.');
+									        showAlert('Failed to remove set.', { tone: 'error' });
 									        setRemovingSetId(null);
 									        return;
 									      }
@@ -292,8 +317,8 @@ export function WorkoutDetails({
 									    removingSetId ===
 									    (set.id ?? `${we.id}-${set.set_number}`)
 									  }
-									  aria-label={`Remove set ${set.set_number}`}
-									  title="Remove set"
+									  aria-label={`Remove ${isCardio ? 'segment' : 'set'} ${set.set_number}`}
+									  title={`Remove ${isCardio ? 'segment' : 'set'}`}
 									  style={{
 									    marginLeft: 8,
 									    width: 18,
@@ -308,11 +333,13 @@ export function WorkoutDetails({
 									>
 									  −
 									</button>
+								)}
 	              </li>
 	            ))}
 	          </ul>
 	        </div>
-	      ))}
+	        );
+	      })}
 
 	      <WorkoutButton
 	        label={isSaving ? 'Saving...' : 'Save Changes'}
@@ -343,9 +370,6 @@ export function WorkoutDetails({
           {duplicateError}
         </p>
       )}
-
-	      <hr style={{ margin: '2rem 0' }} />
-
 	      <h2>📊 Volume Summary</h2>
 	      <ul>
 	        {volumeByExercise.map((ve, i) => (
@@ -385,7 +409,7 @@ export function WorkoutDetails({
                 });
 						    if (error) {
 						      console.error(error);
-						      alert('Failed to mark workout as completed.');
+						      showAlert('Failed to mark workout as completed.', { tone: 'error' });
 						      return;
 						    }
 
@@ -413,7 +437,7 @@ export function WorkoutDetails({
 
 							if (error) {
 								console.error(error);
-								alert('Failed to mark workout as scheduled.');
+								showAlert('Failed to mark workout as scheduled.', { tone: 'error' });
 								return;
 							}
 
@@ -508,7 +532,7 @@ export function WorkoutDetails({
 							.filter((row): row is NonNullable<typeof row> => row !== null);
 
 						if (inserts.length === 0) {
-						  alert('No exercises were available to add to the template.');
+						  showAlert('No exercises were available to add to the template.', { tone: 'error' });
 							return;
 						}
 
@@ -518,7 +542,7 @@ export function WorkoutDetails({
 
 						if (templateExerciseError) {
 						  console.error(templateExerciseError);
-						  alert('Failed to add exercises to the template.');
+						  showAlert('Failed to add exercises to the template.', { tone: 'error' });
 						  return;
 						}
 

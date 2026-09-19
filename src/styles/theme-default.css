@@ -147,4 +147,5 @@
   --image-surface-canvas: url('../full-background.png');
   --image-surface-hero: url('../darkblue-hero-bg.png');
   --image-surface-accent: url('../orange-bg.png');
+  --image-brand-mark-alternate: url('../assets/branding/default/mark-alternate.png');
 }

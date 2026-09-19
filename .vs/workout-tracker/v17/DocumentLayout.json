@@ -3,6 +3,10 @@
   "WorkspaceRootPath": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\",
   "Documents": [
     {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutDetails.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\WorkoutDetails.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-default.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\theme-default.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
@@ -67,6 +71,19 @@
             {
               "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "WorkoutDetails.tsx",
+              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutDetails.tsx",
+              "RelativeDocumentMoniker": "src\\components\\WorkoutDetails.tsx",
+              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutDetails.tsx",
+              "RelativeToolTip": "src\\components\\WorkoutDetails.tsx",
+              "ViewState": "AgIAAGIBAAAAAAAAAAAewHQBAAANAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-19T02:42:34.201Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "theme-default.css",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-default.css",
               "RelativeDocumentMoniker": "src\\styles\\theme-default.css",
@@ -79,7 +96,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
+              "DocumentIndex": 2,
               "Title": "plan.css",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\plan.css",
               "RelativeDocumentMoniker": "src\\styles\\plan.css",
@@ -87,12 +104,11 @@
               "RelativeToolTip": "src\\styles\\plan.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAxAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-18T18:35:05.622Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-18T18:35:05.622Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 3,
               "Title": "account.css",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\account.css",
               "RelativeDocumentMoniker": "src\\styles\\account.css",
@@ -100,12 +116,11 @@
               "RelativeToolTip": "src\\styles\\account.css",
               "ViewState": "AgIAALQAAAAAAAAAAAAvwMYAAAAgAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-18T18:26:18.238Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-18T18:26:18.238Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 5,
               "Title": "index.tsx",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\index.tsx",
               "RelativeDocumentMoniker": "src\\pages\\index.tsx",
@@ -117,7 +132,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
+              "DocumentIndex": 6,
               "Title": "index.css",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\index.css",
               "RelativeDocumentMoniker": "src\\index.css",
@@ -129,7 +144,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 6,
+              "DocumentIndex": 7,
               "Title": "plan.tsx",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\plan.tsx",
               "RelativeDocumentMoniker": "src\\pages\\plan.tsx",
@@ -141,7 +156,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
+              "DocumentIndex": 8,
               "Title": "WorkoutCard.tsx",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutCard.tsx",
               "RelativeDocumentMoniker": "src\\components\\WorkoutCard.tsx",
@@ -153,7 +168,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 8,
+              "DocumentIndex": 9,
               "Title": "GlobalHeader.tsx",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\GlobalHeader.tsx",
               "RelativeDocumentMoniker": "src\\components\\GlobalHeader.tsx",
@@ -165,7 +180,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 10,
+              "DocumentIndex": 11,
               "Title": "workoutExport.ts",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\utils\\workoutExport.ts",
               "RelativeDocumentMoniker": "src\\utils\\workoutExport.ts",
@@ -177,7 +192,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
+              "DocumentIndex": 10,
               "Title": "workoutExportService.ts",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\services\\workoutExportService.ts",
               "RelativeDocumentMoniker": "src\\services\\workoutExportService.ts",
@@ -189,7 +204,7 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 3,
+              "DocumentIndex": 4,
               "Title": "past.tsx",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\past.tsx",
               "RelativeDocumentMoniker": "src\\pages\\past.tsx",
@@ -197,8 +212,7 @@
               "RelativeToolTip": "src\\pages\\past.tsx",
               "ViewState": "AgIAAJUAAAAAAAAAAAAewKgAAAAqAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-06-29T17:55:31.935Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-29T17:55:31.935Z"
             }
           ]
         }

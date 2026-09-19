@@ -255,7 +255,7 @@
   font-weight: 700;
 }
 
-.exercise-editor input,
+.exercise-editor input:not([type='checkbox']),
 .account-settings input {
   width: 100%;
   padding: 0.7rem 1rem;
@@ -281,6 +281,44 @@
 .exercise-editor__actions .secondary {
   background: var(--color-surface-sunken);
   color: var(--color-on-surface);
+}
+
+.exercise-editor--drawer {
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+  margin-top: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.exercise-editor--drawer .exercise-editor__header {
+  padding-right: 2rem;
+}
+
+.exercise-editor--drawer .exercise-editor__header h2 {
+  margin: 0;
+  font-family: var(--font-headline);
+  font-size: 1.8rem;
+}
+
+.exercise-editor--drawer .exercise-editor__header p {
+  margin: 0.5rem 0 0;
+  color: var(--color-on-inverse-muted);
+}
+
+.exercise-editor--drawer label {
+  color: var(--color-on-inverse);
+}
+
+.exercise-editor--drawer select {
+  width: 100%;
+  background: var(--color-surface-default);
+  color: var(--color-on-surface);
+}
+
+.exercise-editor--drawer .account-message {
+  margin: 0;
 }
 
 .account-settings {

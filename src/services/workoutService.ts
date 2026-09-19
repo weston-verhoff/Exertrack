@@ -28,6 +28,8 @@ export interface WorkoutExerciseSummary {
     name: string;
     target_muscle: string;
     exercise_type: 'strength' | 'cardio';
+    default_distance_unit?: DistanceUnit | null;
+    track_laps?: boolean;
   };
 }
 
@@ -50,8 +52,10 @@ const WORKOUT_SELECT_FIELDS = `
     exercise:exercise_id (
       id,
       name,
-      target_muscle
-      ,exercise_type
+      target_muscle,
+      exercise_type,
+      default_distance_unit,
+      track_laps
     ),
     workout_sets (
       id,
@@ -77,8 +81,10 @@ const WORKOUT_SELECT_FIELDS_WITH_TEMPLATE = `
     exercise:exercise_id (
       id,
       name,
-      target_muscle
-      ,exercise_type
+      target_muscle,
+      exercise_type,
+      default_distance_unit,
+      track_laps
     ),
     workout_sets (
       id,
@@ -740,8 +746,9 @@ export async function fetchTemplateBuilderExercises(
       exercise:exercises!template_exercises_exercise_id_fkey (
         id,
         name,
-        target_muscle
-        ,exercise_type
+        target_muscle,
+        exercise_type,
+        track_laps
       )
     `
     )
@@ -761,6 +768,7 @@ export async function fetchTemplateBuilderExercises(
     name: item.exercise?.name ?? '',
     target_muscle: item.exercise?.target_muscle ?? '',
     exercise_type: item.exercise?.exercise_type ?? 'strength',
+    track_laps: Boolean(item.exercise?.track_laps),
     order: item.order ?? i,
     sets: Array.from({ length: item.sets ?? 3 }, (_, idx) => ({
       set_number: idx + 1,
@@ -792,8 +800,9 @@ export async function fetchWorkoutBuilderExercises(
       exercise:exercise_id (
         id,
         name,
-        target_muscle
-        ,exercise_type
+        target_muscle,
+        exercise_type,
+        track_laps
       ),
       workout_sets (
         set_number,
@@ -828,6 +837,7 @@ export async function fetchWorkoutBuilderExercises(
     name: item.exercise?.name ?? '',
     target_muscle: item.exercise?.target_muscle ?? '',
     exercise_type: item.exercise?.exercise_type ?? 'strength',
+    track_laps: Boolean(item.exercise?.track_laps),
     order: item.order ?? i,
     sets:
       item.workout_sets?.length > 0

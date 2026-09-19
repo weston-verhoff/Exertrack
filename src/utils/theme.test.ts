@@ -1,4 +1,4 @@
-import { applyTheme, bootstrapTheme, isAppTheme } from './theme';
+import { applyTheme, bootstrapTheme, isAppTheme, normalizeAppTheme } from './theme';
 
 describe('theme utilities', () => {
   beforeEach(() => {
@@ -8,9 +8,15 @@ describe('theme utilities', () => {
 
   it('recognizes every supported theme', () => {
     expect(isAppTheme('default')).toBe(true);
-    expect(isAppTheme('blue-pink')).toBe(true);
+    expect(isAppTheme('baseball')).toBe(true);
+    expect(isAppTheme('neon')).toBe(true);
     expect(isAppTheme('monokai')).toBe(true);
     expect(isAppTheme('unknown')).toBe(false);
+  });
+
+  it('migrates the former blue-pink theme name to Baseball', () => {
+    expect(normalizeAppTheme('blue-pink')).toBe('baseball');
+    expect(normalizeAppTheme('unknown')).toBeNull();
   });
 
   it('applies and persists Monokai', () => {
@@ -26,5 +32,14 @@ describe('theme utilities', () => {
     bootstrapTheme();
 
     expect(document.documentElement.dataset.theme).toBe('monokai');
+  });
+
+  it('migrates a saved blue-pink preference to Baseball', () => {
+    window.localStorage.setItem('iwyn-theme', 'blue-pink');
+
+    bootstrapTheme();
+
+    expect(document.documentElement.dataset.theme).toBe('baseball');
+    expect(window.localStorage.getItem('iwyn-theme')).toBe('baseball');
   });
 });

@@ -1,12 +1,17 @@
 import fs from 'fs';
 import path from 'path';
-import { THEME_CONTRAST_PAIRS, THEME_TOKEN_CONTRACT } from './colorTokens';
+import {
+  BRAND_IMAGE_TOKEN_CONTRACT,
+  THEME_CONTRAST_PAIRS,
+  THEME_TOKEN_CONTRACT,
+} from './colorTokens';
 
 const stylesDirectory = path.resolve(__dirname, '../styles');
 const sourceDirectory = path.resolve(__dirname, '..');
 const themeFiles = [
   'theme-default.css',
-  'theme-blue-pink.css',
+  'theme-baseball.css',
+  'theme-neon.css',
   'theme-monokai.css',
 ];
 
@@ -77,11 +82,21 @@ describe.each(themeFiles)('%s token contract', (themeFile) => {
     });
   });
 
+  it('declares each optional brand image token at most once', () => {
+    BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
+      expect(counts.get(token) ?? 0).toBeLessThanOrEqual(1);
+    });
+  });
+
   it('does not declare tokens outside the shared contract', () => {
+    const contract = new Set<string>([
+      ...THEME_TOKEN_CONTRACT,
+      ...BRAND_IMAGE_TOKEN_CONTRACT,
+    ]);
     const declaredSystemTokens = Array.from(declarations.keys()).filter((token) =>
       /^(--color-|--shadow-|--image-)/.test(token)
     );
-    expect(declaredSystemTokens.sort()).toEqual([...THEME_TOKEN_CONTRACT].sort());
+    declaredSystemTokens.forEach((token) => expect(contract.has(token)).toBe(true));
   });
 
   it.each(THEME_CONTRAST_PAIRS)(
@@ -97,6 +112,34 @@ describe.each(themeFiles)('%s token contract', (themeFile) => {
 });
 
 describe('token architecture', () => {
+  it('defines one global fallback for every brand image token', () => {
+    const { declarations, counts } = getDeclarations(readStyle('variables.css'));
+
+    BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
+      expect(counts.get(token)).toBe(1);
+      expect(declarations.get(token)).toMatch(/^(?:url\(|var\(--image-brand-)/);
+    });
+  });
+
+  it('uses custom brand images only for themes that provide them', () => {
+    const defaultTokens = getDeclarations(readStyle('theme-default.css')).declarations;
+    const neonTokens = getDeclarations(readStyle('theme-neon.css')).declarations;
+
+    expect(defaultTokens.get('--image-brand-mark-alternate')).toContain(
+      'branding/default/mark-alternate.png'
+    );
+    BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
+      expect(neonTokens.has(token)).toBe(true);
+    });
+
+    ['theme-baseball.css', 'theme-monokai.css'].forEach((themeFile) => {
+      const { declarations } = getDeclarations(readStyle(themeFile));
+      BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
+        expect(declarations.has(token)).toBe(false);
+      });
+    });
+  });
+
   it('keeps reference tokens inside theme files', () => {
     const nonThemeFiles = fs
       .readdirSync(stylesDirectory)
@@ -108,7 +151,10 @@ describe('token architecture', () => {
   });
 
   it('keeps every system-token consumer on the shared contract', () => {
-    const contract = new Set<string>(THEME_TOKEN_CONTRACT);
+    const contract = new Set<string>([
+      ...THEME_TOKEN_CONTRACT,
+      ...BRAND_IMAGE_TOKEN_CONTRACT,
+    ]);
 
     getSourceFiles(sourceDirectory)
       .filter((filename) => !path.basename(filename).startsWith('theme-'))
@@ -133,7 +179,8 @@ describe('token architecture', () => {
 
   it('keeps component, page, hue, and appearance names out of the contract', () => {
     const prohibited = /(plan|header|workout|drawer|account|warm|dark|black|blue|pink|orange|green|red|cyan|purple|yellow)/;
-    THEME_TOKEN_CONTRACT.forEach((token) => expect(token).not.toMatch(prohibited));
+    [...THEME_TOKEN_CONTRACT, ...BRAND_IMAGE_TOKEN_CONTRACT]
+      .forEach((token) => expect(token).not.toMatch(prohibited));
   });
 
   it('defines complete recipe triplets without reference values', () => {

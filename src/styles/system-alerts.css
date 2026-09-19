@@ -1,0 +1,112 @@
+.system-alert-region {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  z-index: 1000;
+  display: flex;
+  width: min(960px, calc(100vw - 2rem));
+  flex-direction: column;
+  gap: 0.625rem;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.system-alert {
+  display: flex;
+  min-height: 3.25rem;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 1rem;
+  border: 1px solid;
+  border-radius: 0.25rem;
+  box-shadow: 0 10px 28px var(--shadow-strong);
+  pointer-events: auto;
+  animation: system-alert-enter 0.3s ease both;
+}
+
+.system-alert--info {
+  background: var(--color-feedback-info-surface);
+  border-color: var(--color-feedback-info-border);
+  color: var(--color-on-feedback-info);
+}
+
+.system-alert--success {
+  background: var(--color-feedback-success-surface);
+  border-color: var(--color-feedback-success-border);
+  color: var(--color-on-feedback-success);
+}
+
+.system-alert--error {
+  background: var(--color-feedback-danger-surface);
+  border-color: var(--color-feedback-danger-border);
+  color: var(--color-on-feedback-danger);
+}
+
+.system-alert--exiting {
+  animation: system-alert-exit 0.3s ease both;
+}
+
+.system-alert__message {
+  flex: 1;
+  min-width: 0;
+  text-align: left;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+.system-alert__close {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: currentColor;
+  cursor: pointer;
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.system-alert__close:hover,
+.system-alert__close:focus-visible {
+  background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.system-alert__close:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+}
+
+@keyframes system-alert-enter {
+  from {
+    opacity: 0;
+    transform: translateY(calc(-100% - 1rem));
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes system-alert-exit {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .system-alert,
+  .system-alert--exiting {
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+  }
+}

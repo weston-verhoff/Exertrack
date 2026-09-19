@@ -1,0 +1,138 @@
+/* Neon theme: a SynthWave '84-inspired dark palette mapped to the shared contract. */
+[data-theme='neon'] {
+  color-scheme: dark;
+
+  /* Reference palette */
+  --ref-night-950: #0f0b18;
+  --ref-night-925: #151020;
+  --ref-night-900: #1a1526;
+  --ref-night-850: #211b30;
+  --ref-night-800: #282239;
+  --ref-night-750: #312a45;
+  --ref-plum-700: #4a385d;
+  --ref-plum-500: #806f96;
+  --ref-plum-300: #b8aac9;
+  --ref-plum-100: #e7dcf4;
+  --ref-white: #fffaff;
+  --ref-pink-500: #ff2ca8;
+  --ref-pink-400: #ff5cbd;
+  --ref-pink-200: #ffafd9;
+  --ref-cyan-500: #20e3f0;
+  --ref-cyan-400: #66f4ff;
+  --ref-cyan-200: #b8faff;
+  --ref-yellow-400: #ffe45c;
+  --ref-yellow-200: #fff2a6;
+  --ref-mint-400: #65fbd2;
+  --ref-coral-400: #ff6b9b;
+  --ref-transparent: rgba(0, 0, 0, 0);
+  --ref-overlay: rgba(15, 11, 24, 0.96);
+  --ref-backdrop: rgba(5, 3, 10, 0.72);
+  --ref-wash-cyan: rgba(32, 227, 240, 0.14);
+  --ref-shadow-subtle: rgba(5, 3, 10, 0.42);
+  --ref-shadow-soft: rgba(255, 44, 168, 0.18);
+  --ref-shadow-medium: rgba(32, 227, 240, 0.22);
+  --ref-shadow-strong: rgba(5, 3, 10, 0.72);
+  --ref-shadow-inset: rgba(15, 11, 24, 0.35);
+  --ref-shadow-hover: rgba(255, 44, 168, 0.34);
+  --ref-shadow-pressed: rgba(5, 3, 10, 0.8);
+  --ref-shadow-control: rgba(5, 3, 10, 0.92);
+  --ref-chart-pink-fill: rgba(255, 44, 168, 0.2);
+  --ref-chart-cyan-fill: rgba(32, 227, 240, 0.2);
+  --ref-chart-yellow-fill: rgba(255, 228, 92, 0.2);
+
+  /* Neutral foundations */
+  --color-surface-canvas: var(--ref-night-900);
+  --color-surface-default: var(--ref-night-850);
+  --color-surface-raised: var(--ref-night-800);
+  --color-surface-sunken: var(--ref-night-950);
+  --color-surface-inverse: var(--ref-night-950);
+  --color-surface-inverse-subtle: var(--ref-night-750);
+  --color-surface-overlay: var(--ref-night-925);
+  --color-on-canvas: var(--ref-plum-100);
+  --color-on-surface: var(--ref-white);
+  --color-content-secondary: var(--ref-plum-100);
+  --color-content-muted: var(--ref-plum-300);
+  --color-on-inverse: var(--ref-white);
+  --color-on-inverse-muted: var(--ref-plum-300);
+  --color-on-inverse-danger: var(--ref-pink-200);
+
+  /* Borders */
+  --color-border-subtle: var(--ref-plum-700);
+  --color-border-default: var(--ref-plum-500);
+  --color-border-strong: var(--ref-plum-300);
+  --color-border-focus: var(--ref-cyan-400);
+  --color-border-on-inverse: var(--ref-plum-500);
+
+  /* Accent families */
+  --color-accent-primary: var(--ref-pink-500);
+  --color-on-accent-primary: var(--ref-night-950);
+  --color-accent-primary-subtle: var(--ref-night-750);
+  --color-on-accent-primary-subtle: var(--ref-pink-200);
+  --color-border-accent-primary: var(--ref-pink-400);
+  --color-hover-on-accent-primary: var(--ref-wash-cyan);
+  --color-accent-secondary: var(--ref-cyan-500);
+  --color-on-accent-secondary: var(--ref-night-950);
+  --color-accent-secondary-subtle: var(--ref-night-750);
+  --color-on-accent-secondary-subtle: var(--ref-cyan-200);
+  --color-border-accent-secondary: var(--ref-cyan-400);
+  --color-hover-on-accent-secondary: var(--ref-wash-cyan);
+
+  /* Interactive states */
+  --color-interactive-primary: var(--ref-pink-500);
+  --color-on-interactive-primary: var(--ref-night-950);
+  --color-interactive-primary-hover: var(--ref-pink-400);
+  --color-interactive-secondary: var(--ref-cyan-500);
+  --color-on-interactive-secondary: var(--ref-night-950);
+  --color-interactive-secondary-hover: var(--ref-cyan-400);
+  --color-interactive-subtle: var(--ref-night-750);
+  --color-on-interactive-subtle: var(--ref-white);
+  --color-interactive-subtle-hover: var(--ref-plum-700);
+  --color-interactive-selected: var(--ref-yellow-400);
+  --color-on-interactive-selected: var(--ref-night-950);
+  --color-border-selected: var(--ref-yellow-200);
+  --color-interactive-positive: var(--ref-mint-400);
+  --color-on-interactive-positive: var(--ref-night-950);
+  --color-interactive-positive-hover: var(--ref-cyan-400);
+  --color-border-positive: var(--ref-mint-400);
+  --color-interactive-danger: var(--ref-coral-400);
+  --color-on-interactive-danger: var(--ref-night-950);
+  --color-interactive-danger-hover: var(--ref-pink-400);
+
+  /* Feedback */
+  --color-feedback-info-surface: var(--ref-night-750);
+  --color-on-feedback-info: var(--ref-cyan-200);
+  --color-feedback-info-border: var(--ref-cyan-500);
+  --color-feedback-success-surface: var(--ref-night-750);
+  --color-on-feedback-success: var(--ref-mint-400);
+  --color-feedback-success-border: var(--ref-mint-400);
+  --color-feedback-danger-surface: var(--ref-night-750);
+  --color-on-feedback-danger: var(--ref-pink-200);
+  --color-feedback-danger-border: var(--ref-coral-400);
+
+  /* Effects and data visualization */
+  --color-transparent: var(--ref-transparent);
+  --color-overlay-backdrop: var(--ref-backdrop);
+  --color-hover-on-inverse: var(--ref-wash-cyan);
+  --color-chart-series-1: var(--ref-pink-400);
+  --color-chart-series-2: var(--ref-cyan-400);
+  --color-chart-series-3: var(--ref-yellow-400);
+  --color-chart-series-1-fill: var(--ref-chart-pink-fill);
+  --color-chart-series-2-fill: var(--ref-chart-cyan-fill);
+  --color-chart-series-3-fill: var(--ref-chart-yellow-fill);
+  --shadow-subtle: var(--ref-shadow-subtle);
+  --shadow-soft: var(--ref-shadow-soft);
+  --shadow-medium: var(--ref-shadow-medium);
+  --shadow-strong: var(--ref-shadow-strong);
+  --shadow-button-inset: var(--ref-shadow-inset);
+  --shadow-button-hover-inset: var(--ref-shadow-hover);
+  --shadow-button-pressed: var(--ref-shadow-pressed);
+  --shadow-control-inset: var(--ref-shadow-control);
+
+  /* Theme artwork */
+  --image-surface-canvas: none;
+  --image-surface-hero: none;
+  --image-surface-accent: none;
+  --image-brand-mark: url('../assets/branding/neon/mark.png');
+  --image-brand-mark-alternate: var(--image-brand-mark);
+  --image-brand-wordmark: url('../assets/branding/neon/wordmark.png');
+}

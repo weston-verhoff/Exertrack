@@ -1,4 +1,7 @@
 :root {
   --font-headline: 'Roboto', sans-serif;
   --font-body: 'Roboto', sans-serif;
+  --image-brand-mark: url('../assets/branding/default/mark.png');
+  --image-brand-mark-alternate: var(--image-brand-mark);
+  --image-brand-wordmark: url('../assets/branding/default/wordmark.png');
 }

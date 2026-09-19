@@ -4,6 +4,7 @@ import { supabase } from '../supabase/client'
 import { Layout } from '../components/Layout';
 import { TemplateCard } from '../components/TemplateCard';
 import { useAuth } from '../context/AuthContext';
+import { useSystemAlerts } from '../context/SystemAlertContext';
 
 interface TemplateExercise {
   id: string
@@ -31,6 +32,7 @@ export default function TemplatesPage() {
   const [loading, setLoading] = useState(true)
   const navigate = useNavigate()
   const { userId, loading: authLoading } = useAuth()
+  const { showAlert } = useSystemAlerts()
 
   useEffect(() => {
     async function fetchTemplates() {
@@ -102,7 +104,7 @@ export default function TemplatesPage() {
 
     if (error) {
       console.error('Error deleting template:', error)
-      alert('Could not delete template.')
+      showAlert('Could not delete template.', { tone: 'error' })
     } else {
       setTemplates(prev => prev.filter(t => t.id !== id))
     }
@@ -123,7 +125,7 @@ export default function TemplatesPage() {
       .eq('user_id', userId)
       .then(({ error }) => {
         if (error) {
-          alert('Failed to rename template.')
+          showAlert('Failed to rename template.', { tone: 'error' })
         } else {
           setTemplates(prev =>
             prev.map(t => (t.id === id ? { ...t, name: newName } : t))

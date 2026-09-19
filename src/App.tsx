@@ -10,6 +10,7 @@ import { GlobalHeader } from './components/GlobalHeader';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { getGlobalHeaderVariant } from './utils/header';
+import { SystemAlertProvider } from './context/SystemAlertContext';
 import './index.css';
 
 const Dashboard = lazy(() => import('./pages/index'));
@@ -33,11 +34,12 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <RouteAwareGlobalHeader />
+        <SystemAlertProvider>
+          <RouteAwareGlobalHeader />
 
-        <main>
-          <Suspense fallback={<div className="page-loading">Loading...</div>}>
-            <Routes>
+          <main>
+            <Suspense fallback={<div className="page-loading">Loading...</div>}>
+              <Routes>
               <Route path="/login" element={<Login />} />
               <Route
                 path="/"
@@ -128,9 +130,10 @@ function App() {
                   </ProtectedRoute>
                 }
               />
-            </Routes>
-          </Suspense>
-        </main>
+              </Routes>
+            </Suspense>
+          </main>
+        </SystemAlertProvider>
       </AuthProvider>
     </BrowserRouter>
   );

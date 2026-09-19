@@ -21,13 +21,15 @@ describe('GlobalHeader', () => {
     expect(screen.getByRole('banner')).not.toHaveClass('global-header--secondary');
   });
 
-  it('exposes semantic secondary intent and both theme-controlled logos', () => {
+  it('exposes semantic secondary intent and one theme-controlled logo', () => {
     render(<GlobalHeader variant="secondary" />);
 
     expect(screen.getByRole('banner')).toHaveClass('global-header--secondary');
 
     const logo = screen.getByRole('link', { name: 'IWYN home' });
-    expect(logo.querySelector('.logo-image--light')).toBeInTheDocument();
-    expect(logo.querySelector('.logo-image--dark')).toBeInTheDocument();
+    const logoImage = logo.querySelector('.logo-image');
+    expect(logoImage).toBeInTheDocument();
+    expect(logoImage).toHaveAttribute('aria-hidden', 'true');
+    expect(logo.querySelectorAll('.logo-image')).toHaveLength(1);
   });
 });

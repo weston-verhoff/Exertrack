@@ -5,13 +5,13 @@ import { WorkoutCard } from '../components/WorkoutCard';
 import { motion } from 'framer-motion'; // ✅ Import motion
 import { Workout } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
-import iwynFullLogoLight from '../IWYN_full_logo_light.png';
 import {
   fetchAllCompletedWorkouts,
   fetchWorkoutOverview,
   getLocalDateString,
 } from '../services/workoutService';
 import { confirmAndDeleteWorkout } from '../utils/workoutActions';
+import { useSystemAlerts } from '../context/SystemAlertContext';
 
 export default function Dashboard() {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -22,6 +22,7 @@ export default function Dashboard() {
   const futureRef = useRef<HTMLDivElement>(null);
 	const [drawerOpen, setDrawerOpen] = useState(false);
   const { userId, loading: authLoading } = useAuth();
+  const { showAlert } = useSystemAlerts();
 	const [isOverflowing] = useState(false);
   const [showAllPast, setShowAllPast] = useState(false);
   const [completedTotalCount, setCompletedTotalCount] = useState<number>(0);
@@ -75,7 +76,7 @@ export default function Dashboard() {
     });
 
     if (error) {
-      alert(error);
+      showAlert(error, { tone: 'error' });
       return;
     }
 
@@ -147,10 +148,10 @@ export default function Dashboard() {
     <div className="clearfix">
       <div className='dashboardHero'>
 				<div className="dash-content">
-					<img
-	          src={iwynFullLogoLight}
+					<div
 	          className="dashboard-logo"
-	          alt="IWYN Fitness"
+	          role="img"
+	          aria-label="IWYN Fitness"
 	        />
 					<div className="dashboard-buttons">
 					{nextWorkoutId && (

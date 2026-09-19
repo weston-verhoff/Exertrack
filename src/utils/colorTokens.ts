@@ -80,6 +80,12 @@ export const THEME_TOKEN_CONTRACT = [
   '--image-surface-accent',
 ] as const;
 
+export const BRAND_IMAGE_TOKEN_CONTRACT = [
+  '--image-brand-mark',
+  '--image-brand-mark-alternate',
+  '--image-brand-wordmark',
+] as const;
+
 export const THEME_CONTRAST_PAIRS = [
   ['--color-surface-canvas', '--color-on-canvas'],
   ['--color-surface-default', '--color-on-surface'],

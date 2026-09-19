@@ -10,6 +10,7 @@ import {
   fetchWorkoutOverview,
 } from '../services/workoutService'
 import { confirmAndDeleteWorkout } from '../utils/workoutActions'
+import { useSystemAlerts } from '../context/SystemAlertContext'
 import {
   buildWorkoutExportFilename,
   downloadTextFile,
@@ -26,6 +27,7 @@ export default function PastWorkouts() {
   const [exportingWorkouts, setExportingWorkouts] = useState(false)
   const [exportError, setExportError] = useState<string | null>(null)
 	const { userId, loading: authLoading } = useAuth()
+	const { showAlert } = useSystemAlerts()
 	const handleStatusChange = (id: string, status: string) => {
 	  setWorkouts(prev =>
 	    prev.map(w =>
@@ -75,7 +77,7 @@ export default function PastWorkouts() {
 		    })
 
 		    if (error) {
-		      alert(error)
+		      showAlert(error, { tone: 'error' })
 		      return
 		    }
 

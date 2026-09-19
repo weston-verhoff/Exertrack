@@ -9,7 +9,7 @@ import {
 } from 'react';
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '../supabase/client';
-import { applyTheme, isAppTheme } from '../utils/theme';
+import { applyTheme, normalizeAppTheme } from '../utils/theme';
 
 type AuthContextValue = {
   session: Session | null;
@@ -53,8 +53,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const savedTheme = user?.user_metadata?.theme;
-    if (isAppTheme(savedTheme)) {
+    const savedTheme = normalizeAppTheme(user?.user_metadata?.theme);
+    if (savedTheme) {
       applyTheme(savedTheme);
     } else if (!loading && !user) {
       applyTheme('default');

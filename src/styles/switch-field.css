@@ -1,0 +1,58 @@
+.toggle-field.toggle-field--switch {
+  position: relative;
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0.65rem;
+  width: fit-content;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.toggle-field .toggle-field__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  opacity: 0;
+}
+
+.toggle-field__control {
+  position: relative;
+  flex: 0 0 auto;
+  width: 3rem;
+  height: 1.75rem;
+  border: 2px solid var(--color-border-default);
+  border-radius: 999px;
+  background: var(--color-surface-sunken);
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+
+.toggle-field__control::after {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 1.25rem;
+  height: 1.25rem;
+  border-radius: 50%;
+  background: var(--color-surface-default);
+  box-shadow: 0 1px 4px var(--shadow-subtle);
+  transition: transform 160ms ease;
+}
+
+.toggle-field__input:checked + .toggle-field__control {
+  border-color: var(--color-interactive-primary);
+  background: var(--color-interactive-primary);
+}
+
+.toggle-field__input:checked + .toggle-field__control::after {
+  transform: translateX(1.25rem);
+}
+
+.toggle-field__input:focus-visible + .toggle-field__control {
+  outline: 3px solid var(--color-border-focus);
+  outline-offset: 3px;
+}

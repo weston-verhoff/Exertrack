@@ -211,11 +211,11 @@ select{
 .global-header .logo .logo-image {
 	display: block;
 	height: 24px;
-	width: auto;
-}
-
-.global-header .logo .logo-image--dark {
-	display: none;
+	width: 77px;
+	background-image: var(--image-brand-mark);
+	background-position: left center;
+	background-repeat: no-repeat;
+	background-size: contain;
 }
 
 .global-header .logo a {
@@ -266,12 +266,8 @@ select{
 	border-bottom:1px solid var(--_header-border)
 }
 
-[data-theme='default'] .global-header--secondary .logo-image--light {
-	display: none;
-}
-
-[data-theme='default'] .global-header--secondary .logo-image--dark {
-	display: block;
+.global-header--secondary .logo .logo-image {
+	background-image: var(--image-brand-mark-alternate);
 }
 
 [data-theme='default'] .global-header--secondary .nav-links a,
@@ -333,8 +329,13 @@ input.exerciseSearch{
 		text-align: center;
 }
 .dashboardHero .dashboard-logo {
-	max-width: min(420px, 80vw);
-	height: auto;
+	display: block;
+	width: min(420px, 80vw);
+	aspect-ratio: 617 / 269;
+	background-image: var(--image-brand-wordmark);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
 	margin-bottom: 1rem;
 }
 .dashboardHero .workout-card {

@@ -34,6 +34,8 @@ export interface WorkoutExercise {
     name: string;
     target_muscle: string;
     exercise_type: ExerciseType;
+    default_distance_unit?: DistanceUnit | null;
+    track_laps?: boolean;
   } | null;
 
   workout_sets: WorkoutSet[];

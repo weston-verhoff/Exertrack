@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { useSystemAlerts } from '../context/SystemAlertContext'
 
 type ButtonState = 'idle' | 'saving' | 'success'
 
@@ -9,6 +10,7 @@ interface StatusButtonProps {
   width?: string
   accentColor?: string
   successColor?: string
+  alertKey?: string
 }
 
 export default function StatusButton({
@@ -17,19 +19,25 @@ export default function StatusButton({
   successLabel = '✅ Saved!',
   width = '200px',
   accentColor = 'var(--color-interactive-secondary)',
-  successColor = 'var(--color-interactive-positive)'
+  successColor = 'var(--color-interactive-positive)',
+  alertKey = 'status-button-save'
 }: StatusButtonProps) {
   const [status, setStatus] = useState<ButtonState>('idle')
+  const { dismissAlertGroup, showAlert } = useSystemAlerts()
 
   const handleClick = async () => {
     if (status === 'saving') return
     setStatus('saving')
+    showAlert('Saving...', { replaceKey: alertKey })
     try {
       await onClick()
       setStatus('success')
+      showAlert(successLabel.replace(/^✅\s*/, ''), { tone: 'success', replaceKey: alertKey })
       setTimeout(() => setStatus('idle'), 2000)
     } catch (err) {
       console.error('StatusButton error:', err)
+      dismissAlertGroup(alertKey)
+      showAlert(err instanceof Error ? err.message : 'Unable to save. Please try again.', { tone: 'error' })
       setStatus('idle')
     }
   }

@@ -255,11 +255,19 @@
   margin-top: 1.5rem;
 }
 
-.custom-lift__form input {
+.custom-lift__form input:not([type='checkbox']),
+.custom-lift__form select {
   width: 100%;
   border: 2px solid var(--color-border-default);
   padding: 0.65rem 0.75rem;
   border-radius: 8px;
+}
+
+.custom-lift__form label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--color-on-inverse);
+  font-size: 0.85rem;
 }
 
 .custom-actions {

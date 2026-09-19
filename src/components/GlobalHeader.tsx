@@ -3,8 +3,6 @@ import { useState, type FC, type ReactNode } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaHome } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
-import logoLight from '../IWYN_logo_light.png';
-import logoDark from '../IWYN_logo_dark.png';
 
 export type GlobalHeaderVariant = 'default' | 'secondary';
 
@@ -52,8 +50,7 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
         to="/"
         onClick={() => setMenuOpen(false)}
       >
-				<img src={logoLight} alt="" className="logo-image logo-image--light" />
-				<img src={logoDark} alt="" className="logo-image logo-image--dark" />
+				<span className="logo-image" aria-hidden="true" />
 			</Link>
 			<nav className={`nav-links ${menuOpen ? 'open' : ''}`}>
 				{(user ? loggedInLinks : loggedOutLinks).map((link) => (

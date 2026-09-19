@@ -7,6 +7,6 @@
     "\\src\\styles",
     "\\src\\utils"
   ],
-  "SelectedNode": "\\src\\styles\\theme-default.css",
+  "SelectedNode": "\\src\\components\\WorkoutDetails.tsx",
   "PreviewInSolutionExplorer": false
 }

@@ -14,6 +14,7 @@ export interface BuilderExerciseConfig {
   name: string;
   target_muscle?: string;
   exercise_type: ExerciseType;
+  track_laps?: boolean;
   sets: BuilderWorkoutSet[];
   order: number;
 }

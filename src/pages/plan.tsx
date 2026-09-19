@@ -19,26 +19,36 @@ import { useTemplates } from '../hooks/useTemplates';
 import { supabase } from '../supabase/client';
 import { Layout } from '../components/Layout';
 import { useAuth } from '../context/AuthContext';
+import { getAccountSettings } from '../services/accountService';
 import { Drawer } from '../components/Drawer';
 import { WorkoutButton } from '../components/WorkoutButton';
+import { SwitchField } from '../components/SwitchField';
 import '../styles/plan.css';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
 import { DistanceUnit, ExerciseType } from '../types/workout';
+import { useSystemAlerts } from '../context/SystemAlertContext';
 import {
   createWorkoutFromBuilder,
   fetchTemplateBuilderExercises,
   fetchWorkoutBuilderExercises,
   updateWorkoutFromBuilder,
 } from '../services/workoutService';
+import {
+  getDefaultDistanceUnit,
+  getDistanceUnitOptions,
+  getWeightUnitLabel,
+  normalizeDistanceUnit,
+} from '../utils/unitPreferences';
 
-type BuilderField = 'sets' | 'reps' | 'weight' | 'duration_seconds' | 'distance_value' | 'distance_unit';
+type BuilderField = 'sets' | 'reps' | 'weight' | 'duration_seconds' | 'distance_value';
 
 type BuilderRowProps = {
   exercise: BuilderExerciseConfig;
+  weightUnitLabel: string;
   onChange: (
     id: string,
     field: BuilderField,
-    value: number | DistanceUnit
+    value: number
   ) => void;
   onRemove: (exerciseId: string, configId: string) => void;
 };
@@ -75,7 +85,12 @@ function BuilderNumberInput({ value, min, onChange }: BuilderNumberInputProps) {
   );
 }
 
-function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
+export function BuilderRow({
+  exercise,
+  weightUnitLabel,
+  onChange,
+  onRemove,
+}: BuilderRowProps) {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({
       id: exercise.id,
@@ -101,14 +116,16 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
       </div>
 
       <div className="builder-row__stats">
-        <label className="stat-field">
-          <BuilderNumberInput
-            value={exercise.sets.length}
-            min={0}
-            onChange={value => onChange(exercise.id, 'sets', value)}
-          />
-          <span className="stat-label">{exercise.exercise_type === 'cardio' ? 'LAPS' : 'SETS'}</span>
-        </label>
+        {(exercise.exercise_type === 'strength' || exercise.track_laps) && (
+          <label className="stat-field">
+            <BuilderNumberInput
+              value={exercise.sets.length}
+              min={0}
+              onChange={value => onChange(exercise.id, 'sets', value)}
+            />
+            <span className="stat-label">{exercise.exercise_type === 'cardio' ? 'LAPS' : 'SETS'}</span>
+          </label>
+        )}
         {exercise.exercise_type === 'cardio' ? <>
         <label className="stat-field">
           <BuilderNumberInput value={Math.round((exercise.sets[0]?.duration_seconds ?? 0) / 60)} min={0} onChange={value => onChange(exercise.id, 'duration_seconds', value * 60)} />
@@ -116,13 +133,9 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
         </label>
         <label className="stat-field">
           <BuilderNumberInput value={exercise.sets[0]?.distance_value ?? 0} min={0} onChange={value => onChange(exercise.id, 'distance_value', value)} />
-          <span className="stat-label">DIST</span>
-        </label>
-        <label className="stat-field">
-          <select value={exercise.sets[0]?.distance_unit ?? 'mi'} onChange={event => onChange(exercise.id, 'distance_unit', event.target.value as DistanceUnit)}>
-            <option value="mi">mi</option><option value="km">km</option><option value="m">m</option><option value="yd">yd</option>
-          </select>
-          <span className="stat-label">UNIT</span>
+          <span className="stat-label">
+            DIST ({(exercise.sets[0]?.distance_unit ?? 'mi').toUpperCase()})
+          </span>
         </label>
         </> : <>
         <label className="stat-field">
@@ -139,7 +152,7 @@ function BuilderRow({ exercise, onChange, onRemove }: BuilderRowProps) {
             min={0}
             onChange={value => onChange(exercise.id, 'weight', value)}
           />
-          <span className="stat-label">LBS</span>
+          <span className="stat-label">{weightUnitLabel}</span>
         </label>
         </>}
       </div>
@@ -164,7 +177,11 @@ export default function PlanSession() {
     addExercise,
   } = useExercises();
   const { templates, loading: loadingTemplates } = useTemplates();
-  const { userId, loading: authLoading } = useAuth();
+  const { user, userId, loading: authLoading } = useAuth();
+  const accountSettings = user ? getAccountSettings(user) : null;
+  const distanceSystem = accountSettings?.distanceSystem ?? 'imperial';
+  const weightUnitLabel = getWeightUnitLabel(accountSettings?.weightSystem ?? 'imperial');
+  const defaultDistanceUnit = getDefaultDistanceUnit(distanceSystem);
 
   const queryTemplateId = searchParams.get('importTemplate');
   const queryWorkoutId = searchParams.get('importWorkout');
@@ -185,15 +202,34 @@ export default function PlanSession() {
   const [customName, setCustomName] = useState('');
   const [customMuscle, setCustomMuscle] = useState('');
   const [customExerciseType, setCustomExerciseType] = useState<ExerciseType>('strength');
+  const [customDistanceUnit, setCustomDistanceUnit] = useState<DistanceUnit>('mi');
+  const [customTrackLaps, setCustomTrackLaps] = useState(false);
   const [addingCustom, setAddingCustom] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [lastImportedKey, setLastImportedKey] = useState<string | null>(null);
+  const { dismissAlertGroup, showAlert } = useSystemAlerts();
+
+  useEffect(() => {
+    if (!statusMessage) return;
+    const tone = /saved|updated/i.test(statusMessage) ? 'success' : 'info';
+    showAlert(statusMessage, { tone, replaceKey: 'plan-save' });
+  }, [showAlert, statusMessage]);
+
+  useEffect(() => {
+    if (!errorMessage) return;
+    dismissAlertGroup('plan-save');
+    showAlert(errorMessage, { tone: 'error' });
+  }, [dismissAlertGroup, errorMessage, showAlert]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
   );
+
+  useEffect(() => {
+    setCustomDistanceUnit(current => normalizeDistanceUnit(current, distanceSystem));
+  }, [distanceSystem]);
 
   const importKey = useMemo(() => {
     if (queryTemplateId) return `template:${queryTemplateId}`;
@@ -247,7 +283,22 @@ export default function PlanSession() {
         }
 
         if (cleaned.length > 0) {
-          const sorted = cleaned.sort((a, b) => a.order - b.order);
+          const sorted = [...cleaned]
+            .sort((a, b) => a.order - b.order)
+            .map(exercise =>
+              exercise.exercise_type === 'cardio'
+                ? {
+                    ...exercise,
+                    sets: exercise.sets.map(set => ({
+                      ...set,
+                      distance_unit: normalizeDistanceUnit(
+                        set.distance_unit,
+                        distanceSystem
+                      ),
+                    })),
+                  }
+                : exercise
+            );
           setSelectedExerciseIds(sorted.map(e => e.exercise_id));
           setSelectedExercisesData(sorted);
           setSelectedDate(
@@ -269,7 +320,8 @@ export default function PlanSession() {
     queryWorkoutId,
     userId,
 		addExercise,
-		editTemplateId,
+    editTemplateId,
+    distanceSystem,
   ]);
 
   const toggleExercise = (exerciseId: string) => {
@@ -297,13 +349,20 @@ export default function PlanSession() {
         name: exercise.name,
         target_muscle: exercise.target_muscle,
         exercise_type: exercise.exercise_type ?? 'strength',
+        track_laps: Boolean(exercise.track_laps),
         order: prev.length,
         sets: Array.from({ length: exercise.exercise_type === 'cardio' ? 1 : 3 }, (_, idx) => ({
           set_number: idx + 1,
           reps: exercise.exercise_type === 'cardio' ? null : 8,
           weight: exercise.exercise_type === 'cardio' ? null : 0,
           duration_seconds: exercise.exercise_type === 'cardio' ? 1800 : null,
-          distance_unit: exercise.exercise_type === 'cardio' ? 'mi' : null,
+          distance_unit:
+            exercise.exercise_type === 'cardio'
+              ? normalizeDistanceUnit(
+                  exercise.default_distance_unit,
+                  distanceSystem
+                )
+              : null,
           intensity_type: 'normal',
         })),
       };
@@ -315,7 +374,7 @@ export default function PlanSession() {
   const handleChangeExercise = (
     id: string,
     field: BuilderField,
-    value: number | DistanceUnit
+    value: number
   ) => {
     setSelectedExercisesData(prev =>
       prev.map(ex => {
@@ -334,7 +393,13 @@ export default function PlanSession() {
                 intensity_type: 'normal',
                 duration_seconds: ex.exercise_type === 'cardio' ? nextSets[0]?.duration_seconds ?? 1800 : null,
                 distance_value: ex.exercise_type === 'cardio' ? nextSets[0]?.distance_value ?? null : null,
-                distance_unit: ex.exercise_type === 'cardio' ? nextSets[0]?.distance_unit ?? 'mi' : null,
+                distance_unit:
+                  ex.exercise_type === 'cardio'
+                    ? normalizeDistanceUnit(
+                        nextSets[0]?.distance_unit,
+                        distanceSystem
+                      )
+                    : null,
                 calories: ex.exercise_type === 'cardio' ? nextSets[0]?.calories ?? null : null,
               }))
             );
@@ -363,10 +428,6 @@ export default function PlanSession() {
         if (field === 'duration_seconds' || field === 'distance_value') {
           nextSets.forEach(set => { set[field] = Math.max(0, Number(value)); });
         }
-        if (field === 'distance_unit') {
-          nextSets.forEach(set => { set.distance_unit = value as DistanceUnit; });
-        }
-
         return { ...ex, sets: nextSets };
       })
     );
@@ -409,6 +470,9 @@ export default function PlanSession() {
           is_custom: true,
           user_id: userId,
           exercise_type: customExerciseType,
+          default_distance_unit:
+            customExerciseType === 'cardio' ? customDistanceUnit : null,
+          track_laps: customExerciseType === 'cardio' && customTrackLaps,
         },
       ])
       .select();
@@ -421,6 +485,8 @@ export default function PlanSession() {
       setCustomName('');
       setCustomMuscle('');
       setCustomExerciseType('strength');
+      setCustomDistanceUnit(defaultDistanceUnit);
+      setCustomTrackLaps(false);
       setAddingCustom(false);
       await refetch();
     }
@@ -619,6 +685,7 @@ export default function PlanSession() {
                       <BuilderRow
                         key={ex.id}
                         exercise={ex}
+                        weightUnitLabel={weightUnitLabel}
                         onChange={handleChangeExercise}
                         onRemove={handleRemoveExercise}
                       />
@@ -635,16 +702,6 @@ export default function PlanSession() {
                 {saving ? 'Saving...' : primaryButtonLabel}
               </button>
 
-              {statusMessage && (
-                <p className="status-message status-message--info color-context color-context--info">
-                  {statusMessage}
-                </p>
-              )}
-              {errorMessage && (
-                <p className="status-message status-message--error color-context color-context--danger">
-                  {errorMessage}
-                </p>
-              )}
             </div>
 
             <div className="exercise-panel">
@@ -742,6 +799,26 @@ export default function PlanSession() {
             <option value="strength">Strength</option>
             <option value="cardio">Cardio</option>
           </select>
+          {customExerciseType === 'cardio' && (
+            <>
+              <label>
+                <span>Default distance unit</span>
+                <select
+                  value={customDistanceUnit}
+                  onChange={event => setCustomDistanceUnit(event.target.value as DistanceUnit)}
+                >
+                  {getDistanceUnitOptions(distanceSystem).map(option => (
+                    <option key={option.value} value={option.value}>{option.label}</option>
+                  ))}
+                </select>
+              </label>
+              <SwitchField
+                checked={customTrackLaps}
+                label="Track laps"
+                onChange={setCustomTrackLaps}
+              />
+            </>
+          )}
           <input
             type="text"
             placeholder="Target muscle"

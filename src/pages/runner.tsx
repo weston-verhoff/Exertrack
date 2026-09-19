@@ -5,11 +5,13 @@ import { Layout } from '../components/Layout';
 import { DistanceUnit, WorkoutExercise, WorkoutSet } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
 import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
+import { useSystemAlerts } from '../context/SystemAlertContext';
 
 export default function WorkoutRunner() {
   const { id: workoutId } = useParams()
   const navigate = useNavigate()
   const { userId, loading: authLoading } = useAuth()
+  const { showAlert } = useSystemAlerts()
 
 	const [exercises, setExercises] = useState<WorkoutExercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -107,7 +109,7 @@ export default function WorkoutRunner() {
 
 	  if (error) {
 	    console.error(error);
-	    alert(error);
+	    showAlert(error, { tone: 'error' });
 	    return;
 	  }
 

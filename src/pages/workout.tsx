@@ -7,6 +7,7 @@ import { WorkoutDetails } from '../components/WorkoutDetails'
 import { useAuth } from '../context/AuthContext';
 import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
 import { confirmAndDeleteWorkout } from '../utils/workoutActions';
+import { useSystemAlerts } from '../context/SystemAlertContext';
 
 export default function WorkoutRecap() {
   const { id } = useParams()
@@ -15,9 +16,8 @@ export default function WorkoutRecap() {
   const [editedExercises, setEditedExercises] = useState<WorkoutExercise[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [statusMessage, setStatusMessage] = useState<string | null>(null)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const { userId, loading: authLoading } = useAuth();
+  const { dismissAlertGroup, showAlert } = useSystemAlerts();
 
   useEffect(() => {
     async function fetchWorkout() {
@@ -56,11 +56,10 @@ export default function WorkoutRecap() {
     if (!userId) return;
 
 	  setSaving(true);
-	  setErrorMessage(null);
-	  setStatusMessage('Saving workout...');
+	  showAlert('Saving workout...', { replaceKey: 'workout-save' });
 
 	  try {
-			setStatusMessage('Updating workout info...');
+			showAlert('Updating workout info...', { replaceKey: 'workout-save' });
 	    const { error } = await saveWorkout({
 	      workoutId: workout.id,
         date: workout.date,
@@ -71,11 +70,11 @@ export default function WorkoutRecap() {
 
 	    if (error) throw new Error(error);
 
-	    setStatusMessage('Workout saved!');
+	    showAlert('Workout saved!', { tone: 'success', replaceKey: 'workout-save' });
 	  } catch (err) {
 	    console.error(err);
-			setErrorMessage('Failed to save workout. Please try again.');
-			setStatusMessage(null);
+			dismissAlertGroup('workout-save');
+			showAlert('Failed to save workout. Please try again.', { tone: 'error' });
 	} finally {
 		setSaving(false);
 	}
@@ -107,7 +106,7 @@ const handleDeleteWorkout = async () => {
   });
 
   if (error) {
-    alert(error);
+    showAlert(error, { tone: 'error' });
     return;
   }
 
@@ -126,8 +125,6 @@ date={workout.date}
 status={workout.status}
 exercises={editedExercises}
 isSaving={saving}
-statusMessage={statusMessage}
-errorMessage={errorMessage}
 onDateChange={date =>
 	setWorkout(prev => prev ? { ...prev, date } : prev)
 }

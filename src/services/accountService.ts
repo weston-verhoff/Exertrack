@@ -1,7 +1,7 @@
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../supabase/client';
-import { ExerciseType } from '../types/workout';
-import { AppTheme, isAppTheme } from '../utils/theme';
+import { DistanceUnit, ExerciseType } from '../types/workout';
+import { AppTheme, normalizeAppTheme } from '../utils/theme';
 import { ServiceResult } from './workoutService';
 
 export type Weekday = 0 | 1 | 2 | 3 | 4 | 5 | 6;
@@ -24,6 +24,8 @@ export interface CustomExercise {
   exercise_type: ExerciseType;
   is_custom: boolean;
   user_id: string;
+  default_distance_unit: DistanceUnit | null;
+  track_laps: boolean;
 }
 
 const accountError = (message: string, error?: unknown) => {
@@ -41,7 +43,7 @@ export const getAccountSettings = (user: User): AccountSettings => {
     startOfWeek: startOfWeek >= 0 && startOfWeek <= 6 ? (startOfWeek as Weekday) : 1,
     distanceSystem: metadata.distance_system === 'metric' ? 'metric' : 'imperial',
     weightSystem: metadata.weight_system === 'metric' ? 'metric' : 'imperial',
-    theme: isAppTheme(metadata.theme) ? metadata.theme : 'default',
+    theme: normalizeAppTheme(metadata.theme) ?? 'default',
   };
 };
 
@@ -81,7 +83,7 @@ export async function fetchCustomExercises({
 }): Promise<ServiceResult<CustomExercise[]>> {
   const { data, error } = await supabase
     .from('exercises')
-    .select('id, name, target_muscle, exercise_type, is_custom, user_id')
+    .select('id, name, target_muscle, exercise_type, is_custom, user_id, default_distance_unit, track_laps')
     .eq('user_id', userId)
     .eq('is_custom', true)
     .order('name', { ascending: true });
@@ -100,7 +102,7 @@ export async function updateCustomExercise({
   exercise,
   userId,
 }: {
-  exercise: Pick<CustomExercise, 'id' | 'name' | 'target_muscle' | 'exercise_type'>;
+  exercise: Pick<CustomExercise, 'id' | 'name' | 'target_muscle' | 'exercise_type' | 'default_distance_unit' | 'track_laps'>;
   userId: string;
 }): Promise<ServiceResult<CustomExercise>> {
   const { data, error } = await supabase
@@ -109,11 +111,14 @@ export async function updateCustomExercise({
       name: exercise.name.trim(),
       target_muscle: exercise.target_muscle.trim(),
       exercise_type: exercise.exercise_type,
+      default_distance_unit:
+        exercise.exercise_type === 'cardio' ? exercise.default_distance_unit : null,
+      track_laps: exercise.exercise_type === 'cardio' && exercise.track_laps,
     })
     .eq('id', exercise.id)
     .eq('user_id', userId)
     .eq('is_custom', true)
-    .select('id, name, target_muscle, exercise_type, is_custom, user_id')
+    .select('id, name, target_muscle, exercise_type, is_custom, user_id, default_distance_unit, track_laps')
     .single();
 
   if (error || !data) {
