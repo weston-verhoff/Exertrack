@@ -139,7 +139,6 @@
   --shadow-control-inset: var(--ref-shadow-100);
 
   /* Theme artwork */
-  --image-surface-canvas: none;
   --image-surface-hero: none;
   --image-surface-accent: none;
 }

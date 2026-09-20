@@ -1,12 +1,14 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import '../styles/drawer.css';
+import { ComponentTone } from '../utils/componentTone';
 
 interface DrawerProps {
   isOpen: boolean;
   onClose: () => void;
   width?: number | string;
   children: ReactNode;
+  tone?: ComponentTone;
 }
 
 export function Drawer({
@@ -14,6 +16,7 @@ export function Drawer({
   onClose,
   width = 420,
   children,
+  tone,
 }: DrawerProps) {
   const [shouldRender, setShouldRender] = useState(isOpen);
 
@@ -65,6 +68,7 @@ export function Drawer({
       />
 
       <aside
+        data-tone={tone}
         className={`drawer-panel ${isOpen ? 'open' : 'closed'}`}
         style={{ width }}
         onAnimationEnd={handleAnimationEnd}

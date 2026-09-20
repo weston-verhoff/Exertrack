@@ -24,9 +24,9 @@
   flex: 0 0 auto;
   width: 3rem;
   height: 1.75rem;
-  border: 2px solid var(--color-border-default);
+  border: 2px solid var(--_tone-border, var(--color-border-default));
   border-radius: 999px;
-  background: var(--color-surface-sunken);
+  background: var(--_tone-surface-sunken, var(--color-surface-sunken));
   transition: background-color 160ms ease, border-color 160ms ease;
 }
 
@@ -38,14 +38,14 @@
   width: 1.25rem;
   height: 1.25rem;
   border-radius: 50%;
-  background: var(--color-surface-default);
+  background: var(--_tone-content, var(--color-surface-default));
   box-shadow: 0 1px 4px var(--shadow-subtle);
   transition: transform 160ms ease;
 }
 
 .toggle-field__input:checked + .toggle-field__control {
-  border-color: var(--color-interactive-primary);
-  background: var(--color-interactive-primary);
+  border-color: var(--_tone-border, var(--color-interactive-primary));
+  background: var(--_tone-strong, var(--color-interactive-primary));
 }
 
 .toggle-field__input:checked + .toggle-field__control::after {

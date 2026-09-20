@@ -18,6 +18,7 @@
   --ref-blue-300: #bedbff;
   --ref-blue-500: #2196f3;
   --ref-blue-600: #1446de;
+  --ref-blue-700: #0a2554;
   --ref-blue-750: #1e3a8a;
   --ref-orange-50: #fff7ed;
   --ref-orange-75: #fef3df;
@@ -98,7 +99,7 @@
   --color-interactive-primary-hover: var(--ref-orange-950);
   --color-interactive-secondary: var(--ref-blue-500);
   --color-on-interactive-secondary: var(--ref-blue-700);
-  --color-interactive-secondary-hover: var(--ref-blue-750);
+  --color-interactive-secondary-hover: var(--ref-blue-300);
   --color-interactive-subtle: var(--ref-blue-100);
   --color-on-interactive-subtle: var(--ref-blue-750);
   --color-interactive-subtle-hover: var(--ref-blue-50);

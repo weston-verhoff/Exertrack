@@ -124,7 +124,7 @@ export default function WorkoutRunner() {
 			<Layout padded maxWidth="md">
 			  <h1 className="headline">Workout Runner</h1>
 			  <p>✅ All exercises completed.</p>
-			  <WorkoutButton label="End Workout →" onClick={finishWorkout} variant="primary" />
+			  <WorkoutButton label="End Workout →" onClick={finishWorkout} variant="primary" tone="workout" />
 			</Layout>
     )
   }
@@ -282,12 +282,12 @@ function ActionButtons({
 }) {
   return (
     <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-      <WorkoutButton label="← Back" onClick={onBackSet} variant="secondary" />
+      <WorkoutButton label="← Back" onClick={onBackSet} variant="secondary" tone="workout" />
       {isLast ? (
-        <WorkoutButton label="End Workout →" onClick={onFinish} variant="primary" />
+        <WorkoutButton label="End Workout →" onClick={onFinish} variant="primary" tone="workout" />
       ) : (
         <>
-          <WorkoutButton label="Next Set →" onClick={onNextSet} variant="primary" />
+          <WorkoutButton label="Next Set →" onClick={onNextSet} variant="primary" tone="workout" />
         </>
       )}
     </div>

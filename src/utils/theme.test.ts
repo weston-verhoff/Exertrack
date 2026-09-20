@@ -11,6 +11,7 @@ describe('theme utilities', () => {
     expect(isAppTheme('baseball')).toBe(true);
     expect(isAppTheme('neon')).toBe(true);
     expect(isAppTheme('monokai')).toBe(true);
+    expect(isAppTheme('sunset')).toBe(true);
     expect(isAppTheme('unknown')).toBe(false);
   });
 
@@ -24,6 +25,13 @@ describe('theme utilities', () => {
 
     expect(document.documentElement.dataset.theme).toBe('monokai');
     expect(window.localStorage.getItem('iwyn-theme')).toBe('monokai');
+  });
+
+  it('applies and persists Sunset', () => {
+    applyTheme('sunset');
+
+    expect(document.documentElement.dataset.theme).toBe('sunset');
+    expect(window.localStorage.getItem('iwyn-theme')).toBe('sunset');
   });
 
   it('restores a saved Monokai preference', () => {

@@ -75,9 +75,12 @@ export const THEME_TOKEN_CONTRACT = [
   '--shadow-button-hover-inset',
   '--shadow-button-pressed',
   '--shadow-control-inset',
-  '--image-surface-canvas',
   '--image-surface-hero',
   '--image-surface-accent',
+] as const;
+
+export const OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT = [
+  '--image-surface-canvas',
 ] as const;
 
 export const BRAND_IMAGE_TOKEN_CONTRACT = [

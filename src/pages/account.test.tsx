@@ -106,6 +106,7 @@ describe('AccountPage custom exercise editor', () => {
     renderAccountPage();
 
     const exerciseButton = await screen.findByRole('button', { name: /Cable Row/i });
+    expect(exerciseButton).toHaveAttribute('data-tone', 'library');
     fireEvent.click(exerciseButton);
 
     const customExercisesSection = document.querySelector('#custom-exercises');
@@ -113,6 +114,7 @@ describe('AccountPage custom exercise editor', () => {
 
     const drawer = document.querySelector('.drawer-panel');
     expect(drawer).toHaveClass('open');
+    expect(drawer).toHaveAttribute('data-tone', 'library');
     expect(
       within(drawer as HTMLElement).getByRole('heading', { name: 'Edit custom exercise' })
     ).toBeInTheDocument();

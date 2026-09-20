@@ -149,7 +149,7 @@ export default function TemplatesPage() {
         <p>No templates found.</p>
       ) : (
         <div className="past-workouts">
-          {templates.map(t => (
+          {templates.map((t) => (
             <TemplateCard
               key={t.id}
               template={{
@@ -158,6 +158,7 @@ export default function TemplatesPage() {
                 exercises: t.template_exercises
               }}
               onRename={renameTemplate}
+              tone="library"
               onDelete={deleteTemplate}
 							onUse={useTemplate}
             />

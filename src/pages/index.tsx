@@ -102,6 +102,7 @@ export default function Dashboard() {
   const renderEmptyWorkoutCard = (className?: string) => (
     <button
       type="button"
+      data-tone="workout"
       className={`empty-workout-card${className ? ` ${className}` : ''}`}
       onClick={() => navigate('/plan')}
     >
@@ -159,7 +160,8 @@ export default function Dashboard() {
 					    label="Start Next Workout"
 							size="lg"
 					    icon=""
-					    variant="primary"
+						    variant="primary"
+							tone="workout"
 					    onClick={() => navigate(`/runner/${nextWorkoutId}`)}
 					  />
 					)}
@@ -170,6 +172,7 @@ export default function Dashboard() {
 							 size="lg"
                icon=""
                variant="secondary"
+							 tone="workout"
                onClick={() => navigate('/plan')}
              />
            )}
@@ -179,6 +182,7 @@ export default function Dashboard() {
 				{nextWorkout ? (
 				  <WorkoutCard
 				    workout={nextWorkout}
+						tone="workout"
 						onDelete={deleteWorkout}
 						variant="highlighted"
 						onStatusChange={handleStatusChange}
@@ -225,6 +229,7 @@ export default function Dashboard() {
 							<WorkoutCard
 								key={w.id}
 								workout={w}
+								tone="workout"
 								onDelete={deleteWorkout}
 								variant="future-workout"
 								onStatusChange={handleStatusChange}
@@ -265,6 +270,7 @@ export default function Dashboard() {
                     <WorkoutCard
                       key={w.id}
                       workout={w}
+                      tone="workout"
                       isToday={w.date === today}
                       onDelete={deleteWorkout}
                         variant="past-workout"

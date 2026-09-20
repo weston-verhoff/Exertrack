@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import {
   BRAND_IMAGE_TOKEN_CONTRACT,
+  OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT,
   THEME_CONTRAST_PAIRS,
   THEME_TOKEN_CONTRACT,
 } from './colorTokens';
@@ -13,6 +14,7 @@ const themeFiles = [
   'theme-baseball.css',
   'theme-neon.css',
   'theme-monokai.css',
+  'theme-sunset.css',
 ];
 
 const readStyle = (filename: string) =>
@@ -28,7 +30,7 @@ const getSourceFiles = (directory: string): string[] =>
 const getDeclarations = (css: string) => {
   const declarations = new Map<string, string>();
   const counts = new Map<string, number>();
-  const pattern = /^\s*(--[a-z0-9-]+):\s*([^;]+);/gm;
+  const pattern = /^\s*(--[_a-z0-9-]+):\s*([^;]+);/gm;
   let match: RegExpExecArray | null;
 
   while ((match = pattern.exec(css))) {
@@ -37,6 +39,16 @@ const getDeclarations = (css: string) => {
   }
 
   return { declarations, counts };
+};
+
+const getRuleDeclarations = (css: string, selector: string) => {
+  const marker = `${selector} {`;
+  const start = css.indexOf(marker);
+  if (start < 0) throw new Error(`Missing selector: ${selector}`);
+  const bodyStart = start + marker.length;
+  const bodyEnd = css.indexOf('}', bodyStart);
+  if (bodyEnd < 0) throw new Error(`Unclosed selector: ${selector}`);
+  return getDeclarations(css.slice(bodyStart, bodyEnd)).declarations;
 };
 
 const resolveValue = (
@@ -50,7 +62,7 @@ const resolveValue = (
   const value = declarations.get(token);
   if (!value) throw new Error(`Missing token: ${token}`);
 
-  const reference = value.match(/^var\((--[a-z0-9-]+)\)$/);
+  const reference = value.match(/^var\((--[_a-z0-9-]+)\)$/);
   return reference ? resolveValue(reference[1], declarations, seen) : value;
 };
 
@@ -88,9 +100,16 @@ describe.each(themeFiles)('%s token contract', (themeFile) => {
     });
   });
 
+  it('declares each optional theme image token at most once', () => {
+    OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT.forEach((token) => {
+      expect(counts.get(token) ?? 0).toBeLessThanOrEqual(1);
+    });
+  });
+
   it('does not declare tokens outside the shared contract', () => {
     const contract = new Set<string>([
       ...THEME_TOKEN_CONTRACT,
+      ...OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT,
       ...BRAND_IMAGE_TOKEN_CONTRACT,
     ]);
     const declaredSystemTokens = Array.from(declarations.keys()).filter((token) =>
@@ -121,6 +140,37 @@ describe('token architecture', () => {
     });
   });
 
+  it('defines a global fallback for optional theme images', () => {
+    const { declarations, counts } = getDeclarations(readStyle('variables.css'));
+
+    OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT.forEach((token) => {
+      expect(counts.get(token)).toBe(1);
+      expect(declarations.get(token)).toBe('none');
+    });
+  });
+
+  it('uses custom canvas artwork only for themes that provide it', () => {
+    ['theme-default.css', 'theme-sunset.css'].forEach((themeFile) => {
+      const { declarations } = getDeclarations(readStyle(themeFile));
+      expect(declarations.has('--image-surface-canvas')).toBe(true);
+      expect(declarations.get('--image-surface-canvas')).not.toBe('none');
+    });
+
+    ['theme-baseball.css', 'theme-neon.css', 'theme-monokai.css'].forEach((themeFile) => {
+      const { declarations } = getDeclarations(readStyle(themeFile));
+      expect(declarations.has('--image-surface-canvas')).toBe(false);
+    });
+  });
+
+  it('layers optional canvas artwork over the planner fallback color', () => {
+    const plannerStyles = readStyle('plan.css');
+
+    expect(plannerStyles).toContain('background-color: var(--_plan-canvas);');
+    expect(plannerStyles).toContain('background-image: var(--image-surface-canvas);');
+    expect(plannerStyles).toContain('background-size: 100% 100%;');
+    expect(plannerStyles).toContain('background-repeat: no-repeat;');
+  });
+
   it('uses custom brand images only for themes that provide them', () => {
     const defaultTokens = getDeclarations(readStyle('theme-default.css')).declarations;
     const neonTokens = getDeclarations(readStyle('theme-neon.css')).declarations;
@@ -132,7 +182,7 @@ describe('token architecture', () => {
       expect(neonTokens.has(token)).toBe(true);
     });
 
-    ['theme-baseball.css', 'theme-monokai.css'].forEach((themeFile) => {
+    ['theme-baseball.css', 'theme-monokai.css', 'theme-sunset.css'].forEach((themeFile) => {
       const { declarations } = getDeclarations(readStyle(themeFile));
       BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
         expect(declarations.has(token)).toBe(false);
@@ -153,6 +203,7 @@ describe('token architecture', () => {
   it('keeps every system-token consumer on the shared contract', () => {
     const contract = new Set<string>([
       ...THEME_TOKEN_CONTRACT,
+      ...OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT,
       ...BRAND_IMAGE_TOKEN_CONTRACT,
     ]);
 
@@ -179,7 +230,7 @@ describe('token architecture', () => {
 
   it('keeps component, page, hue, and appearance names out of the contract', () => {
     const prohibited = /(plan|header|workout|drawer|account|warm|dark|black|blue|pink|orange|green|red|cyan|purple|yellow)/;
-    [...THEME_TOKEN_CONTRACT, ...BRAND_IMAGE_TOKEN_CONTRACT]
+    [...THEME_TOKEN_CONTRACT, ...OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT, ...BRAND_IMAGE_TOKEN_CONTRACT]
       .forEach((token) => expect(token).not.toMatch(prohibited));
   });
 
@@ -196,5 +247,49 @@ describe('token architecture', () => {
         expect(block).toContain('--_context-content:');
         expect(block).toContain('--_context-border:');
       });
+  });
+});
+
+describe('Sunset functional tone recipes', () => {
+  const css = readStyle('theme-sunset.css');
+  const themeDeclarations = getDeclarations(css).declarations;
+  const tonePairs = [
+    ['--_tone-surface-sunken', '--_tone-content'],
+    ['--_tone-surface', '--_tone-content'],
+    ['--_tone-surface-raised', '--_tone-content'],
+    ['--_tone-strong', '--_tone-on-strong'],
+    ['--_tone-strong-hover', '--_tone-on-strong'],
+  ] as const;
+
+  it.each(['workout', 'library', 'selection'])('%s stays within one accessible tonal recipe', (tone) => {
+    const toneDeclarations = getRuleDeclarations(
+      css,
+      `[data-theme='sunset'] [data-tone='${tone}']`
+    );
+    const declarations = new Map([
+      ...Array.from(themeDeclarations.entries()),
+      ...Array.from(toneDeclarations.entries()),
+    ]);
+
+    tonePairs.forEach(([surface, content]) => {
+      const surfaceValue = resolveValue(surface, declarations);
+      const contentValue = resolveValue(content, declarations);
+      expect(surfaceValue).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(contentValue).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(contrast(surfaceValue, contentValue)).toBeGreaterThanOrEqual(4.5);
+    });
+  });
+
+  it('keeps planner actions tonal while preserving destructive semantics', () => {
+    const plannerStyles = readStyle('plan.css');
+    expect(plannerStyles).toContain(
+      'background: var(--_tone-strong, var(--color-interactive-positive));'
+    );
+    expect(plannerStyles).toContain('background: var(--color-interactive-danger);');
+  });
+
+  it('does not define functional recipes in other themes', () => {
+    ['theme-default.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css']
+      .forEach((themeFile) => expect(readStyle(themeFile)).not.toContain('[data-tone='));
   });
 });

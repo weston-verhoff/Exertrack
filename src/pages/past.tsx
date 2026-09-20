@@ -168,6 +168,7 @@ export default function PastWorkouts() {
         <div className="past-workouts" style={{marginBottom:"4rem"}}>
           <button
             type="button"
+            data-tone="workout"
             className="empty-workout-card"
             onClick={() => navigate('/plan')}
           >
@@ -182,6 +183,7 @@ export default function PastWorkouts() {
 						<WorkoutCard
 							key={w.id}
 							workout={w}
+							tone="workout"
 							onDelete={deleteWorkout}
 							variant="future-workout"
 							onStatusChange={handleStatusChange}
@@ -200,6 +202,7 @@ export default function PastWorkouts() {
       <div style={{display:'flex', justifyContent:'center', marginBottom:'1rem'}}>
         <button
           className="show-all-button"
+          data-tone="selection"
           type="button"
           onClick={exportAllWorkouts}
           disabled={exportingWorkouts || !userId}
@@ -221,6 +224,7 @@ export default function PastWorkouts() {
 										<WorkoutCard
 											key={w.id}
 											workout={w}
+											tone="workout"
 											onDelete={deleteWorkout}
 											variant="past-workout"
 											onStatusChange={handleStatusChange}
@@ -238,6 +242,7 @@ export default function PastWorkouts() {
 						<div className="past-workouts-footer">
 							<button
 								className="show-all-button"
+								data-tone="selection"
 								type="button"
 								onClick={loadAllCompletedWorkouts}
 								disabled={loadingAllPast}

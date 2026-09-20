@@ -655,7 +655,7 @@ export default function PlanSession() {
           </div>
 
           <div className="plan-grid">
-            <div className="plan-workout-card sticky-card">
+            <div className="plan-workout-card sticky-card" data-tone="workout">
               <div className="plan-workout-card__header">
                 <input
                   type="date"
@@ -704,7 +704,7 @@ export default function PlanSession() {
 
             </div>
 
-            <div className="exercise-panel">
+            <div className="exercise-panel" data-tone="library">
               <div className="search-row">
                 <span className="filter-icon">🔍</span>
                 <input
@@ -723,11 +723,12 @@ export default function PlanSession() {
                     All matching lifts are already in your workout.
                   </p>
                 ) : (
-                  availableExercises.map(exercise => (
+					availableExercises.map((exercise) => (
 										<button
                       key={exercise.id}
                       type="button"
                       className="exercise-pill"
+                      data-tone="library"
                       onClick={() => toggleExercise(exercise.id)}
                       aria-label={`Add ${exercise.name}`}
                     >
@@ -750,6 +751,7 @@ export default function PlanSession() {
 									label='Add a Custom Exercise'
 									icon="+"
 									variant="primary"
+									tone="library"
 									size="lg"
 									onClick={() => setAddingCustom(true)}
 									rounded="default"
@@ -767,10 +769,11 @@ export default function PlanSession() {
               <p className="muted">No templates available yet.</p>
             ) : (
               <div className="template-buttons">
-                {templates.map(template => (
+                {templates.map((template) => (
                   <button
                     key={template.id}
                     className="template-pill"
+                    data-tone="library"
                     onClick={() => navigate(`/plan?importTemplate=${template.id}`)}
                   >
                     Import &quot;{template.name}&quot; +
@@ -781,7 +784,8 @@ export default function PlanSession() {
           </div>
         </div>
       </Layout>
-			<Drawer isOpen={addingCustom} onClose={closeCustomDrawer} width={440}>
+			<Drawer isOpen={addingCustom} onClose={closeCustomDrawer} width={440} tone="library">
+        <div data-tone="library">
         <div className="custom-drawer__header">
           <h2>Create a custom exercise</h2>
         </div>
@@ -829,6 +833,7 @@ export default function PlanSession() {
             <button onClick={addCustomExercise}>Add</button>
             <button onClick={closeCustomDrawer}>Cancel</button>
           </div>
+        </div>
         </div>
       </Drawer>
     </div>

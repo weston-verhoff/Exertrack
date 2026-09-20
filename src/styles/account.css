@@ -32,9 +32,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--color-border-on-inverse);
+  border: 1px solid var(--_tone-border, var(--color-border-on-inverse));
   border-radius: 12px;
-  background: var(--color-surface-inverse-subtle);
+  background: var(--_tone-surface, var(--color-surface-inverse-subtle));
+  color: var(--_tone-content, var(--color-on-inverse));
 }
 
 .account-stat-card span {
@@ -133,7 +134,7 @@
 
 .account-section__heading {
   display: flex;
-  align-items: end;
+  align-items: start;
   justify-content: space-between;
   gap: 1rem;
 }
@@ -154,7 +155,9 @@
 .account-chart {
   height: 380px;
   padding: 1.25rem;
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--_tone-border, var(--color-border-subtle));
+  background-color: var(--_tone-surface, var(--_context-surface));
+  color: var(--_tone-content, var(--_context-content));
   border-radius: 12px;
   box-shadow: 0 8px 20px var(--shadow-subtle);
 }
@@ -171,9 +174,10 @@
   padding: 0 1rem;
   align-items: center;
   gap: 0.65rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--_tone-border, var(--color-border-default));
   border-radius: 2rem;
-  background: var(--color-surface-default);
+  background: var(--_tone-surface-sunken, var(--color-surface-default));
+  color: var(--_tone-content, var(--color-on-surface));
 }
 
 .account-search input {
@@ -196,17 +200,17 @@
   padding: 0.45rem 0.8rem 0.45rem 0.45rem;
   align-items: center;
   gap: 0.55rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--_tone-border, var(--color-border-default));
   border-radius: 999px;
-  background: var(--color-surface-sunken);
-  color: var(--color-on-surface);
+  background: var(--_tone-surface, var(--color-surface-sunken));
+  color: var(--_tone-content, var(--color-on-surface));
   text-align: left;
   cursor: pointer;
   transition: box-shadow 0.2s ease, background 0.2s ease;
 }
 
 .exercise-chip:hover {
-  background: var(--color-surface-raised);
+  background: var(--_tone-surface-raised, var(--color-surface-raised));
   box-shadow: 0 8px 12px var(--shadow-soft);
 }
 
@@ -215,8 +219,8 @@
   width: 2rem;
   height: 2rem;
   place-items: center;
-  border: 0.5px solid var(--color-border-default);
-  background: var(--color-surface-default);
+  border: 0.5px solid var(--_tone-border, var(--color-border-default));
+  background: var(--_tone-surface-sunken, var(--color-surface-default));
   border-radius: 50%;
 }
 
@@ -227,7 +231,7 @@
 
 .exercise-chip small {
   margin-top: 0.1rem;
-  color: var(--color-content-muted);
+  color: var(--_tone-content-muted, var(--color-content-muted));
 }
 
 .exercise-editor {
@@ -236,9 +240,10 @@
   gap: 1rem;
   margin-top: 1rem;
   padding: 1.25rem;
-  border: 1px solid var(--color-border-focus);
+  border: 1px solid var(--_tone-border, var(--color-border-focus));
   border-radius: 12px;
-  background: var(--color-surface-raised);
+  background: var(--_tone-surface, var(--color-surface-raised));
+  color: var(--_tone-content, var(--color-on-surface));
 }
 
 .exercise-editor h3,
@@ -259,7 +264,9 @@
 .account-settings input {
   width: 100%;
   padding: 0.7rem 1rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--_tone-border, var(--color-border-default));
+  background: var(--_tone-surface-sunken, var(--color-surface-default));
+  color: var(--_tone-content, var(--color-on-surface));
   text-align: left;
 }
 
@@ -270,17 +277,17 @@
 
 .exercise-editor__actions button {
   padding: 0.7rem 1rem;
-  border: 1px solid var(--color-border-focus);
+  border: 1px solid var(--_tone-border, var(--color-border-focus));
   border-radius: 8px;
-  background: var(--color-interactive-primary);
-  color: var(--color-on-interactive-primary);
+  background: var(--_tone-strong, var(--color-interactive-primary));
+  color: var(--_tone-on-strong, var(--color-on-interactive-primary));
   font-weight: 700;
   cursor: pointer;
 }
 
 .exercise-editor__actions .secondary {
-  background: var(--color-surface-sunken);
-  color: var(--color-on-surface);
+  background: var(--_tone-surface-raised, var(--color-surface-sunken));
+  color: var(--_tone-content, var(--color-on-surface));
 }
 
 .exercise-editor--drawer {
@@ -313,8 +320,8 @@
 
 .exercise-editor--drawer select {
   width: 100%;
-  background: var(--color-surface-default);
-  color: var(--color-on-surface);
+  background: var(--_tone-surface-sunken, var(--color-surface-default));
+  color: var(--_tone-content, var(--color-on-surface));
 }
 
 .exercise-editor--drawer .account-message {
@@ -355,8 +362,8 @@
   display: grid;
   grid-template-columns: repeat(var(--segmented-columns), minmax(0, 1fr));
   overflow: hidden;
-  border: 1px solid var(--color-border-default);
-  background: var(--color-surface-sunken);
+  border: 1px solid var(--_tone-border, var(--color-border-default));
+  background: var(--_tone-surface-sunken, var(--color-surface-sunken));
 }
 
 .segmented-control--single {
@@ -380,9 +387,9 @@
   min-height: 44px;
   padding: 0.6rem;
   border: 0;
-  border-right: 1px solid var(--color-border-subtle);
+  border-right: 1px solid var(--_tone-border, var(--color-border-subtle));
   background: transparent;
-  color: var(--color-on-surface);
+  color: var(--_tone-content, var(--color-on-surface));
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -394,8 +401,8 @@
 }
 
 .segmented-control button[aria-pressed='true'] {
-  background: var(--color-interactive-selected);
-  color: var(--color-on-interactive-selected);
+  background: var(--_tone-strong, var(--color-interactive-selected));
+  color: var(--_tone-on-strong, var(--color-on-interactive-selected));
   font-weight: 800;
 }
 

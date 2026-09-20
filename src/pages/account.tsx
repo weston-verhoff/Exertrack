@@ -92,6 +92,7 @@ const THEME_OPTIONS: Array<{
   { value: 'baseball', label: 'Baseball' },
   { value: 'neon', label: 'Neon' },
   { value: 'monokai', label: 'Monokai' },
+  { value: 'sunset', label: 'Sunset' },
 ];
 
 const SECTION_LINKS = [
@@ -358,19 +359,19 @@ export default function AccountPage() {
       <section className="account-hero" aria-labelledby="account-greeting">
         <h1 id="account-greeting">{firstName ? `Hello, ${firstName}!` : 'Hello!'}</h1>
         <div className="account-stat-grid" aria-label="Workout summary">
-          <article className="account-stat-card">
+          <article className="account-stat-card" data-tone="workout">
             <span>Lifetime Workouts</span>
             <strong>{workouts.length}</strong>
           </article>
-          <article className="account-stat-card">
+          <article className="account-stat-card" data-tone="workout">
             <span>Sets This Week</span>
             <strong>{weeklySummary.strengthSets}</strong>
           </article>
-          <article className="account-stat-card">
+          <article className="account-stat-card" data-tone="workout">
             <span>Workouts This Week</span>
             <strong>{weeklySummary.workouts.length}</strong>
           </article>
-          <article className="account-stat-card">
+          <article className="account-stat-card" data-tone="workout">
             <span>Cardio Minutes This Week</span>
             <strong>{weeklySummary.cardioMinutes}</strong>
           </article>
@@ -399,10 +400,11 @@ export default function AccountPage() {
               <p>Loading workouts...</p>
             ) : recentWorkouts.length ? (
               <div className="account-recent-grid">
-                {recentWorkouts.map(workout => (
+                {recentWorkouts.map((workout) => (
                   <WorkoutCard
                     key={workout.id}
                     workout={workout}
+                    tone="workout"
                     variant="past-workout"
                     onDelete={deleteRecentWorkout}
                     onStatusChange={(id, status) =>
@@ -434,7 +436,7 @@ export default function AccountPage() {
                 </select>
               </label>
             </div>
-            <div className="account-chart color-context color-context--raised" aria-label="Strength volume chart">
+            <div className="account-chart color-context color-context--raised" data-tone="workout" aria-label="Strength volume chart">
               {workouts.length ? (
                 <Line
                   data={chartData}
@@ -453,7 +455,7 @@ export default function AccountPage() {
 
           <section id="custom-exercises" className="account-section">
             <h2>Custom Exercises</h2>
-            <label className="account-search">
+            <label className="account-search" data-tone="library">
               <SearchIcon aria-hidden={true} />
               <span className="sr-only">Search custom exercises</span>
               <input
@@ -465,11 +467,12 @@ export default function AccountPage() {
             </label>
 
             <div className="exercise-chip-list">
-              {filteredExercises.map(exercise => (
+              {filteredExercises.map((exercise) => (
                 <button
                   key={exercise.id}
                   type="button"
                   className="exercise-chip"
+                  data-tone="library"
                   onClick={() => openExerciseDrawer(exercise)}
                 >
                   <span className="exercise-chip__icon"><PenIcon aria-hidden={true} /></span>
@@ -506,7 +509,7 @@ export default function AccountPage() {
               </label>
             </div>
 
-            <fieldset>
+            <fieldset data-tone="selection">
               <legend>Start of Week</legend>
               <ResponsiveSegmentedControl
                 options={WEEKDAYS}
@@ -515,7 +518,7 @@ export default function AccountPage() {
               />
             </fieldset>
 
-            <fieldset>
+            <fieldset data-tone="selection">
               <legend>Preferred Distance</legend>
               <ResponsiveSegmentedControl
                 options={DISTANCE_OPTIONS}
@@ -524,7 +527,7 @@ export default function AccountPage() {
               />
             </fieldset>
 
-            <fieldset>
+            <fieldset data-tone="selection">
               <legend>Preferred Weights</legend>
               <ResponsiveSegmentedControl
                 options={WEIGHT_OPTIONS}
@@ -533,7 +536,7 @@ export default function AccountPage() {
               />
             </fieldset>
 
-            <fieldset>
+            <fieldset data-tone="selection">
               <legend>Color Theme</legend>
               <ResponsiveSegmentedControl
                 options={THEME_OPTIONS}
@@ -550,8 +553,9 @@ export default function AccountPage() {
           isOpen={exerciseDrawerOpen}
           onClose={closeExerciseDrawer}
           width={440}
+          tone="library"
         >
-          <form className="exercise-editor exercise-editor--drawer" onSubmit={handleExerciseSave}>
+          <form className="exercise-editor exercise-editor--drawer" data-tone="library" onSubmit={handleExerciseSave}>
             <div className="exercise-editor__header">
               <h2>Edit custom exercise</h2>
               <p>Update how this exercise appears throughout your workouts.</p>

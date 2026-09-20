@@ -345,9 +345,9 @@ input.exerciseSearch{
 	margin-left: 5rem;
 }
 .empty-workout-card {
-	--_empty-surface: var(--color-accent-secondary-subtle);
-	--_empty-content: var(--color-on-accent-secondary-subtle);
-	--_empty-border: var(--color-border-accent-secondary);
+	--_empty-surface: var(--_tone-surface, var(--color-accent-secondary-subtle));
+	--_empty-content: var(--_tone-content, var(--color-on-accent-secondary-subtle));
+	--_empty-border: var(--_tone-border, var(--color-border-accent-secondary));
 	font-family: var(--font-body);
 	min-width: 300px;
 	max-width: 300px;
@@ -366,7 +366,7 @@ input.exerciseSearch{
 }
 .empty-workout-card:hover {
 	transform: translateY(-2px);
-	border-color: var(--color-border-accent-secondary);
+	border-color: var(--_tone-strong-hover, var(--color-border-accent-secondary));
 	box-shadow: 0 12px 24px var(--shadow-medium);
 }
 .empty-workout-card:active {
@@ -378,9 +378,9 @@ input.exerciseSearch{
 	line-height: 1.4;
 }
 .empty-workout-card--hero {
-	--_empty-surface: var(--color-surface-inverse-subtle);
-	--_empty-content: var(--color-on-inverse);
-	--_empty-border: var(--color-border-on-inverse);
+	--_empty-surface: var(--_tone-surface, var(--color-surface-inverse-subtle));
+	--_empty-content: var(--_tone-content, var(--color-on-inverse));
+	--_empty-border: var(--_tone-border, var(--color-border-on-inverse));
 }
 
 .dash-content {
@@ -446,9 +446,9 @@ input.exerciseSearch{
   flex: 0 0 auto;
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
-  border: 1px solid var(--color-border-accent-primary);
-  background: var(--color-interactive-subtle);
-	color: var(--color-on-interactive-subtle);
+  border: 1px solid var(--_tone-border, var(--color-border-accent-primary));
+  background: var(--_tone-surface, var(--color-interactive-subtle));
+	color: var(--_tone-content, var(--color-on-interactive-subtle));
 	font-weight: 700;
 	cursor: pointer;
 	box-shadow: 0 6px 16px var(--shadow-soft);
@@ -457,7 +457,7 @@ input.exerciseSearch{
 .show-all-button:hover {
 	transform: translateY(-2px);
 	box-shadow: 0 10px 24px var(--shadow-strong);
-	background: var(--color-interactive-subtle-hover);
+	background: var(--_tone-surface-raised, var(--color-interactive-subtle-hover));
 }
 .past-workout-container {
 	padding: 2rem;

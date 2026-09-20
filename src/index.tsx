@@ -7,6 +7,7 @@ import './styles/theme-default.css';
 import './styles/theme-baseball.css';
 import './styles/theme-neon.css';
 import './styles/theme-monokai.css';
+import './styles/theme-sunset.css';
 import './styles/color-context.css';
 import { bootstrapTheme } from './utils/theme';
 

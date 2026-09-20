@@ -70,6 +70,14 @@
 	padding-bottom: 32px;
 }
 
+.drawer-panel[data-tone] .drawer-content input:not([type='checkbox']),
+.drawer-panel[data-tone] .drawer-content select,
+.drawer-panel[data-tone] .drawer-content textarea {
+  border-color: var(--_tone-border);
+  background: var(--_tone-surface-sunken);
+  color: var(--_tone-content);
+}
+
 .exercise-item ul {
 	padding-left: 0;
 	list-style: none;

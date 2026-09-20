@@ -129,7 +129,6 @@
   --shadow-control-inset: var(--ref-shadow-control);
 
   /* Theme artwork */
-  --image-surface-canvas: none;
   --image-surface-hero: none;
   --image-surface-accent: none;
   --image-brand-mark: url('../assets/branding/neon/mark.png');

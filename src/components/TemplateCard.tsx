@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { WorkoutButton } from './WorkoutButton';
 import '../styles/WorkoutCard.css';
+import { ComponentTone } from '../utils/componentTone';
 
 interface TemplateExercise {
   sets: number;
@@ -27,13 +28,14 @@ interface Props {
   onRename: (id: string) => void;
   onDelete: (id: string) => void;
   onUse: (id: string) => void; // new prop for "Use Template"
+  tone?: ComponentTone;
 }
 
-export function TemplateCard({ template, onRename, onDelete, onUse }: Props) {
+export function TemplateCard({ template, onRename, onDelete, onUse, tone }: Props) {
   const navigate = useNavigate();
 
   return (
-    <div className="workout-card template-workout">
+    <div className="workout-card template-workout" data-tone={tone}>
       <div className="workout-head">
         <span>{template.name}</span>
 				<WorkoutButton

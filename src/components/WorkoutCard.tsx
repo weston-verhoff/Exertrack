@@ -8,6 +8,7 @@ import { Drawer } from './Drawer'
 import { WorkoutDetails } from './WorkoutDetails';
 import { saveWorkout } from '../services/workoutService';
 import { useAuth } from '../context/AuthContext';
+import { ComponentTone } from '../utils/componentTone';
 
 type WorkoutCardVariant = 'future-workout' | 'past-workout' | 'highlighted';
 
@@ -19,6 +20,7 @@ interface Props {
   onDelete: (id: string) => void;
 	onStatusChange: (id: string, status: string) => void;
 	onWorkoutUpdated: (workout: Workout) => void;
+  tone?: ComponentTone;
 
 	onDrawerOpen?: () => void;
   onDrawerClose?: () => void;
@@ -58,6 +60,7 @@ export function WorkoutCard({
 	onDrawerOpen,
 	onDrawerClose,
 	onWorkoutUpdated,
+  tone,
 }: Props) {
   const navigate = useNavigate();
   const formattedDate = formatDateCompact(workout.date);
@@ -107,7 +110,7 @@ const closeDrawerAfterSave = () => {
 };
 
   return (
-    <div className={variantClass}>
+    <div className={variantClass} data-tone={tone}>
       <div className="workout-head">
         <span>{formattedDate}</span>
 				<WorkoutButton
@@ -156,6 +159,7 @@ const closeDrawerAfterSave = () => {
 			isOpen={drawerOpen}
 			onClose={closeDrawer}
 			width={520}
+			tone={tone}
 		>
 			<WorkoutDetails
 				workoutId={workout.id}

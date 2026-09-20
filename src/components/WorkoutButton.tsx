@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { ComponentTone } from '../utils/componentTone'
 
 interface WorkoutButtonProps {
   label: string
@@ -11,16 +12,17 @@ interface WorkoutButtonProps {
   type?: 'button' | 'submit' | 'reset'
 	size?: 'sm' | 'md' | 'lg'
 	rounded?: 'default' | 'full'
+  tone?: ComponentTone
 }
 
 const variantStyles: Record<string, React.CSSProperties> = {
   primary: {
-    backgroundColor: 'var(--color-interactive-primary)',
-    color: 'var(--color-on-interactive-primary)'
+    backgroundColor: 'var(--_tone-strong, var(--color-interactive-primary))',
+    color: 'var(--_tone-on-strong, var(--color-on-interactive-primary))'
   },
   secondary: {
-    backgroundColor: 'var(--color-interactive-secondary)',
-    color: 'var(--color-on-interactive-secondary)'
+    backgroundColor: 'var(--_tone-surface-raised, var(--color-interactive-secondary))',
+    color: 'var(--_tone-content, var(--color-on-interactive-secondary))'
   },
   destructive: {
     backgroundColor: 'var(--color-interactive-danger)',
@@ -28,7 +30,7 @@ const variantStyles: Record<string, React.CSSProperties> = {
   },
 	blackText: {
 		backgroundColor: 'var(--color-transparent)',
-		color:'var(--color-on-surface)',
+		color:'var(--_tone-on-strong, var(--color-on-surface))',
 		textDecoration: 'underline',
 	},
 	whiteText: {
@@ -75,6 +77,7 @@ export function WorkoutButton({
   loadingLabel,
   type = 'button',
 	rounded = 'default',
+  tone,
 }: WorkoutButtonProps) {
   const [isPressed, setIsPressed] = useState(false)
 
@@ -96,6 +99,7 @@ export function WorkoutButton({
 
   return (
     <button
+      data-tone={tone}
       type={type}
       onClick={isDisabled ? undefined : onClick}
       onMouseDown={() => {

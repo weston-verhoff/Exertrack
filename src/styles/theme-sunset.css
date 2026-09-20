@@ -1,0 +1,191 @@
+/* Sunset theme: dusky blues and pinks lit by vivid orange and soft yellow. */
+[data-theme='sunset'] {
+  color-scheme: dark;
+
+  /* Reference palette */
+  --ref-night-975: #100e22;
+  --ref-night-950: #151326;
+  --ref-night-900: #211b3a;
+  --ref-night-850: #2b2144;
+  --ref-night-800: #372650;
+  --ref-night-700: #49325e;
+  --ref-dusk-600: #684468;
+  --ref-dusk-400: #a7798f;
+  --ref-cream-100: #fff4cf;
+  --ref-cream-200: #f7d9c0;
+  --ref-pink-500: #ec4f8f;
+  --ref-pink-400: #ff72a8;
+  --ref-pink-200: #ffc0d8;
+  --ref-pink-800: #71304f;
+  --ref-pink-900: #512544;
+  --ref-pink-950: #35162c;
+  --ref-orange-500: #ff7a1a;
+  --ref-orange-400: #ff963d;
+  --ref-orange-200: #ffc078;
+  --ref-orange-800: #78351b;
+  --ref-orange-900: #5a291c;
+  --ref-orange-950: #3b1c16;
+  --ref-yellow-400: #ffd86b;
+  --ref-yellow-200: #ffedaa;
+  --ref-yellow-700: #a9751c;
+  --ref-yellow-800: #71531b;
+  --ref-yellow-900: #4a3918;
+  --ref-yellow-950: #302614;
+  --ref-mint-400: #8ed9ad;
+  --ref-mint-900: #173c31;
+  --ref-coral-400: #ff6f7d;
+  --ref-transparent: rgba(0, 0, 0, 0);
+  --ref-overlay: rgba(16, 14, 34, 0.96);
+  --ref-backdrop: rgba(8, 6, 20, 0.72);
+  --ref-wash-yellow: rgba(255, 216, 107, 0.12);
+  --ref-shadow-subtle: rgba(8, 6, 20, 0.36);
+  --ref-shadow-soft: rgba(236, 79, 143, 0.2);
+  --ref-shadow-medium: rgba(255, 122, 26, 0.22);
+  --ref-shadow-strong: rgba(8, 6, 20, 0.74);
+  --ref-shadow-inset: rgba(16, 14, 34, 0.3);
+  --ref-shadow-hover: rgba(255, 216, 107, 0.3);
+  --ref-shadow-pressed: rgba(8, 6, 20, 0.82);
+  --ref-shadow-control: rgba(8, 6, 20, 0.94);
+
+  /* Neutral foundations */
+  --color-surface-canvas: var(--ref-night-900);
+  --color-surface-default: var(--ref-night-850);
+  --color-surface-raised: var(--ref-night-800);
+  --color-surface-sunken: var(--ref-night-950);
+  --color-surface-inverse: var(--ref-night-975);
+  --color-surface-inverse-subtle: var(--ref-night-700);
+  --color-surface-overlay: var(--ref-night-975);
+  --color-on-canvas: var(--ref-cream-100);
+  --color-on-surface: var(--ref-cream-100);
+  --color-content-secondary: var(--ref-cream-200);
+  --color-content-muted: var(--ref-dusk-400);
+  --color-on-inverse: var(--ref-cream-100);
+  --color-on-inverse-muted: var(--ref-cream-200);
+  --color-on-inverse-danger: var(--ref-pink-200);
+
+  /* Borders */
+  --color-border-subtle: var(--ref-dusk-600);
+  --color-border-default: var(--ref-dusk-400);
+  --color-border-strong: var(--ref-cream-200);
+  --color-border-focus: var(--ref-orange-400);
+  --color-border-on-inverse: var(--ref-dusk-400);
+
+  /* Accent families */
+  --color-accent-primary: var(--ref-pink-500);
+  --color-on-accent-primary: var(--ref-night-975);
+  --color-accent-primary-subtle: var(--ref-pink-900);
+  --color-on-accent-primary-subtle: var(--ref-pink-200);
+  --color-border-accent-primary: var(--ref-pink-400);
+  --color-hover-on-accent-primary: var(--ref-wash-yellow);
+  --color-accent-secondary: var(--ref-orange-500);
+  --color-on-accent-secondary: var(--ref-night-975);
+  --color-accent-secondary-subtle: var(--ref-orange-900);
+  --color-on-accent-secondary-subtle: var(--ref-orange-200);
+  --color-border-accent-secondary: var(--ref-orange-400);
+  --color-hover-on-accent-secondary: var(--ref-wash-yellow);
+
+  /* Interactive states */
+  --color-interactive-primary: var(--ref-orange-500);
+  --color-on-interactive-primary: var(--ref-night-975);
+  --color-interactive-primary-hover: var(--ref-orange-400);
+  --color-interactive-secondary: var(--ref-pink-200);
+  --color-on-interactive-secondary: var(--ref-night-975);
+  --color-interactive-secondary-hover: var(--ref-pink-400);
+  --color-interactive-subtle: var(--ref-night-700);
+  --color-on-interactive-subtle: var(--ref-cream-100);
+  --color-interactive-subtle-hover: var(--ref-dusk-600);
+  --color-interactive-selected: var(--ref-yellow-400);
+  --color-on-interactive-selected: var(--ref-night-975);
+  --color-border-selected: var(--ref-yellow-200);
+  --color-interactive-positive: var(--ref-mint-900);
+  --color-on-interactive-positive: var(--ref-mint-400);
+  --color-interactive-positive-hover: var(--ref-night-700);
+  --color-border-positive: var(--ref-mint-400);
+  --color-interactive-danger: var(--ref-pink-900);
+  --color-on-interactive-danger: var(--ref-pink-200);
+  --color-interactive-danger-hover: var(--ref-dusk-600);
+
+  /* Feedback */
+  --color-feedback-info-surface: var(--ref-night-700);
+  --color-on-feedback-info: var(--ref-yellow-200);
+  --color-feedback-info-border: var(--ref-orange-400);
+  --color-feedback-success-surface: var(--ref-mint-900);
+  --color-on-feedback-success: var(--ref-mint-400);
+  --color-feedback-success-border: var(--ref-mint-400);
+  --color-feedback-danger-surface: var(--ref-pink-900);
+  --color-on-feedback-danger: var(--ref-pink-200);
+  --color-feedback-danger-border: var(--ref-coral-400);
+
+  /* Effects and data visualization */
+  --color-transparent: var(--ref-transparent);
+  --color-overlay-backdrop: var(--ref-backdrop);
+  --color-hover-on-inverse: var(--ref-wash-yellow);
+  --color-chart-series-1: var(--ref-orange-400);
+  --color-chart-series-2: var(--ref-pink-400);
+  --color-chart-series-3: var(--ref-yellow-400);
+  --color-chart-series-1-fill: rgba(255, 150, 61, 0.2);
+  --color-chart-series-2-fill: rgba(255, 114, 168, 0.2);
+  --color-chart-series-3-fill: rgba(255, 216, 107, 0.2);
+  --shadow-subtle: var(--ref-shadow-subtle);
+  --shadow-soft: var(--ref-shadow-soft);
+  --shadow-medium: var(--ref-shadow-medium);
+  --shadow-strong: var(--ref-shadow-strong);
+  --shadow-button-inset: var(--ref-shadow-inset);
+  --shadow-button-hover-inset: var(--ref-shadow-hover);
+  --shadow-button-pressed: var(--ref-shadow-pressed);
+  --shadow-control-inset: var(--ref-shadow-control);
+
+  /* Theme artwork */
+  --image-surface-canvas: linear-gradient(
+    160deg,
+    var(--ref-night-950) 0%,
+    var(--ref-night-800) 12%,
+    var(--ref-pink-500) 38%,
+    var(--ref-yellow-400) 72%
+  );
+  --image-surface-hero: none;
+  --image-surface-accent: none;
+}
+
+/* Component-local tonal recipes. Other themes ignore these private aliases. */
+[data-theme='sunset'] [data-tone='workout'] {
+  --_tone-surface-sunken: var(--ref-orange-950);
+  --_tone-surface: var(--ref-orange-900);
+  --_tone-surface-raised: var(--ref-orange-800);
+  --_tone-strong: var(--ref-orange-500);
+  --_tone-strong-hover: var(--ref-orange-400);
+  --_tone-border: var(--ref-orange-400);
+  --_tone-content: var(--ref-orange-200);
+  --_tone-content-muted: var(--ref-orange-200);
+  --_tone-on-strong: var(--ref-night-975);
+  --_tone-shadow: var(--ref-shadow-medium);
+  color: var(--_tone-content);
+}
+
+[data-theme='sunset'] [data-tone='library'] {
+  --_tone-surface-sunken: var(--ref-pink-950);
+  --_tone-surface: var(--ref-pink-900);
+  --_tone-surface-raised: var(--ref-pink-800);
+  --_tone-strong: var(--ref-pink-500);
+  --_tone-strong-hover: var(--ref-pink-400);
+  --_tone-border: var(--ref-pink-400);
+  --_tone-content: var(--ref-pink-200);
+  --_tone-content-muted: var(--ref-pink-200);
+  --_tone-on-strong: var(--ref-night-975);
+  --_tone-shadow: var(--ref-shadow-soft);
+  color: var(--_tone-content);
+}
+
+[data-theme='sunset'] [data-tone='selection'] {
+  --_tone-surface-sunken: var(--ref-yellow-950);
+  --_tone-surface: var(--ref-yellow-900);
+  --_tone-surface-raised: var(--ref-yellow-800);
+  --_tone-strong: var(--ref-yellow-400);
+  --_tone-strong-hover: var(--ref-yellow-200);
+  --_tone-border: var(--ref-yellow-700);
+  --_tone-content: var(--ref-yellow-200);
+  --_tone-content-muted: var(--ref-yellow-400);
+  --_tone-on-strong: var(--ref-night-975);
+  --_tone-shadow: var(--ref-shadow-hover);
+  color: var(--_tone-content);
+}
