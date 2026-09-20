@@ -287,14 +287,15 @@ export default function Dashboard() {
                 </div>
                   {!showAllPast && completedTotalCount > displayedCompletedWorkouts.length && (
                   <div className="past-workouts-footer">
-                    <button
-                      className="show-all-button"
-                      type="button"
+                    <WorkoutButton
+                      label="Show All"
+                      loadingLabel="Loading..."
+                      loading={loadingAllPast}
+                      variant="secondary"
+                      size="lg"
+                      tone="selection"
                       onClick={loadAllCompletedWorkouts}
-                      disabled={loadingAllPast}
-                    >
-                      {loadingAllPast ? 'Loading...' : 'Show All'}
-                    </button>
+                    />
                   </div>
                 )}
               </>

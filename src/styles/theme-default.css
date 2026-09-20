@@ -88,7 +88,7 @@
   --color-hover-on-accent-primary: var(--ref-wash-inverse-10);
   --color-accent-secondary: var(--ref-orange-700);
   --color-on-accent-secondary: var(--ref-neutral-0);
-  --color-accent-secondary-subtle: var(--ref-orange-50);
+  --color-accent-secondary-subtle: var(--ref-orange-100);
   --color-on-accent-secondary-subtle: var(--ref-orange-950);
   --color-border-accent-secondary: var(--ref-blue-700);
   --color-hover-on-accent-secondary: var(--ref-wash-inverse-10);

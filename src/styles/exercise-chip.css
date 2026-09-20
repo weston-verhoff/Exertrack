@@ -1,0 +1,44 @@
+.exercise-chip {
+  display: inline-flex;
+  padding: 0.45rem 0.8rem 0.45rem 0.45rem;
+  align-items: center;
+  gap: 0.55rem;
+  border: 1px solid var(--_tone-border, var(--color-border-default));
+  border-radius: 999px;
+  background: var(--_tone-surface, var(--color-surface-sunken));
+  color: var(--_tone-content, var(--color-on-surface));
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.exercise-chip:hover {
+  background: var(--_tone-surface-raised, var(--color-surface-raised));
+  box-shadow: 0 8px 12px var(--shadow-soft);
+}
+
+.exercise-chip__icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  flex: 0 0 2rem;
+  place-items: center;
+  border: 0.5px solid var(--_tone-border, var(--color-border-default));
+  border-radius: 50%;
+  background: var(--_tone-surface-sunken, var(--color-surface-default));
+}
+
+.exercise-chip__content {
+  min-width: 0;
+}
+
+.exercise-chip strong,
+.exercise-chip small {
+  display: block;
+}
+
+.exercise-chip small {
+  margin-top: 0.1rem;
+  color: var(--_tone-content-muted, var(--color-content-muted));
+}

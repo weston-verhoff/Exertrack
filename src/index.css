@@ -440,25 +440,6 @@ input.exerciseSearch{
   justify-content: center;
   margin-top: 1rem;
 }
-.show-all-button {
-	margin: 1rem auto 0;
-  align-self: center;
-  flex: 0 0 auto;
-  padding: 0.75rem 1.5rem;
-  border-radius: 12px;
-  border: 1px solid var(--_tone-border, var(--color-border-accent-primary));
-  background: var(--_tone-surface, var(--color-interactive-subtle));
-	color: var(--_tone-content, var(--color-on-interactive-subtle));
-	font-weight: 700;
-	cursor: pointer;
-	box-shadow: 0 6px 16px var(--shadow-soft);
-	transition: transform 0.15s ease, box-shadow 0.15s ease, background-color 0.2s ease;
-}
-.show-all-button:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 10px 24px var(--shadow-strong);
-	background: var(--_tone-surface-raised, var(--color-interactive-subtle-hover));
-}
 .past-workout-container {
 	padding: 2rem;
 	padding-top:8rem;

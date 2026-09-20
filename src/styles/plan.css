@@ -330,67 +330,6 @@
   gap: 0.75rem;
 }
 
-.exercise-pill {
-	display: flex;
-	gap: 0.6rem;
-	align-items: center;
-	padding: 0;
-	border: 1px solid var(--_tone-border, var(--color-border-focus));
-	border-radius: 8px;
-	background: var(--_tone-surface-sunken, var(--color-surface-sunken));
-	cursor: pointer;
-	font-weight: 700;
-	transition: box-shadow 0.2s ease, background 0.1s ease;
-	width: auto;
-	text-align: left;
-	font-family: inherit;
-	color: inherit;
-	box-shadow: none;
-}
-.exercise-pill:hover{
-	box-shadow: 0 8px 12px var(--shadow-soft);
-	background: var(--_tone-surface-raised, var(--color-surface-raised));
-}
-
-.add-chip {
-	outline: 1px solid var(--_tone-border, var(--color-border-accent-secondary));
-	background: var(--_tone-strong, var(--color-interactive-secondary));
-	box-shadow: none;
-	color: var(--_tone-on-strong, var(--color-on-interactive-secondary));
-	font-weight: 800;
-	border-radius: 4px;
-	width: 44px;
-	height: 100%;
-	cursor: pointer;
-	font-size: 1.2rem;
-	display: grid;
-	place-items: center;
-	flex-shrink: 0;
-	transition: background 0.1s ease;
-}
-.exercise-pill:hover .add-chip {
-	background: var(--_tone-strong-hover, var(--color-interactive-secondary-hover));
-}
-
-.exercise-pill__meta {
-  display: flex;
-  flex-direction: column;
-  line-height: 1.1;
-  padding:0.75rem 0.75rem 0.75rem 0rem;
-}
-
-.exercise-pill__name {
-  font-size: 0.95rem;
-  color: var(--_tone-content, var(--color-on-surface))
-}
-
-.exercise-pill__muscle {
-  font-size: 0.8rem;
-  font-weight:300;
-  text-transform:capitalize;
-  color: var(--_tone-content-muted, var(--color-content-secondary));
-}
-
 .template-import {
   margin-top: 1rem;
   text-align: center;

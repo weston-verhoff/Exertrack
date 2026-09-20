@@ -23,6 +23,9 @@ import { getAccountSettings } from '../services/accountService';
 import { Drawer } from '../components/Drawer';
 import { WorkoutButton } from '../components/WorkoutButton';
 import { SwitchField } from '../components/SwitchField';
+import { ExerciseChip } from '../components/ExerciseChip';
+import { FaPlus } from 'react-icons/fa';
+import type { FC } from 'react';
 import '../styles/plan.css';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
 import { DistanceUnit, ExerciseType } from '../types/workout';
@@ -41,6 +44,8 @@ import {
 } from '../utils/unitPreferences';
 
 type BuilderField = 'sets' | 'reps' | 'weight' | 'duration_seconds' | 'distance_value';
+
+const PlusIcon = FaPlus as unknown as FC<{ 'aria-hidden'?: boolean }>;
 
 type BuilderRowProps = {
   exercise: BuilderExerciseConfig;
@@ -724,27 +729,17 @@ export default function PlanSession() {
                   </p>
                 ) : (
 					availableExercises.map((exercise) => (
-										<button
+										<ExerciseChip
                       key={exercise.id}
-                      type="button"
-                      className="exercise-pill"
-                      data-tone="library"
+                      tone="library"
+                      name={exercise.name}
+                      meta={
+                        <>{exercise.target_muscle}{' · '}{exercise.exercise_type === 'cardio' ? 'Cardio' : 'Strength'}</>
+                      }
+                      icon={<PlusIcon aria-hidden={true} />}
+                      ariaLabel={`Add ${exercise.name}`}
                       onClick={() => toggleExercise(exercise.id)}
-                      aria-label={`Add ${exercise.name}`}
-                    >
-                      <span className="add-chip" aria-hidden="true">
-                        +
-                      </span>
-                      <span className="exercise-pill__meta">
-                        <span className="exercise-pill__name">
-                          {exercise.name}
-                        </span>
-                        <span className="exercise-pill__muscle">
-                          {exercise.target_muscle}
-                          {' · '}{exercise.exercise_type === 'cardio' ? 'Cardio' : 'Strength'}
-                        </span>
-                      </span>
-                    </button>
+                    />
                   ))
                 )}
 								<WorkoutButton

@@ -24,9 +24,9 @@
 	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-secondary));
 }
 .past-workout{
-	--_card-border: var(--_tone-border, var(--color-feedback-info-border));
-	--_card-header-surface: var(--_tone-strong, var(--color-interactive-secondary));
-	--_card-header-content: var(--_tone-on-strong, var(--color-on-interactive-secondary));
+	--_card-border: var(--_tone-border, var(--color-border-accent-secondary));
+	--_card-header-surface: var(--_tone-strong, var(--color-accent-secondary-subtle));
+	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-secondary-subtle));
 }
 .template-workout{
 	--_card-surface: var(--_tone-surface, var(--color-surface-default));
@@ -36,9 +36,9 @@
 	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-primary-subtle));
 }
 .highlighted{
-	--_card-border: var(--_tone-border, var(--color-feedback-success-border));
-	--_card-header-surface: var(--_tone-strong, var(--color-interactive-positive));
-	--_card-header-content: var(--_tone-on-strong, var(--color-on-interactive-positive));
+	--_card-border: var(--_tone-border, var(--color-border-accent-secondary));
+	--_card-header-surface: var(--_tone-strong, var(--color-accent-secondary-subtle));
+	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-secondary-subtle));
 }
 
 .workout-head {

@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { WorkoutCard } from '../components/WorkoutCard'
+import { WorkoutButton } from '../components/WorkoutButton'
 import { useAuth } from '../context/AuthContext'
 import { fetchWorkoutExportData } from '../services/workoutExportService'
 import {
@@ -200,15 +201,16 @@ export default function PastWorkouts() {
       )}
 			<h2 style={{textAlign:'center'}}>Past Workouts</h2>
       <div style={{display:'flex', justifyContent:'center', marginBottom:'1rem'}}>
-        <button
-          className="show-all-button"
-          data-tone="selection"
-          type="button"
+        <WorkoutButton
+          label="Export All"
+          loadingLabel="Exporting..."
+          loading={exportingWorkouts}
+          disabled={!userId}
+          variant="secondary"
+          size="lg"
+          tone="selection"
           onClick={exportAllWorkouts}
-          disabled={exportingWorkouts || !userId}
-        >
-          {exportingWorkouts ? 'Exporting...' : 'Export All'}
-        </button>
+        />
       </div>
       {exportError && (
         <p role="alert" style={{textAlign:'center'}}>{exportError}</p>
@@ -240,15 +242,15 @@ export default function PastWorkouts() {
 					</div>
 																				{!showAllPast && completedTotalCount > displayedCompletedWorkouts.length && (
 						<div className="past-workouts-footer">
-							<button
-								className="show-all-button"
-								data-tone="selection"
-								type="button"
+							<WorkoutButton
+								label="Show All"
+								loadingLabel="Loading..."
+								loading={loadingAllPast}
+								variant="secondary"
+								size="lg"
+								tone="selection"
 								onClick={loadAllCompletedWorkouts}
-								disabled={loadingAllPast}
-							>
-								{loadingAllPast ? 'Loading...' : 'Show All'}
-							</button>
+							/>
 						</div>
 					)}
 				</>

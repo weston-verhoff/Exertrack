@@ -248,6 +248,18 @@ describe('token architecture', () => {
         expect(block).toContain('--_context-border:');
       });
   });
+
+  it('keeps non-interactive card headers on non-interactive, non-feedback tokens', () => {
+    const cardStyles = readStyle('WorkoutCard.css');
+    const headerRecipes = cardStyles.match(/--_card-header-(?:surface|content):[^;]+;/g) ?? [];
+
+    expect(headerRecipes.length).toBeGreaterThan(0);
+    headerRecipes.forEach((recipe) => {
+      expect(recipe).not.toContain('--color-interactive-');
+      expect(recipe).not.toContain('--color-feedback-');
+      expect(recipe).not.toContain('--color-on-feedback-');
+    });
+  });
 });
 
 describe('Sunset functional tone recipes', () => {

@@ -13,6 +13,7 @@ import {
 import { Line } from 'react-chartjs-2';
 import { FaArrowUp, FaPen, FaSearch } from 'react-icons/fa';
 import { Drawer } from '../components/Drawer';
+import { ExerciseChip } from '../components/ExerciseChip';
 import { ResponsiveSegmentedControl } from '../components/ResponsiveSegmentedControl';
 import { WorkoutCard } from '../components/WorkoutCard';
 import { SwitchField } from '../components/SwitchField';
@@ -468,19 +469,15 @@ export default function AccountPage() {
 
             <div className="exercise-chip-list">
               {filteredExercises.map((exercise) => (
-                <button
+                <ExerciseChip
                   key={exercise.id}
-                  type="button"
-                  className="exercise-chip"
-                  data-tone="library"
+                  tone="library"
+                  name={exercise.name}
+                  meta={exercise.target_muscle}
+                  icon={<PenIcon aria-hidden={true} />}
+                  ariaLabel={`Edit ${exercise.name}`}
                   onClick={() => openExerciseDrawer(exercise)}
-                >
-                  <span className="exercise-chip__icon"><PenIcon aria-hidden={true} /></span>
-                  <span>
-                    <strong>{exercise.name}</strong>
-                    <small>{exercise.target_muscle}</small>
-                  </span>
-                </button>
+                />
               ))}
             </div>
             {!loading && filteredExercises.length === 0 && (
