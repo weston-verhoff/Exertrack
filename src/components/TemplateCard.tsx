@@ -25,36 +25,49 @@ interface Template {
 
 interface Props {
   template: Template;
-  onRename: (id: string) => void;
+  status: 'active' | 'archived';
+  onRename?: (id: string) => void;
+  onArchive?: (id: string) => void;
+  onRestore?: (id: string) => void;
   onDelete: (id: string) => void;
-  onUse: (id: string) => void; // new prop for "Use Template"
   tone?: ComponentTone;
 }
 
-export function TemplateCard({ template, onRename, onDelete, onUse, tone }: Props) {
+export function TemplateCard({
+  template,
+  status,
+  onRename,
+  onArchive,
+  onRestore,
+  onDelete,
+  tone,
+}: Props) {
   const navigate = useNavigate();
+  const isArchived = status === 'archived';
 
   return (
     <div className="workout-card template-workout" data-tone={tone}>
       <div className="workout-head">
         <span>{template.name}</span>
-				<WorkoutButton
-          label="Rename"
-          icon=""
-          variant="blackText"
-          onClick={() => onRename(template.id)}
-        />
+        {!isArchived && onRename && (
+          <WorkoutButton
+            label="Rename"
+            icon=""
+            variant="blackText"
+            onClick={() => onRename(template.id)}
+          />
+        )}
       </div>
 
       <div className="lifts">
-        {template.exercises
+        {[...template.exercises]
           .sort((a, b) => a.order - b.order)
           .map((ex, i) => (
             <div className="lift" key={i}>
               <span className="lift-name">{ex.exercise?.name ?? 'Unknown'}</span>
               <br />
               <span>
-                {ex.exercise.exercise_type === 'cardio'
+                {ex.exercise?.exercise_type === 'cardio'
                   ? `${ex.sets} segment${ex.sets === 1 ? '' : 's'} | ${Math.round((ex.duration_seconds ?? 0) / 60)} min${ex.distance_value != null ? ` | ${ex.distance_value} ${ex.distance_unit ?? ''}` : ''}`
                   : `${ex.sets} sets | ${ex.reps} reps`}
               </span>
@@ -63,24 +76,45 @@ export function TemplateCard({ template, onRename, onDelete, onUse, tone }: Prop
       </div>
 
       <div className="workout-btns">
-        <WorkoutButton
-          label="Import"
-          icon=""
-          variant="primary"
-          onClick={() => navigate(`/plan?importTemplate=${template.id}`)}
-        />
-				<WorkoutButton
-				  label="Edit"
-				  icon=""
-				  variant="secondary"
-				  onClick={() => navigate(`/plan?editTemplate=${template.id}`)}
-				/>
-        <WorkoutButton
-          label="Delete"
-          icon=""
-          variant="destructive"
-          onClick={() => onDelete(template.id)}
-        />
+        {isArchived ? (
+          <>
+            <WorkoutButton
+              label="De-archive"
+              icon=""
+              variant="primary"
+              onClick={() => onRestore?.(template.id)}
+            />
+            <WorkoutButton
+              label="Delete"
+              icon=""
+              variant="destructive"
+              onClick={() => onDelete(template.id)}
+            />
+          </>
+        ) : (
+          <>
+            <WorkoutButton
+              label="Import"
+              icon=""
+              variant="primary"
+              onClick={() => navigate(`/plan?importTemplate=${template.id}`)}
+            />
+            <WorkoutButton
+              label="Edit"
+              icon=""
+              variant="secondary"
+              onClick={() => navigate(`/plan?editTemplate=${template.id}`)}
+            />
+            {onArchive && (
+              <WorkoutButton
+                label="Archive"
+                icon=""
+                variant="destructive"
+                onClick={() => onArchive(template.id)}
+              />
+            )}
+          </>
+        )}
       </div>
     </div>
   );
