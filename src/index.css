@@ -143,7 +143,6 @@ select{
   font-size: 2rem;
   margin-bottom: 1rem;
 	margin-top:0px;
-	padding-top:1rem;
 }
 .font-white {
 	color: var(--color-on-inverse);
@@ -397,11 +396,11 @@ input.exerciseSearch{
 	background-color: var(--color-accent-secondary-subtle);
 	background-image: var(--image-surface-accent);
 	background-size:cover;
+	padding: 4rem;
 	max-height: 450px;
 	max-width:100%;
 }
 .drag-future-workouts {
-	padding: 0 3rem;
 	display: flex;
 	gap: 1rem;
 	scrollbar-width: 0;
@@ -416,7 +415,6 @@ input.exerciseSearch{
 	color: var(--color-on-accent-secondary-subtle);
 	display: flex;
 	flex-direction:row;
-	padding:1rem 3rem;
 	align-items: center;
 	justify-content: center;
 }
@@ -441,8 +439,7 @@ input.exerciseSearch{
   margin-top: 1rem;
 }
 .past-workout-container {
-	padding: 2rem;
-	padding-top:8rem;
+	padding: 4rem;
 }
 .past-workout-container h2{
 	text-align: center;

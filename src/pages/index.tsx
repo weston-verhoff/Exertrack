@@ -203,6 +203,7 @@ export default function Dashboard() {
       ) : (
         <>
           {/* FUTURE WORKOUTS with drag scrolling */}
+					{hasScheduledWorkouts && (
 					<div className="future-workouts" ref={futureContainerRef}>
 					<div className="workouts-header">
 						<h2 className="headline font-black">Future Workouts</h2>
@@ -224,8 +225,7 @@ export default function Dashboard() {
 					  }}
 					>
 
-					{scheduledWorkouts.length > 0 ? (
-						scheduledWorkouts.map((w) => (
+					{scheduledWorkouts.map((w) => (
 							<WorkoutCard
 								key={w.id}
 								workout={w}
@@ -243,13 +243,11 @@ export default function Dashboard() {
 									);
 								}}
 							/>
-						))
-					) : (
-						renderEmptyWorkoutCard()
-					)}
+						))}
 
           </motion.div>
 					</div>
+					)}
           {/* COMPLETED WORKOUTS */}
           <section className="past-workout-container">
 					<div className="workouts-header">
