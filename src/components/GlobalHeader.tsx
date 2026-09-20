@@ -1,6 +1,6 @@
 // src/components/GlobalHeader.tsx
 import { useState, type FC, type ReactNode } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FaHome } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 
@@ -15,6 +15,7 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
 	const HomeIcon = FaHome as unknown as FC<{ size?: number }>;
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+	const location = useLocation();
 	const loggedInLinks: Array<{ to: string; label: ReactNode }> = [
     {
       to: '/',
@@ -32,11 +33,14 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
   const loggedOutLinks: Array<{ to: string; label: ReactNode }> = [];
 
   const handleSignOut = async () => {
+    const returnPath = `${location.pathname}${location.search}${location.hash}`;
+    navigate('/login', { replace: true, state: null });
+
     try {
       await signOut();
-      navigate('/login');
     } catch (error) {
       console.error('Error signing out', error);
+      navigate(returnPath, { replace: true });
     } finally {
       setMenuOpen(false);
     }

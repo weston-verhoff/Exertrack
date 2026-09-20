@@ -64,7 +64,7 @@ export default function Login() {
 
   return (
     <div className="auth-container color-context color-context--inverse">
-      <h1>Login</h1>
+      <div className="auth-logo" role="img" aria-label="IWYN Fitness" />
       <form onSubmit={handleSubmit} className="auth-form">
         <label>
           Email

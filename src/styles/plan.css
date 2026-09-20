@@ -2,7 +2,7 @@
   --_plan-canvas: var(--color-surface-canvas);
   --_plan-card-surface: var(--color-surface-default);
   --_plan-card-content: var(--color-on-surface);
-  --_plan-header-surface: var(--color-accent-secondary);
+  --_plan-header-surface: var(--color-accent-secondary-subtle);
   --_plan-header-content: var(--color-on-accent-secondary);
   --_plan-header-border: var(--color-border-accent-secondary);
   --_plan-row-surface: var(--color-surface-raised);

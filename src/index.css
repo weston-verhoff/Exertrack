@@ -68,6 +68,15 @@ select{
 	border-radius: 12px;
 	box-shadow: 0 10px 30px var(--shadow-strong);
 }
+.auth-logo {
+	width: min(300px, 100%);
+	aspect-ratio: 617 / 269;
+	margin: 0 auto 1.5rem;
+	background-image: var(--image-brand-wordmark);
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
 .auth-form {
 	display: flex;
 	flex-direction: column;
