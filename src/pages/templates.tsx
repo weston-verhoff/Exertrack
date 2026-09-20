@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { Search } from 'lucide-react';
 import { Layout } from '../components/Layout';
 import { ResponsiveSegmentedControl } from '../components/ResponsiveSegmentedControl';
 import { TemplateCard } from '../components/TemplateCard';
@@ -36,8 +36,6 @@ const TEMPLATE_STATUS_OPTIONS = [
   { value: 'active', label: 'Active templates' },
   { value: 'archived', label: 'Archived Templates' },
 ] as const;
-
-const SearchIcon = FaSearch as unknown as React.FC<{ 'aria-hidden'?: boolean }>;
 
 const TEMPLATE_EXERCISE_SELECTION = `
   template_exercises (
@@ -235,7 +233,7 @@ export default function TemplatesPage() {
         <div className="templates-page__controls" data-tone="library">
           <div className="template-search-field">
             <span className="template-search-row">
-              <SearchIcon aria-hidden={true} />
+              <Search aria-hidden="true" size={18} />
               <input
                 aria-label="Search templates"
                 className="template-search"

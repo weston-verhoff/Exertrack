@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useSystemAlerts } from '../context/SystemAlertContext'
+import { CheckCircle2 } from 'lucide-react'
 
 type ButtonState = 'idle' | 'saving' | 'success'
 
@@ -16,7 +17,7 @@ interface StatusButtonProps {
 export default function StatusButton({
   onClick,
   idleLabel = 'Submit',
-  successLabel = '✅ Saved!',
+  successLabel = 'Saved!',
   width = '200px',
   accentColor = 'var(--color-interactive-secondary)',
   successColor = 'var(--color-interactive-positive)',
@@ -32,7 +33,7 @@ export default function StatusButton({
     try {
       await onClick()
       setStatus('success')
-      showAlert(successLabel.replace(/^✅\s*/, ''), { tone: 'success', replaceKey: alertKey })
+      showAlert(successLabel, { tone: 'success', replaceKey: alertKey })
       setTimeout(() => setStatus('idle'), 2000)
     } catch (err) {
       console.error('StatusButton error:', err)
@@ -70,6 +71,10 @@ export default function StatusButton({
 			  border: 'none',
 			  borderRadius: '4px',
 			  textAlign: 'center',
+			  display: 'inline-flex',
+			  alignItems: 'center',
+			  justifyContent: 'center',
+			  gap: '0.4rem',
 			  color: status === 'success' ? 'var(--color-on-interactive-positive)' : 'var(--color-on-interactive-secondary)',
 			  backgroundColor: status === 'success' ? successColor : accentColor,
 			  transition: 'transform 0.1s ease-in-out, background-color 0.2s ease-in-out',
@@ -81,7 +86,8 @@ export default function StatusButton({
 			  WebkitTapHighlightColor: 'var(--color-transparent)'
 			}}
     >
-      {status === 'success' ? successLabel : idleLabel}
+      {status === 'success' && <CheckCircle2 aria-hidden="true" size={18} />}
+      <span>{status === 'success' ? successLabel : idleLabel}</span>
     </button>
   )
 }

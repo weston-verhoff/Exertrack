@@ -24,8 +24,7 @@ import { Drawer } from '../components/Drawer';
 import { WorkoutButton } from '../components/WorkoutButton';
 import { SwitchField } from '../components/SwitchField';
 import { ExerciseChip } from '../components/ExerciseChip';
-import { FaPlus } from 'react-icons/fa';
-import type { FC } from 'react';
+import { GripVertical, Plus, Search, X } from 'lucide-react';
 import '../styles/plan.css';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
 import { DistanceUnit, ExerciseType } from '../types/workout';
@@ -44,8 +43,6 @@ import {
 } from '../utils/unitPreferences';
 
 type BuilderField = 'sets' | 'reps' | 'weight' | 'duration_seconds' | 'distance_value';
-
-const PlusIcon = FaPlus as unknown as FC<{ 'aria-hidden'?: boolean }>;
 
 type BuilderRowProps = {
   exercise: BuilderExerciseConfig;
@@ -109,7 +106,7 @@ export function BuilderRow({
   return (
       <div ref={setNodeRef} style={style} className="builder-row">
       <span className="drag-handle" {...attributes} {...listeners}>
-        ☰
+        <GripVertical aria-hidden="true" size={22} />
       </span>
       
 
@@ -166,7 +163,7 @@ export function BuilderRow({
         onClick={() => onRemove(exercise.exercise_id, exercise.id)}
         aria-label={`Remove ${exercise.name}`}
       >
-        ✕
+        <X aria-hidden="true" size={20} />
       </button>
     </div>
   );
@@ -711,7 +708,7 @@ export default function PlanSession() {
 
             <div className="exercise-panel" data-tone="library">
               <div className="search-row">
-                <span className="filter-icon">🔍</span>
+                <span className="filter-icon" aria-hidden="true"><Search size={18} /></span>
                 <input
                   type="text"
                   className="exercise-search"
@@ -736,7 +733,7 @@ export default function PlanSession() {
                       meta={
                         <>{exercise.target_muscle}{' · '}{exercise.exercise_type === 'cardio' ? 'Cardio' : 'Strength'}</>
                       }
-                      icon={<PlusIcon aria-hidden={true} />}
+                      icon={<Plus aria-hidden="true" size={18} />}
                       ariaLabel={`Add ${exercise.name}`}
                       onClick={() => toggleExercise(exercise.id)}
                     />
@@ -744,7 +741,7 @@ export default function PlanSession() {
                 )}
 								<WorkoutButton
 									label='Add a Custom Exercise'
-									icon="+"
+									icon={<Plus size={20} />}
 									variant="primary"
 									tone="library"
 									size="lg"

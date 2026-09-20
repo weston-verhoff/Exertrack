@@ -1,9 +1,9 @@
-import React, { useState } from 'react'
+import React, { ReactNode, useState } from 'react'
 import { ComponentTone } from '../utils/componentTone'
 
 interface WorkoutButtonProps {
   label: string
-  icon?: string
+  icon?: ReactNode
   onClick: () => void
   variant?: 'primary' | 'secondary' | 'destructive' | 'blackText' | 'whiteText' | 'completedSectionLink' | 'unsetText'
   disabled?: boolean
@@ -88,6 +88,10 @@ export function WorkoutButton({
     borderRadius: rounded==='full'?'999px':'8px',
 		fontFamily: 'var(--font-body)',
 		fontWeight: 700,
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: icon ? '0.4rem' : undefined,
     boxShadow: variant==='whiteText'||variant==='completedSectionLink'||variant==='blackText'||variant==='unsetText'? 'none' : (isPressed ? 'inset 0 0px 8px var(--shadow-button-pressed)' : 'inset -2px -2px var(--shadow-button-inset)'),
     transition: 'box-shadow 0.1s ease',
     opacity: disabled || loading ? 0.6 : isPressed ? 0.85 : 1,
@@ -114,7 +118,8 @@ export function WorkoutButton({
       aria-disabled={isDisabled}
       aria-busy={loading}
     >
-      {icon ? `${icon} ` : ''}{displayLabel}
+      {icon ? <span aria-hidden="true" style={{ display: 'inline-flex' }}>{icon}</span> : null}
+      <span>{displayLabel}</span>
     </button>
   )
 }

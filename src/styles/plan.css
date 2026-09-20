@@ -240,8 +240,8 @@
 }
 
 .filter-icon {
-  font-size: 1.1rem;
-  width:0;
+  display: inline-flex;
+  flex: 0 0 auto;
 }
 
 .exercise-search {

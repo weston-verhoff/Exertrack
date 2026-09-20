@@ -1,7 +1,7 @@
 // src/components/GlobalHeader.tsx
-import { useState, type FC, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { FaHome } from 'react-icons/fa';
+import { Home, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 
 export type GlobalHeaderVariant = 'default' | 'secondary';
@@ -12,7 +12,6 @@ type GlobalHeaderProps = {
 
 export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
-	const HomeIcon = FaHome as unknown as FC<{ size?: number }>;
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 	const location = useLocation();
@@ -21,7 +20,7 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
       to: '/',
       label: (
         <>
-          <HomeIcon size={20} /> Home
+          <Home aria-hidden="true" size={20} /> Home
         </>
       ),
     },
@@ -77,7 +76,7 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
         onClick={() => setMenuOpen((prev: boolean) => !prev)}
         aria-label="Toggle menu"
       >
-        ☰
+        <Menu aria-hidden="true" size={24} />
       </button>
 
       {menuOpen && <div className="overlay" onClick={() => setMenuOpen(false)} />}

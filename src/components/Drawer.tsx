@@ -2,6 +2,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import '../styles/drawer.css';
 import { ComponentTone } from '../utils/componentTone';
+import { X } from 'lucide-react';
 
 interface DrawerProps {
   isOpen: boolean;
@@ -74,7 +75,9 @@ export function Drawer({
         onAnimationEnd={handleAnimationEnd}
         onClick={e => e.stopPropagation()}
       >
-        <button className="drawer-close" onClick={onClose}>✕</button>
+        <button className="drawer-close" onClick={onClose} aria-label="Close drawer">
+          <X aria-hidden="true" size={22} />
+        </button>
         <div className="drawer-content">{children}</div>
       </aside>
     </>,

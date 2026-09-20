@@ -14,6 +14,20 @@ import { BuilderExerciseConfig } from '../types/workoutBuilder';
 import { getAccountSettings } from '../services/accountService';
 import { getDefaultDistanceUnit, getWeightUnitLabel } from '../utils/unitPreferences';
 import { useSystemAlerts } from '../context/SystemAlertContext';
+import {
+  BarChart3,
+  Brain,
+  CalendarCheck,
+  CheckCircle2,
+  Copy,
+  Dumbbell,
+  Minus,
+  PackagePlus,
+  Pencil,
+  Save,
+  Timer,
+  Trash2,
+} from 'lucide-react';
 
 interface Props {
   workoutId: string;
@@ -128,7 +142,14 @@ export function WorkoutDetails({
 	}));
 
 
-  const volumeByExercise = exercises.map(we => {
+  const strengthExercises = exercises.filter(
+    we => we.exercise?.exercise_type === 'strength'
+  );
+  const cardioExercises = exercises.filter(
+    we => we.exercise?.exercise_type === 'cardio'
+  );
+
+  const volumeByExercise = strengthExercises.map(we => {
     const volume = we.workout_sets.reduce(
       (sum: number, s: WorkoutSet) => sum + Number(s.reps ?? 0) * Number(s.weight ?? 0),
       0
@@ -142,7 +163,7 @@ export function WorkoutDetails({
   });
 
   const muscleSummary: Record<string, number> = {};
-  exercises.forEach(we => {
+  strengthExercises.forEach(we => {
     const muscle = we.exercise?.target_muscle ?? 'Unknown';
     const volume = we.workout_sets.reduce(
       (sum: number, s: WorkoutSet) => sum + Number(s.reps ?? 0) * Number(s.weight ?? 0),
@@ -151,12 +172,26 @@ export function WorkoutDetails({
     muscleSummary[muscle] = (muscleSummary[muscle] || 0) + volume;
   });
 
+  const cardioVolume = cardioExercises.map(we => {
+    const durationSeconds = we.workout_sets.reduce(
+      (sum, set) => sum + Number(set.duration_seconds ?? 0),
+      0
+    );
+
+    return {
+      name: we.exercise?.name ?? 'Unknown',
+      muscle: we.exercise?.target_muscle ?? 'Unknown',
+      minutes: Math.round(durationSeconds / 60),
+    };
+  });
+
   /* ------------------ Render ------------------ */
 
   return (
-    <>
-      <label style={{ display: 'block', marginBottom: '1rem' }}>
-        <strong>Date:</strong>{' '}
+    <div className="workout-details">
+      <header className="workout-details__header">
+      <label className="workout-details__date">
+        <span>Date</span>
         <input
           type="date"
           value={date}
@@ -164,9 +199,16 @@ export function WorkoutDetails({
         />
       </label>
 
-      <p><strong>Status:</strong> {status ?? 'completed'}</p>
+      <div className="workout-details__status">
+        <span>Status</span>
+        <strong>{status ?? 'completed'}</strong>
+      </div>
+      </header>
 
-      <h2>🏋️ Exercises</h2>
+      <section className="workout-details__section">
+      <h2 className="workout-details__section-title">
+        <Dumbbell aria-hidden="true" size={24} /> Exercises
+      </h2>
 
       {exercises.map(we => {
         const isCardio = we.exercise?.exercise_type === 'cardio';
@@ -320,7 +362,7 @@ export function WorkoutDetails({
 									  aria-label={`Remove ${isCardio ? 'segment' : 'set'} ${set.set_number}`}
 									  title={`Remove ${isCardio ? 'segment' : 'set'}`}
 									  style={{
-									    marginLeft: 8,
+									    marginLeft: 'auto',
 									    width: 18,
 									    height: 18,
 									    borderRadius: '50%',
@@ -328,10 +370,13 @@ export function WorkoutDetails({
 									    backgroundColor: 'var(--color-interactive-danger)',
 									    color: 'var(--color-on-interactive-danger)',
 									    fontSize: 12,
+									    display: 'inline-grid',
+									    placeItems: 'center',
+									    padding: 0,
 									    cursor: 'pointer',
 									  }}
 									>
-									  −
+									  <Minus aria-hidden="true" size={12} />
 									</button>
 								)}
 	              </li>
@@ -341,14 +386,16 @@ export function WorkoutDetails({
 	        );
 	      })}
 
+	      <div className="workout-details__save">
 	      <WorkoutButton
 	        label={isSaving ? 'Saving...' : 'Save Changes'}
-	        icon="💾"
+	        icon={<Save size={18} />}
 	        variant="primary"
 	        onClick={onSave}
 	        disabled={isSaving}
 	        data-testid="save-workout"
 	      />
+	      </div>
 
 				{statusMessage && (
         <p style={{ marginTop: '0.5rem', color: 'inherit' }}>
@@ -360,6 +407,8 @@ export function WorkoutDetails({
           {errorMessage}
         </p>
       )}
+		</section>
+
 			{duplicateMessage && (
         <p style={{ marginTop: '0.5rem', color: 'inherit' }}>
           {duplicateMessage}
@@ -370,16 +419,13 @@ export function WorkoutDetails({
           {duplicateError}
         </p>
       )}
-	      <h2>📊 Volume Summary</h2>
-	      <ul>
-	        {volumeByExercise.map((ve, i) => (
-	          <li key={i}>
-	            {ve.name}: {ve.sets} sets → Volume: {ve.volume}
-	          </li>
-	        ))}
-	      </ul>
 
-	      <h2>🧠 Muscle Volume Breakdown</h2>
+        <div className="workout-details__summaries">
+        {strengthExercises.length > 0 && (
+        <section className="workout-details__section">
+	      <h2 className="workout-details__section-title">
+          <Brain aria-hidden="true" size={24} /> Muscle Volume Breakdown
+        </h2>
 	      <ul>
 	        {Object.entries(muscleSummary).map(([muscle, vol]) => (
 	          <li key={muscle}>
@@ -387,6 +433,40 @@ export function WorkoutDetails({
 	          </li>
 	        ))}
 	      </ul>
+        </section>
+        )}
+
+        {strengthExercises.length > 0 && (
+        <section className="workout-details__section">
+	      <h2 className="workout-details__section-title">
+          <BarChart3 aria-hidden="true" size={24} /> Volume Summary
+        </h2>
+	      <ul>
+	        {volumeByExercise.map((ve, i) => (
+	          <li key={i}>
+	            {ve.name}: {ve.sets} sets → Volume: {ve.volume}
+	          </li>
+	        ))}
+	      </ul>
+        </section>
+        )}
+
+        {cardioExercises.length > 0 && (
+        <section className="workout-details__section">
+	      <h2 className="workout-details__section-title">
+          <Timer aria-hidden="true" size={24} /> Cardio Volume
+        </h2>
+	      <ul>
+	        {cardioVolume.map((entry, index) => (
+	          <li key={`${entry.name}-${index}`}>
+	            {entry.name}: {entry.muscle} → Volume: {entry.minutes}{' '}
+              {entry.minutes === 1 ? 'minute' : 'minutes'}
+	          </li>
+	        ))}
+	      </ul>
+        </section>
+        )}
+        </div>
 
 	      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
 	        {status !== 'completed' && (
@@ -398,7 +478,7 @@ export function WorkoutDetails({
             />
 						<WorkoutButton
 						  label="Mark Completed"
-						  icon="✅"
+						  icon={<CheckCircle2 size={18} />}
 						  variant="secondary"
 						  onClick={async () => {
 								if (authLoading || !userId) return;
@@ -425,7 +505,7 @@ export function WorkoutDetails({
 					<>
 					<WorkoutButton
 						  label="Move to Scheduled"
-						  icon="✅"
+						  icon={<CalendarCheck size={18} />}
 						  variant="secondary"
 						  onClick={async () => {
               if (authLoading || !userId) return;
@@ -451,13 +531,13 @@ export function WorkoutDetails({
 
         <WorkoutButton
           label="Edit Workout"
-          icon="✏️"
+          icon={<Pencil size={18} />}
           variant="secondary"
           onClick={() => navigate(`/plan?importWorkout=${workoutId}`)}
         />
 				<WorkoutButton
           label={isDuplicating ? 'Duplicating...' : 'Duplicate Workout'}
-          icon="📄"
+          icon={<Copy size={18} />}
           variant="secondary"
           onClick={async () => {
             if (authLoading || !userId) return;
@@ -491,7 +571,7 @@ export function WorkoutDetails({
 
         <WorkoutButton
           label="Create Template"
-          icon="📦"
+          icon={<PackagePlus size={18} />}
           variant="secondary"
           onClick={async () => {
             const name = window.prompt('Name your template:');
@@ -552,13 +632,13 @@ export function WorkoutDetails({
 
         <WorkoutButton
           label="Delete Workout"
-          icon="X"
+          icon={<Trash2 size={18} />}
           variant="destructive"
           onClick={async () => {
             onDelete();
           }}
         />
       </div>
-    </>
+    </div>
   );
 }

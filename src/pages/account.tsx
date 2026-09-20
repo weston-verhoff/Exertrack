@@ -11,7 +11,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { FaArrowUp, FaPen, FaSearch } from 'react-icons/fa';
+import { ArrowUp, Pencil, Search } from 'lucide-react';
 import { Drawer } from '../components/Drawer';
 import { ExerciseChip } from '../components/ExerciseChip';
 import { ResponsiveSegmentedControl } from '../components/ResponsiveSegmentedControl';
@@ -43,10 +43,6 @@ import { getDistanceUnitOptions, normalizeDistanceUnit } from '../utils/unitPref
 import { DistanceUnit } from '../types/workout';
 import { useSystemAlerts } from '../context/SystemAlertContext';
 import '../styles/account.css';
-
-const ArrowUpIcon = FaArrowUp as unknown as React.FC<{ 'aria-hidden'?: boolean }>;
-const PenIcon = FaPen as unknown as React.FC<{ 'aria-hidden'?: boolean }>;
-const SearchIcon = FaSearch as unknown as React.FC<{ 'aria-hidden'?: boolean }>;
 
 ChartJS.register(
   CategoryScale,
@@ -390,7 +386,7 @@ export default function AccountPage() {
           </nav>
           <div className="account-sidebar__actions">
             <a className="account-sidebar__top" href="#account-top">
-              <ArrowUpIcon aria-hidden={true} /> Back to top
+              <ArrowUp aria-hidden="true" size={18} /> Back to top
             </a>
             <button type="button" onClick={signOut}>Sign Out</button>
           </div>
@@ -459,7 +455,7 @@ export default function AccountPage() {
           <section id="custom-exercises" className="account-section">
             <h2>Custom Exercises</h2>
             <label className="account-search" data-tone="library">
-              <SearchIcon aria-hidden={true} />
+              <Search aria-hidden="true" size={18} />
               <span className="sr-only">Search custom exercises</span>
               <input
                 type="search"
@@ -476,7 +472,7 @@ export default function AccountPage() {
                   tone="library"
                   name={exercise.name}
                   meta={exercise.target_muscle}
-                  icon={<PenIcon aria-hidden={true} />}
+                  icon={<Pencil aria-hidden="true" size={18} />}
                   ariaLabel={`Edit ${exercise.name}`}
                   onClick={() => openExerciseDrawer(exercise)}
                 />

@@ -52,13 +52,33 @@ const cardioExercise = (trackLaps: boolean): WorkoutExercise => ({
   ],
 });
 
-const renderDetails = (exercise: WorkoutExercise) =>
+const strengthExercise: WorkoutExercise = {
+  id: 'workout-exercise-2',
+  exercise_id: 'exercise-2',
+  order: 1,
+  exercise: {
+    id: 'exercise-2',
+    name: 'Bench Press',
+    target_muscle: 'Chest',
+    exercise_type: 'strength',
+  },
+  workout_sets: [
+    {
+      id: 'set-2',
+      set_number: 1,
+      reps: 10,
+      weight: 20,
+    },
+  ],
+};
+
+const renderDetails = (exercise: WorkoutExercise | WorkoutExercise[]) =>
   render(
     <WorkoutDetails
       workoutId="workout-1"
       date="2026-09-19"
       status="scheduled"
-      exercises={[exercise]}
+      exercises={Array.isArray(exercise) ? exercise : [exercise]}
       onDateChange={jest.fn()}
       onSave={jest.fn().mockResolvedValue(undefined)}
       onStatusChange={jest.fn()}
@@ -83,5 +103,60 @@ describe('WorkoutDetails cardio controls', () => {
     expect(screen.getByRole('button', { name: 'Add Segment' })).toBeInTheDocument();
     expect(screen.getByText(/Segment 1:/)).toBeInTheDocument();
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+  });
+});
+
+describe('WorkoutDetails volume summaries', () => {
+  it('shows only cardio volume for a cardio-only workout', () => {
+    const running = cardioExercise(false);
+    running.workout_sets[0].duration_seconds = 1200;
+    running.exercise!.target_muscle = 'Legs';
+    const biking: WorkoutExercise = {
+      ...cardioExercise(false),
+      id: 'workout-exercise-3',
+      exercise_id: 'exercise-3',
+      exercise: {
+        ...cardioExercise(false).exercise!,
+        id: 'exercise-3',
+        name: 'Biking',
+        target_muscle: 'Legs',
+      },
+      workout_sets: [
+        {
+          id: 'set-3',
+          set_number: 1,
+          duration_seconds: 3600,
+          distance_value: 12,
+          distance_unit: 'km',
+        },
+      ],
+    };
+
+    renderDetails([running, biking]);
+
+    expect(screen.queryByRole('heading', { name: 'Muscle Volume Breakdown' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Volume Summary' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Cardio Volume' })).toBeInTheDocument();
+    expect(screen.getByText('Running: Legs → Volume: 20 minutes')).toBeInTheDocument();
+    expect(screen.getByText('Biking: Legs → Volume: 60 minutes')).toBeInTheDocument();
+  });
+
+  it('shows strength and cardio summaries for a mixed workout', () => {
+    renderDetails([strengthExercise, cardioExercise(false)]);
+
+    expect(screen.getByRole('heading', { name: 'Muscle Volume Breakdown' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Volume Summary' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Cardio Volume' })).toBeInTheDocument();
+    expect(screen.getByText('Chest: 200')).toBeInTheDocument();
+    expect(screen.getByText('Bench Press: 1 sets → Volume: 200')).toBeInTheDocument();
+    expect(screen.getByText('Running: Full Body → Volume: 30 minutes')).toBeInTheDocument();
+  });
+
+  it('shows only strength summaries for a strength-only workout', () => {
+    renderDetails(strengthExercise);
+
+    expect(screen.getByRole('heading', { name: 'Muscle Volume Breakdown' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Volume Summary' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Cardio Volume' })).not.toBeInTheDocument();
   });
 });

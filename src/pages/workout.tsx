@@ -8,6 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
 import { confirmAndDeleteWorkout } from '../utils/workoutActions';
 import { useSystemAlerts } from '../context/SystemAlertContext';
+import { TrendingUp } from 'lucide-react';
 
 export default function WorkoutRecap() {
   const { id } = useParams()
@@ -117,7 +118,9 @@ const handleDeleteWorkout = async () => {
 
 return (
 	<Layout padded maxWidth="xl" scrollable>
-	<h1>📈 Workout Recap</h1>
+	<h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+	  <TrendingUp aria-hidden="true" size={28} /> Workout Recap
+	</h1>
 
 <WorkoutDetails
 workoutId={workout.id}

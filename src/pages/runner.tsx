@@ -6,6 +6,7 @@ import { DistanceUnit, WorkoutExercise, WorkoutSet } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
 import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
 import { useSystemAlerts } from '../context/SystemAlertContext';
+import { ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
 
 export default function WorkoutRunner() {
   const { id: workoutId } = useParams()
@@ -123,8 +124,10 @@ export default function WorkoutRunner() {
     return (
 			<Layout padded maxWidth="md">
 			  <h1 className="headline">Workout Runner</h1>
-			  <p>✅ All exercises completed.</p>
-			  <WorkoutButton label="End Workout →" onClick={finishWorkout} variant="primary" tone="workout" />
+			  <p style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+			    <CheckCircle2 aria-hidden="true" size={20} /> All exercises completed.
+			  </p>
+			  <WorkoutButton label="End Workout" icon={<ArrowRight size={18} />} onClick={finishWorkout} variant="primary" tone="workout" />
 			</Layout>
     )
   }
@@ -282,12 +285,12 @@ function ActionButtons({
 }) {
   return (
     <div style={{ display: 'flex', gap: '1rem', marginTop: '2rem' }}>
-      <WorkoutButton label="← Back" onClick={onBackSet} variant="secondary" tone="workout" />
+      <WorkoutButton label="Back" icon={<ArrowLeft size={18} />} onClick={onBackSet} variant="secondary" tone="workout" />
       {isLast ? (
-        <WorkoutButton label="End Workout →" onClick={onFinish} variant="primary" tone="workout" />
+        <WorkoutButton label="End Workout" icon={<ArrowRight size={18} />} onClick={onFinish} variant="primary" tone="workout" />
       ) : (
         <>
-          <WorkoutButton label="Next Set →" onClick={onNextSet} variant="primary" tone="workout" />
+          <WorkoutButton label="Next Set" icon={<ArrowRight size={18} />} onClick={onNextSet} variant="primary" tone="workout" />
         </>
       )}
     </div>

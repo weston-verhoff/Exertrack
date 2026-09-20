@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { fetchWorkoutDetail } from '../services/workoutService'
+import { ArrowLeft, Home } from 'lucide-react'
 
 interface WorkoutExercise {
   id?: string
@@ -113,8 +114,12 @@ export default function PastDetail() {
       </section>
 
       <div style={{ marginTop: '2rem' }}>
-        <button onClick={() => navigate('/past')}>← Back to Past Workouts</button>
-        <button onClick={() => navigate('/')}>🏠 Return to Dashboard</button>
+        <button onClick={() => navigate('/past')}>
+          <ArrowLeft aria-hidden="true" size={18} /> Back to Past Workouts
+        </button>
+        <button onClick={() => navigate('/')}>
+          <Home aria-hidden="true" size={18} /> Return to Dashboard
+        </button>
       </div>
     </div>
   )

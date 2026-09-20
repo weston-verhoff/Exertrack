@@ -9,6 +9,7 @@ import { WorkoutDetails } from './WorkoutDetails';
 import { saveWorkout } from '../services/workoutService';
 import { useAuth } from '../context/AuthContext';
 import { ComponentTone } from '../utils/componentTone';
+import { Trash2, Zap } from 'lucide-react';
 
 type WorkoutCardVariant = 'future-workout' | 'past-workout' | 'highlighted';
 
@@ -47,7 +48,18 @@ function summarizeSets(sets: WorkoutSetType[], isCardio: boolean) {
 
   const hasIntensity = sets.some(s => s.intensity_type && s.intensity_type !== 'normal');
 
-  return `${sets.length} sets | ${minReps === maxReps ? `${minReps} reps` : `${minReps}–${maxReps} reps`} | up to ${maxWeight} lb${hasIntensity ? ' ⚡' : ''}`;
+  const summary = `${sets.length} sets | ${minReps === maxReps ? `${minReps} reps` : `${minReps}–${maxReps} reps`} | up to ${maxWeight} lb`;
+
+  return (
+    <>
+      {summary}
+      {hasIntensity && (
+        <span aria-label="Includes intensity techniques" title="Includes intensity techniques">
+          {' '}<Zap aria-hidden="true" size={14} style={{ display: 'inline', verticalAlign: '-0.125em' }} />
+        </span>
+      )}
+    </>
+  );
 }
 
 export function WorkoutCard({
@@ -150,7 +162,7 @@ const closeDrawerAfterSave = () => {
 			)}
 			<WorkoutButton
 				label="Delete"
-				icon="🗑"
+				icon={<Trash2 size={18} />}
 				variant="destructive"
 				onClick={() => onDelete(workout.id)}
 			/>

@@ -8,6 +8,7 @@ import React, {
   useState,
 } from 'react';
 import '../styles/system-alerts.css';
+import { X } from 'lucide-react';
 
 export type SystemAlertTone = 'info' | 'success' | 'error';
 
@@ -72,7 +73,7 @@ function AlertBanner({
         aria-label={`Dismiss: ${alert.message}`}
         onClick={() => onImmediateDismiss(alert.id)}
       >
-        ×
+        <X aria-hidden="true" size={20} />
       </button>
     </div>
   );
