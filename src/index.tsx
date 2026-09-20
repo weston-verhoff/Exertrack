@@ -4,6 +4,8 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './styles/theme-default.css';
+import './styles/theme-dark.css';
+import './styles/theme-up-and-up.css';
 import './styles/theme-baseball.css';
 import './styles/theme-neon.css';
 import './styles/theme-monokai.css';

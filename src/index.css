@@ -257,7 +257,7 @@ select{
   cursor: pointer;
 }
 
-[data-theme='default'] .global-header--secondary {
+[data-theme='up-and-up'] .global-header--secondary {
 	--_header-surface: var(--color-accent-secondary);
 	--_header-content: var(--color-on-accent-secondary);
 	--_header-border: var(--color-border-accent-secondary);
@@ -270,17 +270,17 @@ select{
 	background-image: var(--image-brand-mark-alternate);
 }
 
-[data-theme='default'] .global-header--secondary .nav-links a,
-[data-theme='default'] .global-header--secondary .nav-links .sign-out-button,
-[data-theme='default'] .global-header--secondary .hamburger {
+[data-theme='up-and-up'] .global-header--secondary .nav-links a,
+[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button,
+[data-theme='up-and-up'] .global-header--secondary .hamburger {
 	color: var(--_header-content);
 }
 
-[data-theme='default'] .global-header--secondary .nav-links .sign-out-button {
+[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button {
 	border-color: var(--_header-border);
 }
 
-[data-theme='default'] .global-header--secondary .nav-links .sign-out-button:hover {
+[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button:hover {
 	background-color: var(--_header-hover);
 }
 
@@ -495,21 +495,21 @@ input.exerciseSearch{
 		background-color: var(--color-hover-on-inverse);
 	}
 
-	[data-theme='default'] .global-header--secondary .nav-links {
+	[data-theme='up-and-up'] .global-header--secondary .nav-links {
 		background: var(--color-accent-secondary);
 	}
 
-	[data-theme='default'] .global-header--secondary .nav-links a,
-	[data-theme='default'] .global-header--secondary .nav-links .active,
-	[data-theme='default'] .global-header--secondary .nav-links .sign-out-button {
+	[data-theme='up-and-up'] .global-header--secondary .nav-links a,
+	[data-theme='up-and-up'] .global-header--secondary .nav-links .active,
+	[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button {
 		color: var(--color-on-accent-secondary);
 	}
 
-	[data-theme='default'] .global-header--secondary .nav-links .sign-out-button {
+	[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button {
 		border-color: var(--color-border-accent-secondary);
 	}
 
-	[data-theme='default'] .global-header--secondary .nav-links a:hover {
+	[data-theme='up-and-up'] .global-header--secondary .nav-links a:hover {
 		background-color: var(--color-hover-on-accent-secondary);
 	}
 	.dashboardHero {

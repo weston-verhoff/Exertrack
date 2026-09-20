@@ -89,7 +89,9 @@ const THEME_OPTIONS: Array<{
   value: AccountSettings['theme'];
   label: string;
 }> = [
-  { value: 'default', label: 'Up & Up' },
+  { value: 'default', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+  { value: 'up-and-up', label: 'Up & Up' },
   { value: 'baseball', label: 'Baseball' },
   { value: 'neon', label: 'Neon' },
   { value: 'monokai', label: 'Monokai' },

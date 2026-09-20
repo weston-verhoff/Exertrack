@@ -8,6 +8,8 @@ describe('theme utilities', () => {
 
   it('recognizes every supported theme', () => {
     expect(isAppTheme('default')).toBe(true);
+    expect(isAppTheme('dark')).toBe(true);
+    expect(isAppTheme('up-and-up')).toBe(true);
     expect(isAppTheme('baseball')).toBe(true);
     expect(isAppTheme('neon')).toBe(true);
     expect(isAppTheme('monokai')).toBe(true);
@@ -32,6 +34,13 @@ describe('theme utilities', () => {
 
     expect(document.documentElement.dataset.theme).toBe('sunset');
     expect(window.localStorage.getItem('iwyn-theme')).toBe('sunset');
+  });
+
+  it('applies and persists Up & Up independently from Default', () => {
+    applyTheme('up-and-up');
+
+    expect(document.documentElement.dataset.theme).toBe('up-and-up');
+    expect(window.localStorage.getItem('iwyn-theme')).toBe('up-and-up');
   });
 
   it('restores a saved Monokai preference', () => {

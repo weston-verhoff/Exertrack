@@ -1,0 +1,146 @@
+/* Dark theme: a quiet, neutral counterpart to the light Default theme. */
+[data-theme='dark'] {
+  color-scheme: dark;
+
+  /* Reference palette */
+  --ref-neutral-0: #ffffff;
+  --ref-neutral-50: #f1f1ef;
+  --ref-neutral-100: #e5e5e1;
+  --ref-neutral-150: #d2d2cc;
+  --ref-neutral-200: #c9c9c4;
+  --ref-neutral-300: #a0a09a;
+  --ref-neutral-400: #7b7b76;
+  --ref-neutral-500: #62625d;
+  --ref-neutral-600: #5c5c57;
+  --ref-neutral-650: #4b4b48;
+  --ref-neutral-700: #444440;
+  --ref-neutral-750: #40403e;
+  --ref-neutral-800: #343432;
+  --ref-neutral-825: #292928;
+  --ref-neutral-850: #252524;
+  --ref-neutral-875: #242423;
+  --ref-neutral-900: #1d1d1c;
+  --ref-neutral-925: #171716;
+  --ref-neutral-950: #121212;
+  --ref-green-200: #b9d8c1;
+  --ref-green-500: #547a5e;
+  --ref-green-800: #304635;
+  --ref-green-850: #26382c;
+  --ref-red-100: #f0b8b8;
+  --ref-red-400: #a65757;
+  --ref-red-700: #923838;
+  --ref-red-800: #7a3030;
+  --ref-blue-gray-100: #c0ccd5;
+  --ref-blue-gray-500: #607584;
+  --ref-blue-gray-850: #29343d;
+  --ref-transparent: rgba(0, 0, 0, 0);
+  --ref-overlay-inverse-95: rgba(18, 18, 18, 0.95);
+  --ref-overlay-backdrop: rgba(0, 0, 0, 0.62);
+  --ref-wash-inverse-8: rgba(255, 255, 255, 0.08);
+  --ref-wash-inverse-12: rgba(255, 255, 255, 0.12);
+  --ref-shadow-12: rgba(0, 0, 0, 0.12);
+  --ref-shadow-18: rgba(0, 0, 0, 0.18);
+  --ref-shadow-26: rgba(0, 0, 0, 0.26);
+  --ref-shadow-38: rgba(0, 0, 0, 0.38);
+  --ref-shadow-50: rgba(0, 0, 0, 0.5);
+  --ref-shadow-65: rgba(0, 0, 0, 0.65);
+  --ref-shadow-85: rgba(0, 0, 0, 0.85);
+  --ref-chart-1: #d0d0ca;
+  --ref-chart-1-fill: rgba(208, 208, 202, 0.14);
+  --ref-chart-2: #9d9d97;
+  --ref-chart-2-fill: rgba(157, 157, 151, 0.14);
+  --ref-chart-3: #73736e;
+  --ref-chart-3-fill: rgba(115, 115, 110, 0.14);
+
+  /* Neutral foundations */
+  --color-surface-canvas: var(--ref-neutral-925);
+  --color-surface-default: var(--ref-neutral-900);
+  --color-surface-raised: var(--ref-neutral-875);
+  --color-surface-sunken: var(--ref-neutral-950);
+  --color-surface-inverse: var(--ref-neutral-950);
+  --color-surface-inverse-subtle: var(--ref-wash-inverse-8);
+  --color-surface-overlay: var(--ref-overlay-inverse-95);
+  --color-on-canvas: var(--ref-neutral-50);
+  --color-on-surface: var(--ref-neutral-50);
+  --color-content-secondary: var(--ref-neutral-200);
+  --color-content-muted: var(--ref-neutral-300);
+  --color-on-inverse: var(--ref-neutral-50);
+  --color-on-inverse-muted: var(--ref-neutral-200);
+  --color-on-inverse-danger: var(--ref-red-100);
+
+  /* Borders */
+  --color-border-subtle: var(--ref-neutral-800);
+  --color-border-default: var(--ref-neutral-700);
+  --color-border-strong: var(--ref-neutral-500);
+  --color-border-focus: var(--ref-neutral-200);
+  --color-border-on-inverse: var(--ref-neutral-500);
+
+  /* Accent families */
+  --color-accent-primary: var(--ref-neutral-650);
+  --color-on-accent-primary: var(--ref-neutral-0);
+  --color-accent-primary-subtle: var(--ref-neutral-825);
+  --color-on-accent-primary-subtle: var(--ref-neutral-100);
+  --color-border-accent-primary: var(--ref-neutral-500);
+  --color-hover-on-accent-primary: var(--ref-wash-inverse-12);
+  --color-accent-secondary: var(--ref-neutral-600);
+  --color-on-accent-secondary: var(--ref-neutral-0);
+  --color-accent-secondary-subtle: var(--ref-neutral-850);
+  --color-on-accent-secondary-subtle: var(--ref-neutral-150);
+  --color-border-accent-secondary: var(--ref-neutral-500);
+  --color-hover-on-accent-secondary: var(--ref-wash-inverse-12);
+
+  /* Interactive states */
+  --color-interactive-primary: var(--ref-neutral-100);
+  --color-on-interactive-primary: var(--ref-neutral-900);
+  --color-interactive-primary-hover: var(--ref-neutral-0);
+  --color-interactive-secondary: var(--ref-neutral-800);
+  --color-on-interactive-secondary: var(--ref-neutral-50);
+  --color-interactive-secondary-hover: var(--ref-neutral-750);
+  --color-interactive-subtle: var(--ref-neutral-825);
+  --color-on-interactive-subtle: var(--ref-neutral-100);
+  --color-interactive-subtle-hover: var(--ref-neutral-800);
+  --color-interactive-selected: var(--ref-neutral-150);
+  --color-on-interactive-selected: var(--ref-neutral-900);
+  --color-border-selected: var(--ref-neutral-50);
+  --color-interactive-positive: var(--ref-green-850);
+  --color-on-interactive-positive: var(--ref-green-200);
+  --color-interactive-positive-hover: var(--ref-green-800);
+  --color-border-positive: var(--ref-green-500);
+  --color-interactive-danger: var(--ref-red-800);
+  --color-on-interactive-danger: var(--ref-neutral-0);
+  --color-interactive-danger-hover: var(--ref-red-700);
+
+  /* Feedback */
+  --color-feedback-info-surface: var(--ref-blue-gray-850);
+  --color-on-feedback-info: var(--ref-blue-gray-100);
+  --color-feedback-info-border: var(--ref-blue-gray-500);
+  --color-feedback-success-surface: var(--ref-green-850);
+  --color-on-feedback-success: var(--ref-green-200);
+  --color-feedback-success-border: var(--ref-green-500);
+  --color-feedback-danger-surface: var(--ref-red-800);
+  --color-on-feedback-danger: var(--ref-neutral-0);
+  --color-feedback-danger-border: var(--ref-red-400);
+
+  /* Effects and data visualization */
+  --color-transparent: var(--ref-transparent);
+  --color-overlay-backdrop: var(--ref-overlay-backdrop);
+  --color-hover-on-inverse: var(--ref-wash-inverse-12);
+  --color-chart-series-1: var(--ref-chart-1);
+  --color-chart-series-2: var(--ref-chart-2);
+  --color-chart-series-3: var(--ref-chart-3);
+  --color-chart-series-1-fill: var(--ref-chart-1-fill);
+  --color-chart-series-2-fill: var(--ref-chart-2-fill);
+  --color-chart-series-3-fill: var(--ref-chart-3-fill);
+  --shadow-subtle: var(--ref-shadow-12);
+  --shadow-soft: var(--ref-shadow-18);
+  --shadow-medium: var(--ref-shadow-26);
+  --shadow-strong: var(--ref-shadow-50);
+  --shadow-button-inset: var(--ref-shadow-38);
+  --shadow-button-hover-inset: var(--ref-shadow-50);
+  --shadow-button-pressed: var(--ref-shadow-65);
+  --shadow-control-inset: var(--ref-shadow-85);
+
+  /* No decorative artwork in the neutral dark theme. */
+  --image-surface-hero: none;
+  --image-surface-accent: none;
+}

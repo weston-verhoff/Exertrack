@@ -11,6 +11,8 @@ const stylesDirectory = path.resolve(__dirname, '../styles');
 const sourceDirectory = path.resolve(__dirname, '..');
 const themeFiles = [
   'theme-default.css',
+  'theme-dark.css',
+  'theme-up-and-up.css',
   'theme-baseball.css',
   'theme-neon.css',
   'theme-monokai.css',
@@ -150,13 +152,13 @@ describe('token architecture', () => {
   });
 
   it('uses custom canvas artwork only for themes that provide it', () => {
-    ['theme-default.css', 'theme-sunset.css'].forEach((themeFile) => {
+    ['theme-up-and-up.css', 'theme-sunset.css'].forEach((themeFile) => {
       const { declarations } = getDeclarations(readStyle(themeFile));
       expect(declarations.has('--image-surface-canvas')).toBe(true);
       expect(declarations.get('--image-surface-canvas')).not.toBe('none');
     });
 
-    ['theme-baseball.css', 'theme-neon.css', 'theme-monokai.css'].forEach((themeFile) => {
+    ['theme-default.css', 'theme-dark.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css'].forEach((themeFile) => {
       const { declarations } = getDeclarations(readStyle(themeFile));
       expect(declarations.has('--image-surface-canvas')).toBe(false);
     });
@@ -172,17 +174,17 @@ describe('token architecture', () => {
   });
 
   it('uses custom brand images only for themes that provide them', () => {
-    const defaultTokens = getDeclarations(readStyle('theme-default.css')).declarations;
+    const upAndUpTokens = getDeclarations(readStyle('theme-up-and-up.css')).declarations;
     const neonTokens = getDeclarations(readStyle('theme-neon.css')).declarations;
 
-    expect(defaultTokens.get('--image-brand-mark-alternate')).toContain(
+    expect(upAndUpTokens.get('--image-brand-mark-alternate')).toContain(
       'branding/default/mark-alternate.png'
     );
     BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
       expect(neonTokens.has(token)).toBe(true);
     });
 
-    ['theme-baseball.css', 'theme-monokai.css', 'theme-sunset.css'].forEach((themeFile) => {
+    ['theme-default.css', 'theme-dark.css', 'theme-baseball.css', 'theme-monokai.css', 'theme-sunset.css'].forEach((themeFile) => {
       const { declarations } = getDeclarations(readStyle(themeFile));
       BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
         expect(declarations.has(token)).toBe(false);
@@ -301,7 +303,7 @@ describe('Sunset functional tone recipes', () => {
   });
 
   it('does not define functional recipes in other themes', () => {
-    ['theme-default.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css']
+    ['theme-default.css', 'theme-dark.css', 'theme-up-and-up.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css']
       .forEach((themeFile) => expect(readStyle(themeFile)).not.toContain('[data-tone='));
   });
 });

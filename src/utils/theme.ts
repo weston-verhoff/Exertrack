@@ -1,4 +1,4 @@
-export const APP_THEMES = ['default', 'baseball', 'neon', 'monokai', 'sunset'] as const;
+export const APP_THEMES = ['default', 'dark', 'up-and-up', 'baseball', 'neon', 'monokai', 'sunset'] as const;
 
 export type AppTheme = (typeof APP_THEMES)[number];
 

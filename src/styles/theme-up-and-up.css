@@ -1,0 +1,152 @@
+/* Up & Up theme: the original branded blue and orange experience. */
+[data-theme='up-and-up'] {
+  color-scheme: light;
+
+  /* Reference palette */
+  --ref-neutral-0: #ffffff;
+  --ref-neutral-50: #f1f1f1;
+  --ref-neutral-100: #d3d7dd;
+  --ref-neutral-300: #a5a5a5;
+  --ref-neutral-600: #6d6f74;
+  --ref-neutral-750: #404040;
+  --ref-neutral-850: #1f1f1f;
+  --ref-neutral-900: #141b21;
+  --ref-navy-800: #1f2c4f;
+  --ref-navy-850: #162456;
+  --ref-blue-50: #eff6ff;
+  --ref-blue-100: #e3e8ff;
+  --ref-blue-300: #bedbff;
+  --ref-blue-500: #2196f3;
+  --ref-blue-600: #1446de;
+  --ref-blue-700: #0a2554;
+  --ref-blue-750: #1e3a8a;
+  --ref-orange-50: #fff7ed;
+  --ref-orange-75: #fef3df;
+  --ref-orange-100: #f8dfc7;
+  --ref-orange-200: #f7c48c;
+  --ref-orange-300: #f7af57;
+  --ref-orange-500: #f0851d;
+  --ref-orange-700: #c94614;
+  --ref-orange-950: #441306;
+  --ref-green-100: #b9f8cf;
+  --ref-green-300: #60d67a;
+  --ref-green-400: #6ab57a;
+  --ref-green-900: #0f3b1c;
+  --ref-red-50: #ffe8e8;
+  --ref-red-200: #ffb4b4;
+  --ref-red-800: #9a1f1f;
+  --ref-red-900: #741717;
+  --ref-transparent: rgba(0, 0, 0, 0);
+  --ref-overlay-inverse-95: rgba(14, 23, 55, 0.95);
+  --ref-overlay-backdrop: rgba(0, 0, 0, 0.45);
+  --ref-wash-inverse-8: rgba(255, 255, 255, 0.08);
+  --ref-wash-inverse-10: rgba(255, 255, 255, 0.1);
+  --ref-shadow-8: rgba(0, 0, 0, 0.08);
+  --ref-shadow-14: rgba(0, 0, 0, 0.14);
+  --ref-shadow-18: rgba(0, 0, 0, 0.18);
+  --ref-shadow-25: rgba(0, 0, 0, 0.25);
+  --ref-shadow-40: rgba(0, 0, 0, 0.4);
+  --ref-shadow-50: rgba(0, 0, 0, 0.5);
+  --ref-shadow-80: rgba(0, 0, 0, 0.8);
+  --ref-shadow-100: rgba(0, 0, 0, 1);
+  --ref-chart-1: #4bc0c0;
+  --ref-chart-1-fill: rgba(75, 192, 192, 0.2);
+  --ref-chart-2: #1446de;
+  --ref-chart-2-fill: rgba(20, 70, 222, 0.2);
+  --ref-chart-3: #ff7a00;
+  --ref-chart-3-fill: rgba(255, 122, 0, 0.2);
+
+  /* Neutral foundations */
+  --color-surface-canvas: var(--ref-neutral-50);
+  --color-surface-default: var(--ref-neutral-0);
+  --color-surface-raised: var(--ref-blue-50);
+  --color-surface-sunken: var(--ref-neutral-100);
+  --color-surface-inverse: var(--ref-navy-850);
+  --color-surface-inverse-subtle: var(--ref-wash-inverse-8);
+  --color-surface-overlay: var(--ref-overlay-inverse-95);
+  --color-on-canvas: var(--ref-neutral-900);
+  --color-on-surface: var(--ref-neutral-850);
+  --color-content-secondary: var(--ref-neutral-750);
+  --color-content-muted: var(--ref-neutral-600);
+  --color-on-inverse: var(--ref-neutral-0);
+  --color-on-inverse-muted: var(--ref-blue-100);
+  --color-on-inverse-danger: var(--ref-red-200);
+
+  /* Borders */
+  --color-border-subtle: var(--ref-neutral-300);
+  --color-border-default: var(--ref-neutral-750);
+  --color-border-strong: var(--ref-navy-800);
+  --color-border-focus: var(--ref-blue-600);
+  --color-border-on-inverse: var(--ref-blue-100);
+
+  /* Accent families */
+  --color-accent-primary: var(--ref-blue-600);
+  --color-on-accent-primary: var(--ref-neutral-0);
+  --color-accent-primary-subtle: var(--ref-blue-50);
+  --color-on-accent-primary-subtle: var(--ref-blue-750);
+  --color-border-accent-primary: var(--ref-blue-300);
+  --color-hover-on-accent-primary: var(--ref-wash-inverse-10);
+  --color-accent-secondary: var(--ref-orange-700);
+  --color-on-accent-secondary: var(--ref-neutral-0);
+  --color-accent-secondary-subtle: var(--ref-orange-100);
+  --color-on-accent-secondary-subtle: var(--ref-orange-950);
+  --color-border-accent-secondary: var(--ref-blue-700);
+  --color-hover-on-accent-secondary: var(--ref-wash-inverse-10);
+
+  /* Interactive states */
+  --color-interactive-primary: var(--ref-orange-700);
+  --color-on-interactive-primary: var(--ref-neutral-0);
+  --color-interactive-primary-hover: var(--ref-orange-950);
+  --color-interactive-secondary: var(--ref-blue-500);
+  --color-on-interactive-secondary: var(--ref-blue-700);
+  --color-interactive-secondary-hover: var(--ref-blue-300);
+  --color-interactive-subtle: var(--ref-blue-100);
+  --color-on-interactive-subtle: var(--ref-blue-750);
+  --color-interactive-subtle-hover: var(--ref-blue-50);
+  --color-interactive-selected: var(--ref-neutral-750);
+  --color-on-interactive-selected: var(--ref-neutral-0);
+  --color-border-selected: var(--ref-neutral-850);
+  --color-interactive-positive: var(--ref-green-100);
+  --color-on-interactive-positive: var(--ref-green-900);
+  --color-interactive-positive-hover: var(--ref-green-300);
+  --color-border-positive: var(--ref-green-400);
+  --color-interactive-danger: var(--ref-red-800);
+  --color-on-interactive-danger: var(--ref-neutral-0);
+  --color-interactive-danger-hover: var(--ref-red-900);
+
+  /* Feedback */
+  --color-feedback-info-surface: var(--ref-blue-50);
+  --color-on-feedback-info: var(--ref-blue-750);
+  --color-feedback-info-border: var(--ref-blue-300);
+  --color-feedback-success-surface: var(--ref-green-100);
+  --color-on-feedback-success: var(--ref-green-900);
+  --color-feedback-success-border: var(--ref-green-400);
+  --color-feedback-danger-surface: var(--ref-red-50);
+  --color-on-feedback-danger: var(--ref-red-800);
+  --color-feedback-danger-border: var(--ref-red-200);
+
+  /* Effects and data visualization */
+  --color-transparent: var(--ref-transparent);
+  --color-overlay-backdrop: var(--ref-overlay-backdrop);
+  --color-hover-on-inverse: var(--ref-wash-inverse-10);
+  --color-chart-series-1: var(--ref-chart-1);
+  --color-chart-series-2: var(--ref-chart-2);
+  --color-chart-series-3: var(--ref-chart-3);
+  --color-chart-series-1-fill: var(--ref-chart-1-fill);
+  --color-chart-series-2-fill: var(--ref-chart-2-fill);
+  --color-chart-series-3-fill: var(--ref-chart-3-fill);
+  --shadow-subtle: var(--ref-shadow-8);
+  --shadow-soft: var(--ref-shadow-14);
+  --shadow-medium: var(--ref-shadow-18);
+  --shadow-strong: var(--ref-shadow-50);
+  --shadow-button-inset: var(--ref-shadow-25);
+  --shadow-button-hover-inset: var(--ref-shadow-40);
+  --shadow-button-pressed: var(--ref-shadow-80);
+  --shadow-control-inset: var(--ref-shadow-100);
+
+  /* Theme artwork */
+  --image-surface-canvas: url('../full-background.png');
+  --image-surface-hero: url('../darkblue-hero-bg.png');
+  --image-surface-accent: url('../orange-bg.png');
+  --image-brand-mark-alternate: url('../assets/branding/default/mark-alternate.png');
+}
