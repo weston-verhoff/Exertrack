@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import {
   BRAND_IMAGE_TOKEN_CONTRACT,
+  COLOR_CONTEXT_TOKEN_CONTRACT,
   OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT,
   THEME_CONTRAST_PAIRS,
   THEME_TOKEN_CONTRACT,
@@ -80,11 +81,13 @@ const parseColor = (value: string, backdrop: RgbColor): RgbColor => {
   }
 
   const match = value.match(
-    /^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(0(?:\.\d+)?|1(?:\.0+)?)\s*\)$/i
+    /^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+(?:\.\d+)?%?)\s*\)$/i
   );
   if (!match) throw new Error(`Unsupported color: ${value}`);
 
-  const alpha = Number(match[4]);
+  const alpha = match[4].endsWith('%')
+    ? Number(match[4].slice(0, -1)) / 100
+    : Number(match[4]);
   return [Number(match[1]), Number(match[2]), Number(match[3])].map(
     (channel, index) => channel * alpha + backdrop[index] * (1 - alpha)
   ) as RgbColor;
@@ -266,7 +269,7 @@ describe('token architecture', () => {
       .forEach((token) => expect(token).not.toMatch(prohibited));
   });
 
-  it('defines complete recipe triplets without reference values', () => {
+  it('defines every surface recipe with the complete context contract', () => {
     const recipes = readStyle('color-context.css');
     expect(recipes).not.toMatch(/var\(--ref-/);
 
@@ -275,9 +278,75 @@ describe('token architecture', () => {
         const block = recipes.match(
           new RegExp(`\\.color-context--${name}\\s*\\{([\\s\\S]*?)\\}`)
         )?.[1] ?? '';
-        expect(block).toContain('--_context-surface:');
-        expect(block).toContain('--_context-content:');
-        expect(block).toContain('--_context-border:');
+        COLOR_CONTEXT_TOKEN_CONTRACT.forEach((token) => {
+          expect(block).toContain(`${token}:`);
+        });
+      });
+  });
+
+  it('keeps theme selectors in the centralized recipe layer', () => {
+    fs.readdirSync(stylesDirectory)
+      .filter((filename) => filename.endsWith('.css'))
+      .filter((filename) => !filename.startsWith('theme-'))
+      .filter((filename) => filename !== 'color-context.css')
+      .forEach((filename) => {
+        expect(readStyle(filename)).not.toMatch(/\[data-theme(?:=|\])/);
+      });
+  });
+
+  it('keeps each theme stylesheet limited to its root declaration', () => {
+    themeFiles.forEach((themeFile) => {
+      const css = readStyle(themeFile).replace(/\/\*[\s\S]*?\*\//g, '');
+      const selectors = Array.from(css.matchAll(/([^{}]+)\{/g), (match) =>
+        match[1].trim()
+      );
+      expect(selectors).toEqual([
+        `[data-theme='${themeFile.replace(/^theme-|\.css$/g, '')}']`,
+      ]);
+    });
+  });
+
+  it('does not allow legacy tone or drawer-owned color aliases', () => {
+    getSourceFiles(sourceDirectory).forEach((filename) => {
+      const source = fs.readFileSync(filename, 'utf8');
+      expect(source).not.toMatch(/--_(?:tone|drawer)-/);
+    });
+  });
+
+  it('treats softened drawer set rows as complete nested contexts', () => {
+    const recipes = readStyle('color-context.css');
+    const selector = `:is(
+  [data-theme='default'],
+  [data-theme='baseball'],
+  [data-theme='up-and-up']
+) .drawer-panel .exercise-set-row`;
+    const declarations = getRuleDeclarations(recipes, selector);
+
+    expect(declarations.get('--_context-surface-raised')).toBe(
+      'var(--color-surface-sunken)'
+    );
+    expect(declarations.get('--_context-surface-sunken')).toBe(
+      'var(--color-surface-default)'
+    );
+    expect(declarations.get('--_context-content')).toBe(
+      'var(--color-on-surface)'
+    );
+    expect(declarations.get('--_context-border')).toBe(
+      'var(--color-border-default)'
+    );
+    expect(recipes).not.toContain('--_context-set-row-');
+  });
+
+  it('routes component surface colors through the context contract', () => {
+    getSourceFiles(sourceDirectory)
+      .filter((filename) => /\.(css|tsx)$/.test(filename))
+      .filter((filename) => !path.basename(filename).startsWith('theme-'))
+      .filter((filename) => path.basename(filename) !== 'color-context.css')
+      .forEach((filename) => {
+        const source = fs.readFileSync(filename, 'utf8');
+        expect(source).not.toMatch(
+          /var\(--color-(?:surface-(?:default|raised|sunken|inverse|inverse-subtle|overlay)|on-(?:surface|inverse|inverse-muted)|content-(?:secondary|muted)|border-(?:subtle|default|strong|on-inverse))\)/
+        );
       });
   });
 
@@ -295,19 +364,20 @@ describe('token architecture', () => {
 });
 
 describe('Sunset functional tone recipes', () => {
-  const css = readStyle('theme-sunset.css');
-  const themeDeclarations = getDeclarations(css).declarations;
+  const themeCss = readStyle('theme-sunset.css');
+  const recipeCss = readStyle('color-context.css');
+  const themeDeclarations = getDeclarations(themeCss).declarations;
   const tonePairs = [
-    ['--_tone-surface-sunken', '--_tone-content'],
-    ['--_tone-surface', '--_tone-content'],
-    ['--_tone-surface-raised', '--_tone-content'],
-    ['--_tone-strong', '--_tone-on-strong'],
-    ['--_tone-strong-hover', '--_tone-on-strong'],
+    ['--_context-surface-sunken', '--_context-content'],
+    ['--_context-surface', '--_context-content'],
+    ['--_context-surface-raised', '--_context-content'],
+    ['--_context-strong', '--_context-on-strong'],
+    ['--_context-strong-hover', '--_context-on-strong'],
   ] as const;
 
   it.each(['workout', 'library', 'selection'])('%s stays within one accessible tonal recipe', (tone) => {
     const toneDeclarations = getRuleDeclarations(
-      css,
+      recipeCss,
       `[data-theme='sunset'] [data-tone='${tone}']`
     );
     const declarations = new Map([
@@ -319,7 +389,7 @@ describe('Sunset functional tone recipes', () => {
       const surfaceValue = resolveValue(surface, declarations);
       const contentValue = resolveValue(content, declarations);
       expect(surfaceValue).toMatch(
-        surface.startsWith('--_tone-surface')
+        surface.startsWith('--_context-surface')
           ? /^rgba\(.+\)$/i
           : /^#[0-9a-f]{6}$/i
       );
@@ -335,11 +405,13 @@ describe('Sunset functional tone recipes', () => {
   });
 
   it('keeps the canvas opaque while making semantic surfaces translucent', () => {
-    const configuredOpacity = Number(
-      themeDeclarations.get('--sunset-surface-opacity')
-    );
+    const opacityToken = themeDeclarations.get('--sunset-surface-opacity') ?? '';
+    const configuredOpacity = opacityToken.endsWith('%')
+      ? Number(opacityToken.slice(0, -1)) / 100
+      : Number(opacityToken);
     expect(configuredOpacity).toBeGreaterThan(0);
     expect(configuredOpacity).toBeLessThan(1);
+    expect(opacityToken).toMatch(/^\d+(?:\.\d+)?%$/);
     expect(resolveValue('--color-surface-canvas', themeDeclarations)).toMatch(
       /^#[0-9a-f]{6}$/i
     );
@@ -358,48 +430,49 @@ describe('Sunset functional tone recipes', () => {
       '--color-feedback-danger-surface',
     ].forEach((token) => {
       const resolvedSurface = resolveValue(token, themeDeclarations);
-      const alpha = resolvedSurface.match(/,\s*([01](?:\.\d+)?)\)$/)?.[1];
+      const alphaToken = resolvedSurface.match(/,\s*(\d+(?:\.\d+)?%?)\)$/)?.[1] ?? '';
+      const alpha = alphaToken.endsWith('%')
+        ? Number(alphaToken.slice(0, -1)) / 100
+        : Number(alphaToken);
       expect(resolvedSurface).toMatch(/^rgba\(.+\)$/i);
-      expect(Number(alpha)).toBe(configuredOpacity);
+      expect(alpha).toBe(configuredOpacity);
     });
   });
 
   it('keeps the drawer shell translucent and its tonal contents opaque', () => {
-    const drawerDeclarations = getRuleDeclarations(
-      css,
-      "[data-theme='sunset'] .drawer-panel"
+    expect(resolveValue('--color-surface-inverse', themeDeclarations)).toMatch(
+      /^rgba\(.+\)$/i
     );
-    const declarations = new Map([
-      ...Array.from(themeDeclarations.entries()),
-      ...Array.from(drawerDeclarations.entries()),
-    ]);
+    expect(readStyle('../components/Drawer.tsx')).toContain(
+      'drawer-content color-context--opaque'
+    );
+    expect(recipeCss).toContain("[data-theme='sunset'] .color-context--opaque {");
 
-    expect(resolveValue('--_drawer-surface', declarations)).toMatch(/^rgba\(.+\)$/i);
+    ['surface', 'surface-raised', 'surface-sunken'].forEach((surface) => {
+      expect(
+        resolveValue(`--sunset-${surface}-opaque`, themeDeclarations)
+      ).toMatch(/^#[0-9a-f]{6}$/i);
+    });
 
     ['workout', 'library', 'selection'].forEach((tone) => {
-      const selector =
-        `[data-theme='sunset'] .drawer-panel[data-tone='${tone}'], ` +
-        `[data-theme='sunset'] .drawer-panel [data-tone='${tone}']`;
-      const opaqueToneDeclarations = getRuleDeclarations(css, selector);
-      const opaqueDeclarations = new Map([
-        ...Array.from(themeDeclarations.entries()),
-        ...Array.from(opaqueToneDeclarations.entries()),
-      ]);
-
-      [
-        '--_tone-surface-sunken',
-        '--_tone-surface',
-        '--_tone-surface-raised',
-      ].forEach((token) => {
-        expect(resolveValue(token, opaqueDeclarations)).toMatch(/^#[0-9a-f]{6}$/i);
+      ['surface-sunken', 'surface', 'surface-raised'].forEach((surface) => {
+        expect(
+          resolveValue(
+            `--sunset-tone-${tone}-${surface}-opaque`,
+            themeDeclarations
+          )
+        ).toMatch(/^#[0-9a-f]{6}$/i);
       });
+      expect(recipeCss).toContain(
+        `[data-theme='sunset'] [data-tone='${tone}'] > .color-context--opaque`
+      );
     });
   });
 
   it('keeps planner actions tonal while preserving destructive semantics', () => {
     const plannerStyles = readStyle('plan.css');
     expect(plannerStyles).toContain(
-      'background: var(--_tone-strong, var(--color-interactive-positive));'
+      'background: var(--_context-strong);'
     );
     expect(plannerStyles).toContain('background: var(--color-interactive-danger);');
   });

@@ -1,7 +1,7 @@
 /* Sunset theme: dusky blues and pinks lit by vivid orange and soft yellow. */
 [data-theme='sunset'] {
   color-scheme: dark;
-  --sunset-surface-opacity: 0.5;
+  --sunset-surface-opacity: 50%;
 
   /* Reference palette */
   --ref-night-975: #100e22;
@@ -62,6 +62,50 @@
   --ref-shadow-hover: rgba(255, 216, 107, 0.3);
   --ref-shadow-pressed: rgba(8, 6, 20, 0.82);
   --ref-shadow-control: rgba(8, 6, 20, 0.94);
+
+  /* Context inputs. This is the only theme-specific surface recipe data. */
+  --sunset-surface-opaque: var(--ref-night-850);
+  --sunset-surface-raised-opaque: var(--ref-night-800);
+  --sunset-surface-sunken-opaque: var(--ref-night-950);
+  --sunset-tone-workout-surface-sunken: var(--ref-orange-950-surface);
+  --sunset-tone-workout-surface: var(--ref-orange-900-surface);
+  --sunset-tone-workout-surface-raised: var(--ref-orange-800-surface);
+  --sunset-tone-workout-surface-sunken-opaque: var(--ref-orange-950);
+  --sunset-tone-workout-surface-opaque: var(--ref-orange-900);
+  --sunset-tone-workout-surface-raised-opaque: var(--ref-orange-800);
+  --sunset-tone-workout-strong: var(--ref-orange-400);
+  --sunset-tone-workout-strong-hover: var(--ref-orange-400);
+  --sunset-tone-workout-border: var(--ref-orange-400);
+  --sunset-tone-workout-content: var(--ref-orange-200);
+  --sunset-tone-workout-content-muted: var(--ref-orange-200);
+  --sunset-tone-workout-on-strong: var(--ref-night-975);
+  --sunset-tone-workout-shadow: var(--ref-shadow-medium);
+  --sunset-tone-library-surface-sunken: var(--ref-pink-950-surface);
+  --sunset-tone-library-surface: var(--ref-pink-900-surface);
+  --sunset-tone-library-surface-raised: var(--ref-pink-800-surface);
+  --sunset-tone-library-surface-sunken-opaque: var(--ref-pink-950);
+  --sunset-tone-library-surface-opaque: var(--ref-pink-900);
+  --sunset-tone-library-surface-raised-opaque: var(--ref-pink-800);
+  --sunset-tone-library-strong: var(--ref-pink-500);
+  --sunset-tone-library-strong-hover: var(--ref-pink-400);
+  --sunset-tone-library-border: var(--ref-pink-400);
+  --sunset-tone-library-content: var(--ref-pink-200);
+  --sunset-tone-library-content-muted: var(--ref-pink-200);
+  --sunset-tone-library-on-strong: var(--ref-night-975);
+  --sunset-tone-library-shadow: var(--ref-shadow-soft);
+  --sunset-tone-selection-surface-sunken: var(--ref-yellow-950-surface);
+  --sunset-tone-selection-surface: var(--ref-yellow-900-surface);
+  --sunset-tone-selection-surface-raised: var(--ref-yellow-800-surface);
+  --sunset-tone-selection-surface-sunken-opaque: var(--ref-yellow-950);
+  --sunset-tone-selection-surface-opaque: var(--ref-yellow-900);
+  --sunset-tone-selection-surface-raised-opaque: var(--ref-yellow-800);
+  --sunset-tone-selection-strong: var(--ref-yellow-400);
+  --sunset-tone-selection-strong-hover: var(--ref-yellow-200);
+  --sunset-tone-selection-border: var(--ref-yellow-700);
+  --sunset-tone-selection-content: var(--ref-yellow-200);
+  --sunset-tone-selection-content-muted: var(--ref-yellow-400);
+  --sunset-tone-selection-on-strong: var(--ref-night-975);
+  --sunset-tone-selection-shadow: var(--ref-shadow-hover);
 
   /* Neutral foundations */
   --color-surface-canvas: var(--ref-night-900);
@@ -161,71 +205,4 @@
   );
   --image-surface-hero: none;
   --image-surface-accent: none;
-}
-
-/* Let the canvas show through the drawer shell. Its contents are overridden below. */
-[data-theme='sunset'] .drawer-panel {
-  --_drawer-surface: var(--ref-night-975-surface);
-}
-
-/* Component-local tonal recipes. Other themes ignore these private aliases. */
-[data-theme='sunset'] [data-tone='workout'] {
-  --_tone-surface-sunken: var(--ref-orange-950-surface);
-  --_tone-surface: var(--ref-orange-900-surface);
-  --_tone-surface-raised: var(--ref-orange-800-surface);
-  --_tone-strong: var(--ref-orange-400);
-  --_tone-strong-hover: var(--ref-orange-400);
-  --_tone-border: var(--ref-orange-400);
-  --_tone-content: var(--ref-orange-200);
-  --_tone-content-muted: var(--ref-orange-200);
-  --_tone-on-strong: var(--ref-night-975);
-  --_tone-shadow: var(--ref-shadow-medium);
-  color: var(--_tone-content);
-}
-
-[data-theme='sunset'] [data-tone='library'] {
-  --_tone-surface-sunken: var(--ref-pink-950-surface);
-  --_tone-surface: var(--ref-pink-900-surface);
-  --_tone-surface-raised: var(--ref-pink-800-surface);
-  --_tone-strong: var(--ref-pink-500);
-  --_tone-strong-hover: var(--ref-pink-400);
-  --_tone-border: var(--ref-pink-400);
-  --_tone-content: var(--ref-pink-200);
-  --_tone-content-muted: var(--ref-pink-200);
-  --_tone-on-strong: var(--ref-night-975);
-  --_tone-shadow: var(--ref-shadow-soft);
-  color: var(--_tone-content);
-}
-
-[data-theme='sunset'] [data-tone='selection'] {
-  --_tone-surface-sunken: var(--ref-yellow-950-surface);
-  --_tone-surface: var(--ref-yellow-900-surface);
-  --_tone-surface-raised: var(--ref-yellow-800-surface);
-  --_tone-strong: var(--ref-yellow-400);
-  --_tone-strong-hover: var(--ref-yellow-200);
-  --_tone-border: var(--ref-yellow-700);
-  --_tone-content: var(--ref-yellow-200);
-  --_tone-content-muted: var(--ref-yellow-400);
-  --_tone-on-strong: var(--ref-night-975);
-  --_tone-shadow: var(--ref-shadow-hover);
-  color: var(--_tone-content);
-}
-
-/* Preserve crisp hierarchy inside drawers, including nested tonal contexts. */
-[data-theme='sunset'] .drawer-panel[data-tone='workout'], [data-theme='sunset'] .drawer-panel [data-tone='workout'] {
-  --_tone-surface-sunken: var(--ref-orange-950);
-  --_tone-surface: var(--ref-orange-900);
-  --_tone-surface-raised: var(--ref-orange-800);
-}
-
-[data-theme='sunset'] .drawer-panel[data-tone='library'], [data-theme='sunset'] .drawer-panel [data-tone='library'] {
-  --_tone-surface-sunken: var(--ref-pink-950);
-  --_tone-surface: var(--ref-pink-900);
-  --_tone-surface-raised: var(--ref-pink-800);
-}
-
-[data-theme='sunset'] .drawer-panel[data-tone='selection'], [data-theme='sunset'] .drawer-panel [data-tone='selection'] {
-  --_tone-surface-sunken: var(--ref-yellow-950);
-  --_tone-surface: var(--ref-yellow-900);
-  --_tone-surface-raised: var(--ref-yellow-800);
 }

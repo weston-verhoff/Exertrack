@@ -1,9 +1,9 @@
 .workout-card-skeleton,
 .chart-skeleton {
-  --_skeleton-surface: var(--_tone-surface, var(--color-surface-default));
-  --_skeleton-base: var(--_tone-surface-sunken, var(--color-surface-sunken));
-  --_skeleton-highlight: var(--_tone-surface-raised, var(--color-surface-raised));
-  --_skeleton-border: var(--_tone-border, var(--color-border-default));
+  --_skeleton-surface: var(--_context-surface);
+  --_skeleton-base: var(--_context-surface-sunken);
+  --_skeleton-highlight: var(--_context-surface-raised);
+  --_skeleton-border: var(--_context-border);
 }
 
 .skeleton-pulse {

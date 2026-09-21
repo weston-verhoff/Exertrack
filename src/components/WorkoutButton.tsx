@@ -17,12 +17,12 @@ interface WorkoutButtonProps {
 
 const variantStyles: Record<string, React.CSSProperties> = {
   primary: {
-    backgroundColor: 'var(--_tone-strong, var(--color-interactive-primary))',
-    color: 'var(--_tone-on-strong, var(--color-on-interactive-primary))'
+    backgroundColor: 'var(--_context-strong)',
+    color: 'var(--_context-on-strong)'
   },
   secondary: {
-    backgroundColor: 'var(--_tone-surface-raised, var(--color-interactive-secondary))',
-    color: 'var(--_tone-content, var(--color-on-interactive-secondary))'
+    backgroundColor: 'var(--_context-surface-raised)',
+    color: 'var(--_context-content)'
   },
   destructive: {
     backgroundColor: 'var(--color-interactive-danger)',
@@ -30,17 +30,17 @@ const variantStyles: Record<string, React.CSSProperties> = {
   },
 	blackText: {
 		backgroundColor: 'var(--color-transparent)',
-		color:'var(--_tone-on-strong, var(--color-on-surface))',
+		color:'var(--_context-on-strong)',
 		textDecoration: 'underline',
 	},
 	whiteText: {
 		backgroundColor: 'var(--color-transparent)',
-		color:'var(--color-on-inverse)',
+		color:'var(--_context-content)',
 		textDecoration: 'underline',
 	},
 	completedSectionLink: {
 		backgroundColor: 'var(--color-transparent)',
-		color:'var(--color-on-canvas)',
+		color:'var(--_context-content)',
 		textDecoration: 'underline',
 	},
 	unsetText: {
@@ -103,6 +103,7 @@ export function WorkoutButton({
 
   return (
     <button
+      className={`workout-button workout-button--${variant}`}
       data-tone={tone}
       type={type}
       onClick={isDisabled ? undefined : onClick}

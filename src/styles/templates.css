@@ -17,10 +17,10 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.35rem 0.75rem;
-  border: 1px solid var(--_tone-border, var(--color-border-default));
+  border: 1px solid var(--_context-border);
   border-radius: 999px;
-  background: var(--_tone-surface-sunken, var(--color-surface-sunken));
-  color: var(--_tone-content, var(--color-on-surface));
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
   width: 100%;
   box-sizing: border-box;
 }
@@ -49,9 +49,9 @@
   max-width: 680px;
   margin: 0 auto 1.5rem;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--_context-border);
   border-radius: 8px;
-  background: var(--color-surface-raised);
-  color: var(--color-on-surface);
+  background: var(--_context-surface-raised);
+  color: var(--_context-content);
   text-align: center;
 }

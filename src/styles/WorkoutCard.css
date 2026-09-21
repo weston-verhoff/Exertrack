@@ -1,9 +1,9 @@
 .workout-card {
-  --_card-surface: var(--_tone-surface, var(--color-surface-default));
-  --_card-content: var(--_tone-content, var(--color-on-surface));
-  --_card-border: var(--_tone-border, var(--color-border-default));
-  --_card-header-surface: var(--_tone-strong, var(--color-surface-raised));
-  --_card-header-content: var(--_tone-on-strong, var(--color-on-surface));
+  --_card-surface: var(--_context-surface);
+  --_card-content: var(--_context-content);
+  --_card-border: var(--_context-border);
+  --_card-header-surface: var(--_context-strong);
+  --_card-header-content: var(--_context-on-strong);
   font-family: var(--font-body);
   display: flex;
   flex-direction: column;
@@ -19,31 +19,26 @@
 }
 
 .future-workout{
-	--_card-border: var(--_tone-border, var(--color-border-accent-secondary));
-	--_card-header-surface: var(--_tone-strong, var(--color-accent-secondary));
-	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-secondary));
+	--_card-border: var(--_context-border);
+	--_card-header-surface: var(--_context-strong);
+	--_card-header-content: var(--_context-on-strong);
 }
 .past-workout{
-	--_card-border: var(--_tone-border, var(--color-border-accent-secondary));
-	--_card-header-surface: var(--_tone-strong, var(--color-accent-secondary-subtle));
-	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-secondary-subtle));
+	--_card-border: var(--_context-border);
+	--_card-header-surface: var(--_context-strong);
+	--_card-header-content: var(--_context-on-strong);
 }
 .template-workout{
-	--_card-surface: var(--_tone-surface, var(--color-surface-default));
-	--_card-content: var(--_tone-content, var(--color-on-surface));
-	--_card-border: var(--_tone-border, var(--color-border-accent-primary));
-	--_card-header-surface: var(--_tone-strong, var(--color-accent-primary-subtle));
-	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-primary-subtle));
+	--_card-surface: var(--_context-surface);
+	--_card-content: var(--_context-content);
+	--_card-border: var(--_context-border);
+	--_card-header-surface: var(--_context-strong);
+	--_card-header-content: var(--_context-on-strong);
 }
 .highlighted{
-	--_card-border: var(--_tone-border, var(--color-border-accent-secondary));
-	--_card-header-surface: var(--_tone-strong, var(--color-accent-secondary-subtle));
-	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-secondary-subtle));
-}
-
-[data-theme='default'] .workout-card {
-	--_card-header-surface: var(--_card-surface);
-	--_card-header-content: var(--_card-content);
+	--_card-border: var(--_context-border);
+	--_card-header-surface: var(--_context-strong);
+	--_card-header-content: var(--_context-on-strong);
 }
 
 .workout-head {
@@ -101,8 +96,8 @@
 }
 .btn:active{filter: brightness(95%);}
 .start-btn{
-  background-color: var(--_tone-strong, var(--color-interactive-positive));
-  color: var(--_tone-on-strong, var(--color-on-interactive-positive));
+  background-color: var(--_context-strong);
+  color: var(--_context-on-strong);
 }
 
 .delete-btn{

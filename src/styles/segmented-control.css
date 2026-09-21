@@ -11,8 +11,8 @@
   display: grid;
   grid-template-columns: repeat(var(--segmented-columns), minmax(0, 1fr));
   overflow: hidden;
-  border: 1px solid var(--_tone-border, var(--color-border-default));
-  background: var(--_tone-surface-sunken, var(--color-surface-sunken));
+  border: 1px solid var(--_context-border);
+  background: var(--_context-surface-sunken);
 }
 
 .segmented-control--single { border-radius: 999px; }
@@ -25,9 +25,9 @@
   min-height: 44px;
   padding: 0.6rem;
   border: 0;
-  border-right: 1px solid var(--_tone-border, var(--color-border-subtle));
+  border-right: 1px solid var(--_context-border);
   background: transparent;
-  color: var(--_tone-content, var(--color-on-surface));
+  color: var(--_context-content);
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -37,8 +37,8 @@
 .segmented-control button:last-child { border-right: 0; }
 
 .segmented-control button[aria-pressed='true'] {
-  background: var(--_tone-strong, var(--color-interactive-selected));
-  color: var(--_tone-on-strong, var(--color-on-interactive-selected));
+  background: var(--_context-strong);
+  color: var(--_context-on-strong);
   font-weight: 800;
 }
 

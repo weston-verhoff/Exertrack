@@ -70,7 +70,7 @@ export function Drawer({
 
       <aside
         data-tone={tone}
-        className={`drawer-panel ${isOpen ? 'open' : 'closed'}`}
+        className={`drawer-panel color-context ${isOpen ? 'open' : 'closed'}`}
         style={{ width }}
         onAnimationEnd={handleAnimationEnd}
         onClick={e => e.stopPropagation()}
@@ -78,7 +78,7 @@ export function Drawer({
         <button className="drawer-close" onClick={onClose} aria-label="Close drawer">
           <X aria-hidden="true" size={22} />
         </button>
-        <div className="drawer-content">{children}</div>
+        <div className="drawer-content color-context--opaque">{children}</div>
       </aside>
     </>,
     document.body

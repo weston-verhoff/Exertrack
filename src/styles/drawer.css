@@ -1,11 +1,10 @@
 .drawer-panel {
-  --_drawer-surface: var(--color-surface-inverse);
   position: fixed;
   top: 0;
   right: 0;
   height: 100vh;
-	background: var(--_drawer-surface);
-  color: var(--color-on-inverse);
+	background: var(--_context-surface);
+  color: var(--_context-content);
   z-index: 1001;
   box-shadow: -4px 0 12px var(--shadow-strong);
   display: flex;
@@ -20,7 +19,7 @@
 	max-width: 80%;
 	box-sizing: border-box;
 	padding-left: 16px;
-	border-left: 1px solid var(--_tone-border, var(--color-border-on-inverse));
+	border-left: 1px solid var(--_context-border);
 }
 
 .drawer-panel.open {
@@ -55,14 +54,14 @@
 
   background: none;
   border: none;
-  color: var(--color-on-inverse);
+  color: var(--_context-content);
   font-size: 1.25rem;
   padding: 0.75rem 1rem;
   cursor: pointer;
 	border-radius: 999px;
 }
 .drawer-close:hover {
-  background: var(--color-hover-on-inverse);
+  background: var(--_context-hover);
 	transition: background 0.2s ease-out;
 }
 .drawer-content {
@@ -76,9 +75,9 @@
 .drawer-panel[data-tone] .drawer-content input:not([type='checkbox']),
 .drawer-panel[data-tone] .drawer-content select,
 .drawer-panel[data-tone] .drawer-content textarea {
-  border-color: var(--_tone-border);
-  background: var(--_tone-surface-sunken);
-  color: var(--_tone-content);
+  border-color: var(--_context-border);
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
 }
 
 .workout-details {
@@ -92,9 +91,9 @@
   justify-content: space-between;
   gap: 1rem;
   padding: 1rem;
-  border: 1px solid var(--_tone-border, var(--color-border-on-inverse));
+  border: 1px solid var(--_context-border);
   border-radius: 12px;
-  background: var(--_tone-surface-raised, var(--color-surface-inverse-subtle));
+  background: var(--_context-surface-raised);
 }
 
 .workout-details__date,
@@ -105,7 +104,7 @@
 
 .workout-details__date > span,
 .workout-details__status > span {
-  color: var(--_tone-content-muted, var(--color-on-inverse-muted));
+  color: var(--_context-content-muted);
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.06em;
@@ -122,18 +121,18 @@
   display: inline-flex;
   align-items: center;
   padding: 0 0.75rem;
-  border: 1px solid var(--_tone-border, var(--color-border-on-inverse));
+  border: 1px solid var(--_context-border);
   border-radius: 999px;
-  background: var(--_tone-surface-sunken, var(--color-surface-inverse-subtle));
+  background: var(--_context-surface-sunken);
   line-height: 1;
   text-transform: capitalize;
 }
 
 .workout-details__section {
   padding: 1rem;
-  border: 1px solid var(--_tone-border, var(--color-border-on-inverse));
+  border: 1px solid var(--_context-border);
   border-radius: 12px;
-  background: var(--_tone-surface-raised, var(--color-surface-inverse-subtle));
+  background: var(--_context-surface-raised);
 }
 
 .workout-details__section-title {
@@ -164,17 +163,23 @@
 .workout-details .exercise-item {
   margin-bottom: 1.25rem;
 	padding: 0.75rem;
-	border: 1px solid var(--_tone-border, var(--color-border-default));
+	border: 1px solid var(--_context-border);
 	border-radius: 10px;
-	background: var(--_tone-surface, var(--color-surface-default));
+	background: var(--_context-surface);
+}
+
+.drawer-panel .workout-details .exercise-item {
+	padding: 0;
+	border: 0;
+	background: transparent;
 }
 
 .workout-details input:not([type='checkbox']) {
 	padding: 0.7rem 1rem;
-	border: 1px solid var(--_tone-border, var(--color-border-default));
-	background: var(--_tone-surface-sunken, var(--color-surface-default));
+	border: 1px solid var(--_context-border);
+	background: var(--_context-surface-sunken);
 	box-shadow: none;
-	color: var(--_tone-content, var(--color-on-surface));
+	color: var(--_context-content);
 	text-align: left;
 	appearance: none;
 }
@@ -196,9 +201,10 @@
 	align-items: center;
 	gap: 0.25rem;
 	padding: 0.55rem 0.65rem;
-	border: 1px solid var(--_tone-border, var(--color-border-on-inverse));
+	border: 1px solid var(--_context-border);
 	border-radius: 8px;
-	background: var(--_tone-surface-raised, var(--color-surface-raised));
+	background: var(--_context-surface-raised);
+	color: var(--_context-content);
 }
 
 .workout-details .exercise-set-row--completed {
@@ -211,9 +217,9 @@
 	width: 18px;
 	height: 18px;
 	padding: 0;
-	border: 1px solid var(--_tone-border, var(--color-border-default));
+	border: 1px solid var(--_context-border);
 	border-radius: 50%;
-	background: var(--_tone-surface-sunken, var(--color-surface-sunken));
+	background: var(--_context-surface-sunken);
 	color: var(--color-on-interactive-positive);
 	font-size: 12px;
 	font-weight: 800;

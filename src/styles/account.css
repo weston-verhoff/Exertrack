@@ -29,10 +29,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--_tone-border, var(--_page-hero-border, var(--color-border-on-inverse)));
+  border: 1px solid var(--_context-border);
   border-radius: 12px;
-  background: var(--_tone-surface, var(--_page-hero-raised-surface, var(--color-surface-inverse-subtle)));
-  color: var(--_tone-content, var(--_page-hero-content, var(--color-on-inverse)));
+  background: var(--_context-surface-raised);
+  color: var(--_context-content);
 }
 
 .account-stat-card span {
@@ -64,7 +64,7 @@
   padding: 1.25rem;
   flex-direction: column;
   justify-content: space-between;
-  border: 1px solid var(--color-border-subtle);
+  border: 1px solid var(--_context-border-subtle);
   border-radius: 12px;
   box-shadow: 0 8px 20px var(--shadow-subtle);
 }
@@ -86,7 +86,7 @@
   border: 0;
   border-radius: 8px;
   background: transparent;
-  color: var(--color-on-surface);
+  color: var(--_context-content);
   font-weight: 700;
   text-align: left;
   text-decoration: none;
@@ -146,15 +146,15 @@
 .account-section__heading select,
 .exercise-editor select {
   padding: 0.55rem 0.75rem;
-  border: 1px solid var(--color-border-default);
+  border: 1px solid var(--_context-border-subtle);
 }
 
 .account-chart {
   height: 380px;
   padding: 1.25rem;
-  border: 1px solid var(--_tone-border, var(--color-border-subtle));
-  background-color: var(--_tone-surface, var(--_context-surface));
-  color: var(--_tone-content, var(--_context-content));
+  border: 1px solid var(--_context-border);
+  background-color: var(--_context-surface);
+  color: var(--_context-content);
   border-radius: 12px;
   box-shadow: 0 8px 20px var(--shadow-subtle);
 }
@@ -171,10 +171,10 @@
   padding: 0 1rem;
   align-items: center;
   gap: 0.65rem;
-  border: 1px solid var(--_tone-border, var(--color-border-default));
+  border: 1px solid var(--_context-border);
   border-radius: 2rem;
-  background: var(--_tone-surface-sunken, var(--color-surface-default));
-  color: var(--_tone-content, var(--color-on-surface));
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
 }
 
 .account-search input {
@@ -201,10 +201,10 @@
   gap: 1rem;
   margin-top: 1rem;
   padding: 1.25rem;
-  border: 1px solid var(--_tone-border, var(--color-border-focus));
+  border: 1px solid var(--_context-border);
   border-radius: 12px;
-  background: var(--_tone-surface, var(--color-surface-raised));
-  color: var(--_tone-content, var(--color-on-surface));
+  background: var(--_context-surface);
+  color: var(--_context-content);
 }
 
 .exercise-editor h3,
@@ -225,10 +225,14 @@
 .account-settings input {
   width: 100%;
   padding: 0.7rem 1rem;
-  border: 1px solid var(--_tone-border, var(--color-border-default));
-  background: var(--_tone-surface-sunken, var(--color-surface-default));
-  color: var(--_tone-content, var(--color-on-surface));
+  border: 1px solid var(--_context-border-subtle);
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
   text-align: left;
+}
+
+.account-settings input {
+  border-color: var(--_context-border);
 }
 
 .exercise-editor__actions {
@@ -238,17 +242,17 @@
 
 .exercise-editor__actions button {
   padding: 0.7rem 1rem;
-  border: 1px solid var(--_tone-border, var(--color-border-focus));
+  border: 1px solid var(--_context-border);
   border-radius: 8px;
-  background: var(--_tone-strong, var(--color-interactive-primary));
-  color: var(--_tone-on-strong, var(--color-on-interactive-primary));
+  background: var(--_context-strong);
+  color: var(--_context-on-strong);
   font-weight: 700;
   cursor: pointer;
 }
 
 .exercise-editor__actions .secondary {
-  background: var(--_tone-surface-raised, var(--color-surface-sunken));
-  color: var(--_tone-content, var(--color-on-surface));
+  background: var(--_context-surface-raised);
+  color: var(--_context-content);
 }
 
 .exercise-editor--drawer {
@@ -272,17 +276,17 @@
 
 .exercise-editor--drawer .exercise-editor__header p {
   margin: 0.5rem 0 0;
-  color: var(--color-on-inverse-muted);
+  color: var(--_context-content-muted);
 }
 
 .exercise-editor--drawer label {
-  color: var(--color-on-inverse);
+  color: var(--_context-content);
 }
 
 .exercise-editor--drawer select {
   width: 100%;
-  background: var(--_tone-surface-sunken, var(--color-surface-default));
-  color: var(--_tone-content, var(--color-on-surface));
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
 }
 
 .exercise-editor--drawer .account-message {

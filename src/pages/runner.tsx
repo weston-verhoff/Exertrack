@@ -187,7 +187,7 @@ function ExerciseHeader({ name, targetMuscle }: { name: string; targetMuscle: st
   return (
     <div style={{ marginBottom: '1rem' }}>
       <h2>{name}</h2>
-      <p style={{ color: 'var(--color-content-muted)' }}>{targetMuscle}</p>
+      <p style={{ color: 'var(--_context-content-muted)' }}>{targetMuscle}</p>
     </div>
   )
 }
@@ -206,7 +206,7 @@ function SetProgress({
         const isCompleted = setNumber < current
         const isCurrent = setNumber === current
 
-				let color = 'var(--color-surface-sunken)'
+				let color = 'var(--_context-surface-sunken)'
 				if (isCompleted) color = 'var(--color-interactive-secondary)'
 				else if (isCurrent) color = 'var(--color-interactive-positive)'
 
@@ -300,12 +300,12 @@ function WorkoutProgressBar({ current, total }: { current: number; total: number
   const percent = Math.round((current / total) * 100)
 
   return (
-    <div style={{ marginBottom: '1rem', backgroundColor: 'var(--color-surface-inverse)', color: 'var(--color-on-inverse)', padding: '0.75rem', borderRadius: '0.5rem' }}>
+    <div className="color-context color-context--inverse" style={{ marginBottom: '1rem', padding: '0.75rem', borderRadius: '0.5rem' }}>
       <div
+        className="color-context color-context--default"
         style={{
           height: '16px',
           width: '100%',
-          backgroundColor: 'var(--color-surface-sunken)',
           borderRadius: '8px',
           overflow: 'hidden'
         }}

@@ -58,7 +58,7 @@ input[type='checkbox']{
 	margin-right: 12px;
 }
 select{
-	background: var(--color-surface-default);
+	background: var(--_context-surface);
 	border-radius: 4px;
 }
 .auth-container {
@@ -88,7 +88,7 @@ select{
 	flex-direction: column;
 	align-items: flex-start;
 	gap: 0.5rem;
-	color: var(--color-on-inverse-muted);
+	color: var(--_context-content-muted);
 }
 .auth-form input {
 	width: 100%;
@@ -109,8 +109,8 @@ select{
 }
 .auth-actions .secondary {
 	background: var(--color-transparent);
-	border: 1px solid var(--color-border-on-inverse);
-	color: var(--color-on-inverse-muted);
+	border: 1px solid var(--_context-border);
+	color: var(--_context-content-muted);
 }
 .auth-error {
 	color: var(--color-on-inverse-danger);
@@ -118,7 +118,7 @@ select{
 }
 .auth-note {
 	margin-top: 0.75rem;
-	color: var(--color-on-inverse-muted);
+	color: var(--_context-content-muted);
 	font-size: 0.9rem;
 }
 
@@ -133,7 +133,7 @@ select{
   background-repeat: repeat;
   border-radius: 12px;
 	box-shadow: 2px 2px 16px var(--shadow-strong);
-	border: 1px solid var(--color-border-strong);
+	border: 1px solid var(--_context-border-strong);
 	display: flex;
 	flex-direction:column;
 	align-items: center;
@@ -154,7 +154,7 @@ select{
 	margin-top:0px;
 }
 .font-white {
-	color: var(--color-on-inverse);
+	color: var(--_context-content);
 }
 
 /* === SECTIONS & CARDS === */
@@ -192,10 +192,6 @@ select{
 
 /* === GLOBAL HEADER === */
 .global-header {
-	--_header-surface: var(--color-surface-overlay);
-	--_header-content: var(--color-on-inverse);
-	--_header-border: var(--color-border-on-inverse);
-	--_header-hover: var(--color-hover-on-inverse);
 	top:0;
 	position: fixed;
   display: flex;
@@ -208,6 +204,7 @@ select{
 	width:100%;
 
   color: var(--_header-content);
+  border-bottom: var(--_header-secondary-border-width) solid var(--_header-border);
   z-index: 100;
 }
 
@@ -220,7 +217,7 @@ select{
 	display: block;
 	height: 24px;
 	width: 77px;
-	background-image: var(--image-brand-mark);
+	background-image: var(--_header-logo-image);
 	background-position: left center;
 	background-repeat: no-repeat;
 	background-size: contain;
@@ -265,43 +262,8 @@ select{
   cursor: pointer;
 }
 
-[data-theme='default'] .global-header {
-	--_header-surface: var(--color-surface-default);
-	--_header-content: var(--color-on-surface);
-	--_header-border: var(--color-border-default);
-	--_header-hover: var(--color-interactive-subtle);
-	border-bottom: 1px solid var(--_header-border);
-}
-
-[data-theme='default'] .global-header .logo .logo-image {
-	background-image: url('./assets/branding/default/mark-alternate.png');
-}
-
-[data-theme='up-and-up'] .global-header--secondary {
-	--_header-surface: var(--color-accent-secondary);
-	--_header-content: var(--color-on-accent-secondary);
-	--_header-border: var(--color-border-accent-secondary);
-	--_header-hover: var(--color-hover-on-accent-secondary);
-	background-color: var(--_header-surface);
-	border-bottom:1px solid var(--_header-border)
-}
-
 .global-header--secondary .logo .logo-image {
 	background-image: var(--image-brand-mark-alternate);
-}
-
-[data-theme='up-and-up'] .global-header--secondary .nav-links a,
-[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button,
-[data-theme='up-and-up'] .global-header--secondary .hamburger {
-	color: var(--_header-content);
-}
-
-[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button {
-	border-color: var(--_header-border);
-}
-
-[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button:hover {
-	background-color: var(--_header-hover);
 }
 
 .global-header .overlay {
@@ -355,9 +317,9 @@ input.exerciseSearch{
 	margin-left: 5rem;
 }
 .empty-workout-card {
-	--_empty-surface: var(--_tone-surface, var(--color-accent-secondary-subtle));
-	--_empty-content: var(--_tone-content, var(--color-on-accent-secondary-subtle));
-	--_empty-border: var(--_tone-border, var(--color-border-accent-secondary));
+	--_empty-surface: var(--_context-surface);
+	--_empty-content: var(--_context-content);
+	--_empty-border: var(--_context-border);
 	font-family: var(--font-body);
 	min-width: 300px;
 	max-width: 300px;
@@ -376,7 +338,7 @@ input.exerciseSearch{
 }
 .empty-workout-card:hover {
 	transform: translateY(-2px);
-	border-color: var(--_tone-strong-hover, var(--color-border-accent-secondary));
+	border-color: var(--_context-strong-hover);
 	box-shadow: 0 12px 24px var(--shadow-medium);
 }
 .empty-workout-card:active {
@@ -388,9 +350,9 @@ input.exerciseSearch{
 	line-height: 1.4;
 }
 .empty-workout-card--hero {
-	--_empty-surface: var(--_tone-surface, var(--_page-hero-raised-surface, var(--color-surface-inverse-subtle)));
-	--_empty-content: var(--_tone-content, var(--_page-hero-content, var(--color-on-inverse)));
-	--_empty-border: var(--_tone-border, var(--_page-hero-border, var(--color-border-on-inverse)));
+	--_empty-surface: var(--_context-surface-raised);
+	--_empty-content: var(--_context-content);
+	--_empty-border: var(--_context-border);
 }
 
 .dash-content {
@@ -474,7 +436,7 @@ input.exerciseSearch{
 		right: 0;
 		height: 100%;
 		width: 200px;
-		background: var(--color-surface-inverse);
+		background: var(--_header-mobile-surface);
 		flex-direction: column;
 		padding: 2rem 1rem;
 		transform: translateX(100%);
@@ -493,7 +455,7 @@ input.exerciseSearch{
 	.global-header .nav-links a,
 	.global-header .nav-links .active {
 		text-decoration: none;
-		color: var(--color-on-inverse);
+		color: var(--_header-mobile-content);
 		font-weight: 500;
 		padding: 0.75rem 1rem;
 		border-radius: 4px;
@@ -501,32 +463,14 @@ input.exerciseSearch{
 		transition: background 0.2s ease;
 	}
 	.global-header .nav-links .sign-out-button {
-		border: 1px solid var(--color-border-on-inverse);
-		color: var(--color-on-inverse);
+		border: 1px solid var(--_header-mobile-border);
+		color: var(--_header-mobile-content);
 		padding: 0.75rem 1rem;
 		width: 100%;
 		text-align: left;
 	}
 	.global-header .nav-links a:hover {
-		background-color: var(--color-hover-on-inverse);
-	}
-
-	[data-theme='up-and-up'] .global-header--secondary .nav-links {
-		background: var(--color-accent-secondary);
-	}
-
-	[data-theme='up-and-up'] .global-header--secondary .nav-links a,
-	[data-theme='up-and-up'] .global-header--secondary .nav-links .active,
-	[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button {
-		color: var(--color-on-accent-secondary);
-	}
-
-	[data-theme='up-and-up'] .global-header--secondary .nav-links .sign-out-button {
-		border-color: var(--color-border-accent-secondary);
-	}
-
-	[data-theme='up-and-up'] .global-header--secondary .nav-links a:hover {
-		background-color: var(--color-hover-on-accent-secondary);
+		background-color: var(--_header-mobile-hover);
 	}
 	.dashboardHero {
 		flex-direction: column;

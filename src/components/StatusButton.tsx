@@ -46,7 +46,7 @@ export default function StatusButton({
   const handleMouseDown = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.currentTarget.style.transform = 'scale(0.96)'
     e.currentTarget.style.backgroundColor =
-      status === 'success' ? 'var(--color-interactive-positive-hover)' : 'var(--color-border-subtle)'
+      status === 'success' ? 'var(--color-interactive-positive-hover)' : 'var(--_context-hover)'
   }
 
   const handleMouseUp = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -59,6 +59,7 @@ export default function StatusButton({
 
   return (
     <button
+      className="status-button"
       onClick={handleClick}
       disabled={status === 'saving'}
       onMouseDown={handleMouseDown}

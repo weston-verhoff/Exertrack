@@ -1,4 +1,29 @@
-/* Reusable complete color contexts. Structural CSS still owns border width/style. */
+/*
+ * Surface contexts are the only color interface layout and component styles use.
+ * Themes own semantic primitives; these recipes own how those primitives compose.
+ */
+[data-theme] {
+  --_context-surface: var(--color-surface-default);
+  --_context-surface-raised: var(--color-surface-raised);
+  --_context-surface-sunken: var(--color-surface-sunken);
+  --_context-content: var(--color-on-surface);
+  --_context-content-muted: var(--color-content-muted);
+  --_context-border: var(--color-border-default);
+  --_context-border-subtle: var(--color-border-subtle);
+  --_context-border-strong: var(--color-border-strong);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-strong: var(--color-interactive-primary);
+  --_context-strong-hover: var(--color-interactive-primary-hover);
+  --_context-on-strong: var(--color-on-interactive-primary);
+  --_context-shadow: var(--shadow-soft);
+}
+
+[data-theme='sunset'] {
+  --_context-opacity-boundary-surface: var(--sunset-surface-opaque);
+  --_context-opacity-boundary-surface-raised: var(--sunset-surface-raised-opaque);
+  --_context-opacity-boundary-surface-sunken: var(--sunset-surface-sunken-opaque);
+}
+
 .color-context {
   background-color: var(--_context-surface);
   color: var(--_context-content);
@@ -7,48 +32,404 @@
 
 .color-context--canvas {
   --_context-surface: var(--color-surface-canvas);
+  --_context-surface-raised: var(--color-surface-default);
+  --_context-surface-sunken: var(--color-surface-sunken);
   --_context-content: var(--color-on-canvas);
+  --_context-content-muted: var(--color-content-muted);
   --_context-border: var(--color-border-subtle);
+  --_context-border-subtle: var(--color-border-subtle);
+  --_context-border-strong: var(--color-border-strong);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-strong: var(--color-interactive-primary);
+  --_context-strong-hover: var(--color-interactive-primary-hover);
+  --_context-on-strong: var(--color-on-interactive-primary);
+  --_context-shadow: var(--shadow-soft);
 }
 
 .color-context--default {
   --_context-surface: var(--color-surface-default);
+  --_context-surface-raised: var(--color-surface-raised);
+  --_context-surface-sunken: var(--color-surface-sunken);
   --_context-content: var(--color-on-surface);
+  --_context-content-muted: var(--color-content-muted);
   --_context-border: var(--color-border-default);
+  --_context-border-subtle: var(--color-border-subtle);
+  --_context-border-strong: var(--color-border-strong);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-strong: var(--color-interactive-primary);
+  --_context-strong-hover: var(--color-interactive-primary-hover);
+  --_context-on-strong: var(--color-on-interactive-primary);
+  --_context-shadow: var(--shadow-soft);
 }
 
 .color-context--raised {
   --_context-surface: var(--color-surface-raised);
+  --_context-surface-raised: var(--color-surface-default);
+  --_context-surface-sunken: var(--color-surface-sunken);
   --_context-content: var(--color-on-surface);
+  --_context-content-muted: var(--color-content-muted);
   --_context-border: var(--color-border-subtle);
+  --_context-border-subtle: var(--color-border-subtle);
+  --_context-border-strong: var(--color-border-strong);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-strong: var(--color-interactive-primary);
+  --_context-strong-hover: var(--color-interactive-primary-hover);
+  --_context-on-strong: var(--color-on-interactive-primary);
+  --_context-shadow: var(--shadow-soft);
 }
 
 .color-context--inverse {
   --_context-surface: var(--color-surface-inverse);
+  --_context-surface-raised: var(--color-surface-inverse-subtle);
+  --_context-surface-sunken: var(--color-surface-inverse);
   --_context-content: var(--color-on-inverse);
+  --_context-content-muted: var(--color-on-inverse-muted);
   --_context-border: var(--color-border-on-inverse);
+  --_context-border-subtle: var(--color-border-on-inverse);
+  --_context-border-strong: var(--color-border-on-inverse);
+  --_context-hover: var(--color-hover-on-inverse);
+  --_context-strong: var(--color-interactive-primary);
+  --_context-strong-hover: var(--color-interactive-primary-hover);
+  --_context-on-strong: var(--color-on-interactive-primary);
+  --_context-shadow: var(--shadow-strong);
 }
 
 .color-context--selected {
   --_context-surface: var(--color-interactive-selected);
+  --_context-surface-raised: var(--color-interactive-selected);
+  --_context-surface-sunken: var(--color-interactive-selected);
   --_context-content: var(--color-on-interactive-selected);
+  --_context-content-muted: var(--color-on-interactive-selected);
   --_context-border: var(--color-border-selected);
+  --_context-border-subtle: var(--color-border-selected);
+  --_context-border-strong: var(--color-border-selected);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-strong: var(--color-interactive-selected);
+  --_context-strong-hover: var(--color-interactive-selected);
+  --_context-on-strong: var(--color-on-interactive-selected);
+  --_context-shadow: var(--shadow-soft);
 }
 
 .color-context--info {
   --_context-surface: var(--color-feedback-info-surface);
+  --_context-surface-raised: var(--color-feedback-info-surface);
+  --_context-surface-sunken: var(--color-feedback-info-surface);
   --_context-content: var(--color-on-feedback-info);
+  --_context-content-muted: var(--color-on-feedback-info);
   --_context-border: var(--color-feedback-info-border);
+  --_context-border-subtle: var(--color-feedback-info-border);
+  --_context-border-strong: var(--color-feedback-info-border);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-strong: var(--color-interactive-secondary);
+  --_context-strong-hover: var(--color-interactive-secondary-hover);
+  --_context-on-strong: var(--color-on-interactive-secondary);
+  --_context-shadow: var(--shadow-soft);
 }
 
 .color-context--success {
   --_context-surface: var(--color-feedback-success-surface);
+  --_context-surface-raised: var(--color-feedback-success-surface);
+  --_context-surface-sunken: var(--color-feedback-success-surface);
   --_context-content: var(--color-on-feedback-success);
+  --_context-content-muted: var(--color-on-feedback-success);
   --_context-border: var(--color-feedback-success-border);
+  --_context-border-subtle: var(--color-feedback-success-border);
+  --_context-border-strong: var(--color-feedback-success-border);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-strong: var(--color-interactive-positive);
+  --_context-strong-hover: var(--color-interactive-positive-hover);
+  --_context-on-strong: var(--color-on-interactive-positive);
+  --_context-shadow: var(--shadow-soft);
 }
 
 .color-context--danger {
   --_context-surface: var(--color-feedback-danger-surface);
+  --_context-surface-raised: var(--color-feedback-danger-surface);
+  --_context-surface-sunken: var(--color-feedback-danger-surface);
   --_context-content: var(--color-on-feedback-danger);
+  --_context-content-muted: var(--color-on-feedback-danger);
   --_context-border: var(--color-feedback-danger-border);
+  --_context-border-subtle: var(--color-feedback-danger-border);
+  --_context-border-strong: var(--color-feedback-danger-border);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-strong: var(--color-interactive-danger);
+  --_context-strong-hover: var(--color-interactive-danger-hover);
+  --_context-on-strong: var(--color-on-interactive-danger);
+  --_context-shadow: var(--shadow-soft);
+}
+
+/* Reapply solid surfaces where a translucent theme reaches an opacity boundary. */
+[data-theme='sunset'] .color-context--opaque {
+  --_context-surface: var(--_context-opacity-boundary-surface);
+  --_context-surface-raised: var(--_context-opacity-boundary-surface-raised);
+  --_context-surface-sunken: var(--_context-opacity-boundary-surface-sunken);
+}
+
+/* Component context selection lives here instead of in component styles. */
+.global-header,
+.page-hero-surface,
+.drawer-panel {
+  --_context-surface: var(--color-surface-inverse);
+  --_context-surface-raised: var(--color-surface-inverse-subtle);
+  --_context-surface-sunken: var(--color-surface-inverse-subtle);
+  --_context-content: var(--color-on-inverse);
+  --_context-content-muted: var(--color-on-inverse-muted);
+  --_context-border: var(--color-border-on-inverse);
+  --_context-border-subtle: var(--color-border-on-inverse);
+  --_context-border-strong: var(--color-border-on-inverse);
+  --_context-hover: var(--color-hover-on-inverse);
+  --_context-shadow: var(--shadow-strong);
+}
+
+.global-header {
+  --_header-surface: var(--color-surface-overlay);
+  --_header-content: var(--_context-content);
+  --_header-border: var(--_context-border);
+  --_header-hover: var(--_context-hover);
+  --_header-logo-image: var(--image-brand-mark);
+  --_header-mobile-surface: var(--color-surface-inverse);
+  --_header-mobile-content: var(--color-on-inverse);
+  --_header-mobile-border: var(--color-border-on-inverse);
+  --_header-mobile-hover: var(--color-hover-on-inverse);
+  --_header-secondary-border-width: 0;
+}
+
+/* Component defaults are recipes, not declarations owned by component CSS. */
+.workout-card {
+  --_context-surface: var(--color-surface-default);
+  --_context-content: var(--color-on-surface);
+  --_context-border: var(--color-border-default);
+  --_context-strong: var(--color-surface-raised);
+  --_context-on-strong: var(--color-on-surface);
+}
+
+.future-workout {
+  --_context-border: var(--color-border-accent-secondary);
+  --_context-strong: var(--color-accent-secondary);
+  --_context-on-strong: var(--color-on-accent-secondary);
+}
+
+.past-workout,
+.highlighted {
+  --_context-border: var(--color-border-accent-secondary);
+  --_context-strong: var(--color-accent-secondary-subtle);
+  --_context-on-strong: var(--color-on-accent-secondary-subtle);
+}
+
+.template-workout {
+  --_context-border: var(--color-border-accent-primary);
+  --_context-strong: var(--color-accent-primary-subtle);
+  --_context-on-strong: var(--color-on-accent-primary-subtle);
+}
+
+.empty-workout-card {
+  --_context-surface: var(--color-accent-secondary-subtle);
+  --_context-content: var(--color-on-accent-secondary-subtle);
+  --_context-border: var(--color-border-accent-secondary);
+  --_context-strong-hover: var(--color-border-accent-secondary);
+}
+
+.plan-workout-card {
+  --_context-surface: var(--color-surface-default);
+  --_context-surface-raised: var(--color-surface-raised);
+  --_context-surface-sunken: var(--color-surface-sunken);
+  --_context-content: var(--color-on-surface);
+  --_context-content-muted: var(--color-content-secondary);
+  --_context-border: var(--color-border-accent-secondary);
+  --_context-strong: var(--color-accent-secondary-subtle);
+  --_context-on-strong: var(--color-on-accent-secondary);
+}
+
+.workout-button--secondary {
+  --_context-surface-raised: var(--color-interactive-secondary);
+  --_context-content: var(--color-on-interactive-secondary);
+}
+
+.workout-button--blackText {
+  --_context-on-strong: var(--color-on-surface);
+}
+
+.workout-button--whiteText {
+  --_context-content: var(--color-on-inverse);
+}
+
+.workout-button--completedSectionLink {
+  --_context-content: var(--color-on-canvas);
+}
+
+.status-button {
+  --_context-hover: var(--color-border-subtle);
+}
+
+.exercise-chip {
+  --_context-surface: var(--color-surface-sunken);
+  --_context-surface-raised: var(--color-surface-raised);
+  --_context-surface-sunken: var(--color-surface-default);
+  --_context-content: var(--color-on-surface);
+  --_context-content-muted: var(--color-content-muted);
+  --_context-border: var(--color-border-default);
+}
+
+[data-theme]:not([data-theme='sunset']) .account-search {
+  --_context-surface-sunken: var(--color-surface-default);
+}
+
+[data-theme]:not([data-theme='sunset']) .exercise-editor {
+  --_context-surface: var(--color-surface-raised);
+  --_context-surface-raised: var(--color-surface-sunken);
+  --_context-surface-sunken: var(--color-surface-default);
+  --_context-border: var(--color-border-focus);
+  --_context-border-subtle: var(--color-border-default);
+}
+
+[data-theme]:not([data-theme='sunset']) .start-btn,
+[data-theme]:not([data-theme='sunset']) .save-button {
+  --_context-strong: var(--color-interactive-positive);
+  --_context-strong-hover: var(--color-interactive-positive-hover);
+  --_context-on-strong: var(--color-on-interactive-positive);
+  --_context-border: var(--color-border-positive);
+}
+
+[data-theme]:not([data-theme='sunset']) .template-pill {
+  --_context-surface: var(--color-accent-primary-subtle);
+  --_context-content: var(--color-on-accent-primary-subtle);
+  --_context-border: var(--color-border-accent-primary);
+}
+
+[data-theme='default'] .global-header,
+[data-theme='default'] .page-hero-surface,
+[data-theme='default'] .drawer-panel {
+  --_context-surface: var(--color-surface-default);
+  --_context-surface-raised: var(--color-surface-raised);
+  --_context-surface-sunken: var(--color-surface-sunken);
+  --_context-content: var(--color-on-surface);
+  --_context-content-muted: var(--color-content-muted);
+  --_context-border: var(--color-border-default);
+  --_context-border-subtle: var(--color-border-subtle);
+  --_context-border-strong: var(--color-border-strong);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-shadow: var(--shadow-soft);
+}
+
+[data-theme='default'] .page-hero-surface {
+  --_page-hero-wordmark: url('../assets/branding/default/wordmark-alternate.png');
+}
+
+[data-theme='default'] .global-header {
+  --_header-surface: var(--_context-surface);
+  --_header-hover: var(--color-interactive-subtle);
+  --_header-logo-image: url('../assets/branding/default/mark-alternate.png');
+  --_header-secondary-border-width: 1px;
+}
+
+[data-theme='default'] .workout-card {
+  --_card-header-surface: var(--_card-surface);
+  --_card-header-content: var(--_card-content);
+}
+
+:is(
+  [data-theme='default'],
+  [data-theme='baseball'],
+  [data-theme='up-and-up']
+) .drawer-panel .exercise-set-row {
+  --_context-surface: var(--color-surface-default);
+  --_context-surface-raised: var(--color-surface-sunken);
+  --_context-surface-sunken: var(--color-surface-default);
+  --_context-content: var(--color-on-surface);
+  --_context-content-muted: var(--color-content-muted);
+  --_context-border: var(--color-border-default);
+  --_context-border-subtle: var(--color-border-subtle);
+  --_context-border-strong: var(--color-border-strong);
+  --_context-hover: var(--color-interactive-subtle-hover);
+  --_context-shadow: var(--shadow-soft);
+}
+
+[data-theme='up-and-up'] .global-header--secondary {
+  --_header-surface: var(--color-accent-secondary);
+  --_header-content: var(--color-on-accent-secondary);
+  --_header-border: var(--color-border-accent-secondary);
+  --_header-hover: var(--color-hover-on-accent-secondary);
+  --_header-action-surface: var(--color-accent-secondary);
+  --_header-action-content: var(--color-on-accent-secondary);
+  --_header-action-border: var(--color-border-accent-secondary);
+  --_header-action-hover: var(--color-hover-on-accent-secondary);
+  --_header-mobile-surface: var(--color-accent-secondary);
+  --_header-mobile-content: var(--color-on-accent-secondary);
+  --_header-mobile-border: var(--color-border-accent-secondary);
+  --_header-mobile-hover: var(--color-hover-on-accent-secondary);
+  --_header-secondary-border-width: 1px;
+}
+
+/* Sunset is the only theme with functional tonal surfaces. */
+[data-theme='sunset'] [data-tone='workout'] {
+  --_context-surface-sunken: var(--sunset-tone-workout-surface-sunken);
+  --_context-surface: var(--sunset-tone-workout-surface);
+  --_context-surface-raised: var(--sunset-tone-workout-surface-raised);
+  --_context-strong: var(--sunset-tone-workout-strong);
+  --_context-strong-hover: var(--sunset-tone-workout-strong-hover);
+  --_context-border: var(--sunset-tone-workout-border);
+  --_context-border-subtle: var(--sunset-tone-workout-border);
+  --_context-border-strong: var(--sunset-tone-workout-border);
+  --_context-content: var(--sunset-tone-workout-content);
+  --_context-content-muted: var(--sunset-tone-workout-content-muted);
+  --_context-on-strong: var(--sunset-tone-workout-on-strong);
+  --_context-shadow: var(--sunset-tone-workout-shadow);
+  color: var(--_context-content);
+}
+
+[data-theme='sunset'] [data-tone='library'] {
+  --_context-surface-sunken: var(--sunset-tone-library-surface-sunken);
+  --_context-surface: var(--sunset-tone-library-surface);
+  --_context-surface-raised: var(--sunset-tone-library-surface-raised);
+  --_context-strong: var(--sunset-tone-library-strong);
+  --_context-strong-hover: var(--sunset-tone-library-strong-hover);
+  --_context-border: var(--sunset-tone-library-border);
+  --_context-border-subtle: var(--sunset-tone-library-border);
+  --_context-border-strong: var(--sunset-tone-library-border);
+  --_context-content: var(--sunset-tone-library-content);
+  --_context-content-muted: var(--sunset-tone-library-content-muted);
+  --_context-on-strong: var(--sunset-tone-library-on-strong);
+  --_context-shadow: var(--sunset-tone-library-shadow);
+  color: var(--_context-content);
+}
+
+[data-theme='sunset'] [data-tone='selection'] {
+  --_context-surface-sunken: var(--sunset-tone-selection-surface-sunken);
+  --_context-surface: var(--sunset-tone-selection-surface);
+  --_context-surface-raised: var(--sunset-tone-selection-surface-raised);
+  --_context-strong: var(--sunset-tone-selection-strong);
+  --_context-strong-hover: var(--sunset-tone-selection-strong-hover);
+  --_context-border: var(--sunset-tone-selection-border);
+  --_context-border-subtle: var(--sunset-tone-selection-border);
+  --_context-border-strong: var(--sunset-tone-selection-border);
+  --_context-content: var(--sunset-tone-selection-content);
+  --_context-content-muted: var(--sunset-tone-selection-content-muted);
+  --_context-on-strong: var(--sunset-tone-selection-on-strong);
+  --_context-shadow: var(--sunset-tone-selection-shadow);
+  color: var(--_context-content);
+}
+
+/* An opaque boundary also keeps nested Sunset tone recipes opaque. */
+[data-theme='sunset'] .color-context--opaque[data-tone='workout'],
+[data-theme='sunset'] [data-tone='workout'] > .color-context--opaque,
+[data-theme='sunset'] .color-context--opaque [data-tone='workout'] {
+  --_context-surface-sunken: var(--sunset-tone-workout-surface-sunken-opaque);
+  --_context-surface: var(--sunset-tone-workout-surface-opaque);
+  --_context-surface-raised: var(--sunset-tone-workout-surface-raised-opaque);
+}
+
+[data-theme='sunset'] .color-context--opaque[data-tone='library'],
+[data-theme='sunset'] [data-tone='library'] > .color-context--opaque,
+[data-theme='sunset'] .color-context--opaque [data-tone='library'] {
+  --_context-surface-sunken: var(--sunset-tone-library-surface-sunken-opaque);
+  --_context-surface: var(--sunset-tone-library-surface-opaque);
+  --_context-surface-raised: var(--sunset-tone-library-surface-raised-opaque);
+}
+
+[data-theme='sunset'] .color-context--opaque[data-tone='selection'],
+[data-theme='sunset'] [data-tone='selection'] > .color-context--opaque,
+[data-theme='sunset'] .color-context--opaque [data-tone='selection'] {
+  --_context-surface-sunken: var(--sunset-tone-selection-surface-sunken-opaque);
+  --_context-surface: var(--sunset-tone-selection-surface-opaque);
+  --_context-surface-raised: var(--sunset-tone-selection-surface-raised-opaque);
 }

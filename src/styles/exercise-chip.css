@@ -3,10 +3,10 @@
   padding: 0.45rem 0.8rem 0.45rem 0.45rem;
   align-items: center;
   gap: 0.55rem;
-  border: 1px solid var(--_tone-border, var(--color-border-default));
+  border: 1px solid var(--_context-border);
   border-radius: 999px;
-  background: var(--_tone-surface, var(--color-surface-sunken));
-  color: var(--_tone-content, var(--color-on-surface));
+  background: var(--_context-surface);
+  color: var(--_context-content);
   font-family: inherit;
   text-align: left;
   cursor: pointer;
@@ -14,7 +14,7 @@
 }
 
 .exercise-chip:hover {
-  background: var(--_tone-surface-raised, var(--color-surface-raised));
+  background: var(--_context-surface-raised);
   box-shadow: 0 8px 12px var(--shadow-soft);
 }
 
@@ -24,9 +24,9 @@
   height: 2rem;
   flex: 0 0 2rem;
   place-items: center;
-  border: 0.5px solid var(--_tone-border, var(--color-border-default));
+  border: 0.5px solid var(--_context-border);
   border-radius: 50%;
-  background: var(--_tone-surface-sunken, var(--color-surface-default));
+  background: var(--_context-surface-sunken);
 }
 
 .exercise-chip__content {
@@ -40,5 +40,5 @@
 
 .exercise-chip small {
   margin-top: 0.1rem;
-  color: var(--_tone-content-muted, var(--color-content-muted));
+  color: var(--_context-content-muted);
 }

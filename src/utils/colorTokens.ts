@@ -83,6 +83,22 @@ export const OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT = [
   '--image-surface-canvas',
 ] as const;
 
+export const COLOR_CONTEXT_TOKEN_CONTRACT = [
+  '--_context-surface',
+  '--_context-surface-raised',
+  '--_context-surface-sunken',
+  '--_context-content',
+  '--_context-content-muted',
+  '--_context-border',
+  '--_context-border-subtle',
+  '--_context-border-strong',
+  '--_context-hover',
+  '--_context-strong',
+  '--_context-strong-hover',
+  '--_context-on-strong',
+  '--_context-shadow',
+] as const;
+
 export const BRAND_IMAGE_TOKEN_CONTRACT = [
   '--image-brand-mark',
   '--image-brand-mark-alternate',
