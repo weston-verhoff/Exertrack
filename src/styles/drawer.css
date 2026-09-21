@@ -1,9 +1,10 @@
 .drawer-panel {
+  --_drawer-surface: var(--color-surface-inverse);
   position: fixed;
   top: 0;
   right: 0;
   height: 100vh;
-	background: var(--color-surface-inverse);
+	background: var(--_drawer-surface);
   color: var(--color-on-inverse);
   z-index: 1001;
   box-shadow: -4px 0 12px var(--shadow-strong);
@@ -162,6 +163,20 @@
 
 .workout-details .exercise-item {
   margin-bottom: 1.25rem;
+	padding: 0.75rem;
+	border: 1px solid var(--_tone-border, var(--color-border-default));
+	border-radius: 10px;
+	background: var(--_tone-surface, var(--color-surface-default));
+}
+
+.workout-details input:not([type='checkbox']) {
+	padding: 0.7rem 1rem;
+	border: 1px solid var(--_tone-border, var(--color-border-default));
+	background: var(--_tone-surface-sunken, var(--color-surface-default));
+	box-shadow: none;
+	color: var(--_tone-content, var(--color-on-surface));
+	text-align: left;
+	appearance: none;
 }
 
 .workout-details .exercise-item ul {
@@ -183,7 +198,37 @@
 	padding: 0.55rem 0.65rem;
 	border: 1px solid var(--_tone-border, var(--color-border-on-inverse));
 	border-radius: 8px;
-	background: var(--_tone-surface-sunken, var(--color-surface-inverse-subtle));
+	background: var(--_tone-surface-raised, var(--color-surface-raised));
+}
+
+.workout-details .exercise-set-row--completed {
+	border-color: var(--color-feedback-success-border);
+}
+
+.exercise-set-completion,
+.workout-details .exercise-item .exercise-set-completion {
+	flex: 0 0 18px;
+	width: 18px;
+	height: 18px;
+	padding: 0;
+	border: 1px solid var(--_tone-border, var(--color-border-default));
+	border-radius: 50%;
+	background: var(--_tone-surface-sunken, var(--color-surface-sunken));
+	color: var(--color-on-interactive-positive);
+	font-size: 12px;
+	font-weight: 800;
+	line-height: 1;
+	cursor: pointer;
+}
+
+.exercise-set-completion[aria-pressed='true'] {
+	border-color: var(--color-interactive-positive);
+	background: var(--color-interactive-positive);
+}
+
+.exercise-set-completion:disabled {
+	cursor: wait;
+	opacity: 0.65;
 }
 
 .workout-details__save {

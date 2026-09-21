@@ -185,6 +185,15 @@ const closeDrawerAfterSave = () => {
 					onStatusChange(workout.id, status);    // notify parent
 				}}
 				onExercisesChange={setEditedExercises}
+				onPersistedExercisesChange={persistedExercises => {
+					setEditedExercises(persistedExercises);
+					onWorkoutUpdated({
+						...workout,
+						date: editedDate,
+						status: localStatus,
+						workout_exercises: persistedExercises,
+					});
+				}}
 				isSaving={isSaving}
 				onSave={async () => {
 					setIsSaving(true);

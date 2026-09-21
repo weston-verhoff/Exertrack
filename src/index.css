@@ -332,7 +332,6 @@ input.exerciseSearch{
 	justify-content: center;
 	max-width:100vw;
 	min-height: 350px;
-	height: 25vh;
 	padding:4rem 2rem;
 }
 .dashboardHero h1{
@@ -408,9 +407,10 @@ input.exerciseSearch{
 	background-color: var(--color-accent-secondary-subtle);
 	background-image: var(--image-surface-accent);
 	background-size:cover;
-	padding: 4rem;
-	max-height: 450px;
-	max-width:100%;
+	margin: 1rem var(--global-header-content-gap) 0;
+	padding: 2rem;
+	max-width: calc(100% - (2 * var(--global-header-content-gap)));
+	border-radius: 1rem;
 }
 .drag-future-workouts {
 	display: flex;

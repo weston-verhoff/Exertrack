@@ -1,6 +1,7 @@
 /* Sunset theme: dusky blues and pinks lit by vivid orange and soft yellow. */
 [data-theme='sunset'] {
   color-scheme: dark;
+  --sunset-surface-opacity: 0.5;
 
   /* Reference palette */
   --ref-night-975: #100e22;
@@ -9,6 +10,11 @@
   --ref-night-850: #2b2144;
   --ref-night-800: #372650;
   --ref-night-700: #49325e;
+  --ref-night-975-surface: rgba(16, 14, 34, var(--sunset-surface-opacity));
+  --ref-night-950-surface: rgba(21, 19, 38, var(--sunset-surface-opacity));
+  --ref-night-850-surface: rgba(43, 33, 68, var(--sunset-surface-opacity));
+  --ref-night-800-surface: rgba(55, 38, 80, var(--sunset-surface-opacity));
+  --ref-night-700-surface: rgba(73, 50, 94, var(--sunset-surface-opacity));
   --ref-dusk-600: #684468;
   --ref-dusk-400: #a7798f;
   --ref-cream-100: #fff4cf;
@@ -19,20 +25,30 @@
   --ref-pink-800: #71304f;
   --ref-pink-900: #512544;
   --ref-pink-950: #35162c;
+  --ref-pink-800-surface: rgba(113, 48, 79, var(--sunset-surface-opacity));
+  --ref-pink-900-surface: rgba(81, 37, 68, var(--sunset-surface-opacity));
+  --ref-pink-950-surface: rgba(53, 22, 44, var(--sunset-surface-opacity));
   --ref-orange-500: #ff7a1a;
   --ref-orange-400: #ff963d;
   --ref-orange-200: #ffc078;
   --ref-orange-800: #78351b;
   --ref-orange-900: #5a291c;
   --ref-orange-950: #3b1c16;
+  --ref-orange-800-surface: rgba(120, 53, 27, var(--sunset-surface-opacity));
+  --ref-orange-900-surface: rgba(90, 41, 28, var(--sunset-surface-opacity));
+  --ref-orange-950-surface: rgba(59, 28, 22, var(--sunset-surface-opacity));
   --ref-yellow-400: #ffd86b;
   --ref-yellow-200: #ffedaa;
   --ref-yellow-700: #a9751c;
   --ref-yellow-800: #71531b;
   --ref-yellow-900: #4a3918;
   --ref-yellow-950: #302614;
+  --ref-yellow-800-surface: rgba(113, 83, 27, var(--sunset-surface-opacity));
+  --ref-yellow-900-surface: rgba(74, 57, 24, var(--sunset-surface-opacity));
+  --ref-yellow-950-surface: rgba(48, 38, 20, var(--sunset-surface-opacity));
   --ref-mint-400: #8ed9ad;
   --ref-mint-900: #173c31;
+  --ref-mint-900-surface: rgba(23, 60, 49, var(--sunset-surface-opacity));
   --ref-coral-400: #ff6f7d;
   --ref-transparent: rgba(0, 0, 0, 0);
   --ref-overlay: rgba(16, 14, 34, 0.96);
@@ -49,12 +65,12 @@
 
   /* Neutral foundations */
   --color-surface-canvas: var(--ref-night-900);
-  --color-surface-default: var(--ref-night-850);
-  --color-surface-raised: var(--ref-night-800);
-  --color-surface-sunken: var(--ref-night-950);
-  --color-surface-inverse: var(--ref-night-975);
-  --color-surface-inverse-subtle: var(--ref-night-700);
-  --color-surface-overlay: var(--ref-night-975);
+  --color-surface-default: var(--ref-night-850-surface);
+  --color-surface-raised: var(--ref-night-800-surface);
+  --color-surface-sunken: var(--ref-night-950-surface);
+  --color-surface-inverse: var(--ref-night-975-surface);
+  --color-surface-inverse-subtle: var(--ref-night-700-surface);
+  --color-surface-overlay: var(--ref-night-975-surface);
   --color-on-canvas: var(--ref-cream-100);
   --color-on-surface: var(--ref-cream-100);
   --color-content-secondary: var(--ref-cream-200);
@@ -73,13 +89,13 @@
   /* Accent families */
   --color-accent-primary: var(--ref-pink-500);
   --color-on-accent-primary: var(--ref-night-975);
-  --color-accent-primary-subtle: var(--ref-pink-900);
+  --color-accent-primary-subtle: var(--ref-pink-900-surface);
   --color-on-accent-primary-subtle: var(--ref-pink-200);
   --color-border-accent-primary: var(--ref-pink-400);
   --color-hover-on-accent-primary: var(--ref-wash-yellow);
   --color-accent-secondary: var(--ref-orange-500);
   --color-on-accent-secondary: var(--ref-night-975);
-  --color-accent-secondary-subtle: var(--ref-orange-900);
+  --color-accent-secondary-subtle: var(--ref-orange-900-surface);
   --color-on-accent-secondary-subtle: var(--ref-orange-200);
   --color-border-accent-secondary: var(--ref-orange-400);
   --color-hover-on-accent-secondary: var(--ref-wash-yellow);
@@ -106,13 +122,13 @@
   --color-interactive-danger-hover: var(--ref-dusk-600);
 
   /* Feedback */
-  --color-feedback-info-surface: var(--ref-night-700);
+  --color-feedback-info-surface: var(--ref-night-700-surface);
   --color-on-feedback-info: var(--ref-yellow-200);
   --color-feedback-info-border: var(--ref-orange-400);
-  --color-feedback-success-surface: var(--ref-mint-900);
+  --color-feedback-success-surface: var(--ref-mint-900-surface);
   --color-on-feedback-success: var(--ref-mint-400);
   --color-feedback-success-border: var(--ref-mint-400);
-  --color-feedback-danger-surface: var(--ref-pink-900);
+  --color-feedback-danger-surface: var(--ref-pink-900-surface);
   --color-on-feedback-danger: var(--ref-pink-200);
   --color-feedback-danger-border: var(--ref-coral-400);
 
@@ -147,12 +163,17 @@
   --image-surface-accent: none;
 }
 
+/* Let the canvas show through the drawer shell. Its contents are overridden below. */
+[data-theme='sunset'] .drawer-panel {
+  --_drawer-surface: var(--ref-night-975-surface);
+}
+
 /* Component-local tonal recipes. Other themes ignore these private aliases. */
 [data-theme='sunset'] [data-tone='workout'] {
-  --_tone-surface-sunken: var(--ref-orange-950);
-  --_tone-surface: var(--ref-orange-900);
-  --_tone-surface-raised: var(--ref-orange-800);
-  --_tone-strong: var(--ref-orange-500);
+  --_tone-surface-sunken: var(--ref-orange-950-surface);
+  --_tone-surface: var(--ref-orange-900-surface);
+  --_tone-surface-raised: var(--ref-orange-800-surface);
+  --_tone-strong: var(--ref-orange-400);
   --_tone-strong-hover: var(--ref-orange-400);
   --_tone-border: var(--ref-orange-400);
   --_tone-content: var(--ref-orange-200);
@@ -163,9 +184,9 @@
 }
 
 [data-theme='sunset'] [data-tone='library'] {
-  --_tone-surface-sunken: var(--ref-pink-950);
-  --_tone-surface: var(--ref-pink-900);
-  --_tone-surface-raised: var(--ref-pink-800);
+  --_tone-surface-sunken: var(--ref-pink-950-surface);
+  --_tone-surface: var(--ref-pink-900-surface);
+  --_tone-surface-raised: var(--ref-pink-800-surface);
   --_tone-strong: var(--ref-pink-500);
   --_tone-strong-hover: var(--ref-pink-400);
   --_tone-border: var(--ref-pink-400);
@@ -177,9 +198,9 @@
 }
 
 [data-theme='sunset'] [data-tone='selection'] {
-  --_tone-surface-sunken: var(--ref-yellow-950);
-  --_tone-surface: var(--ref-yellow-900);
-  --_tone-surface-raised: var(--ref-yellow-800);
+  --_tone-surface-sunken: var(--ref-yellow-950-surface);
+  --_tone-surface: var(--ref-yellow-900-surface);
+  --_tone-surface-raised: var(--ref-yellow-800-surface);
   --_tone-strong: var(--ref-yellow-400);
   --_tone-strong-hover: var(--ref-yellow-200);
   --_tone-border: var(--ref-yellow-700);
@@ -188,4 +209,23 @@
   --_tone-on-strong: var(--ref-night-975);
   --_tone-shadow: var(--ref-shadow-hover);
   color: var(--_tone-content);
+}
+
+/* Preserve crisp hierarchy inside drawers, including nested tonal contexts. */
+[data-theme='sunset'] .drawer-panel[data-tone='workout'], [data-theme='sunset'] .drawer-panel [data-tone='workout'] {
+  --_tone-surface-sunken: var(--ref-orange-950);
+  --_tone-surface: var(--ref-orange-900);
+  --_tone-surface-raised: var(--ref-orange-800);
+}
+
+[data-theme='sunset'] .drawer-panel[data-tone='library'], [data-theme='sunset'] .drawer-panel [data-tone='library'] {
+  --_tone-surface-sunken: var(--ref-pink-950);
+  --_tone-surface: var(--ref-pink-900);
+  --_tone-surface-raised: var(--ref-pink-800);
+}
+
+[data-theme='sunset'] .drawer-panel[data-tone='selection'], [data-theme='sunset'] .drawer-panel [data-tone='selection'] {
+  --_tone-surface-sunken: var(--ref-yellow-950);
+  --_tone-surface: var(--ref-yellow-900);
+  --_tone-surface-raised: var(--ref-yellow-800);
 }

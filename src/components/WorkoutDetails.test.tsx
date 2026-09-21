@@ -1,6 +1,7 @@
-import { render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { WorkoutDetails } from './WorkoutDetails';
 import { WorkoutExercise } from '../types/workout';
+import { updateWorkoutSetCompletion } from '../services/workoutService';
 
 jest.mock(
   'react-router-dom',
@@ -20,6 +21,7 @@ jest.mock('../services/workoutService', () => ({
   deleteWorkoutSet: jest.fn(),
   duplicateWorkoutFromExercises: jest.fn(),
   insertWorkoutSet: jest.fn(),
+  updateWorkoutSetCompletion: jest.fn(),
   updateWorkoutStatus: jest.fn(),
 }));
 
@@ -104,6 +106,18 @@ describe('WorkoutDetails layout', () => {
       'workout-details--full-page'
     );
   });
+
+  it('uses spinner-free text fields with a decimal keyboard hint', () => {
+    const { container } = renderDetails(strengthExercise);
+    const inputs = container.querySelectorAll('.workout-details__numeric-input');
+
+    expect(inputs).toHaveLength(2);
+    inputs.forEach(input => {
+      expect(input).toHaveAttribute('type', 'text');
+      expect(input).toHaveAttribute('inputmode', 'decimal');
+    });
+    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+  });
 });
 
 describe('WorkoutDetails cardio controls', () => {
@@ -122,6 +136,76 @@ describe('WorkoutDetails cardio controls', () => {
     expect(screen.getByRole('button', { name: 'Add Segment' })).toBeInTheDocument();
     expect(screen.getByText(/Segment 1:/)).toBeInTheDocument();
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
+  });
+});
+
+describe('WorkoutDetails set completion', () => {
+  beforeEach(() => {
+    jest.mocked(updateWorkoutSetCompletion).mockResolvedValue({ data: null, error: null });
+  });
+
+  it('persists and reports a completed strength set', async () => {
+    const onExercisesChange = jest.fn();
+    const onPersistedExercisesChange = jest.fn();
+    render(
+      <WorkoutDetails
+        workoutId="workout-1"
+        date="2026-09-19"
+        status="scheduled"
+        exercises={[strengthExercise]}
+        onDateChange={jest.fn()}
+        onSave={jest.fn().mockResolvedValue(undefined)}
+        onStatusChange={jest.fn()}
+        onExercisesChange={onExercisesChange}
+        onPersistedExercisesChange={onPersistedExercisesChange}
+        onDelete={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark completed set 1' }));
+
+    await waitFor(() => expect(updateWorkoutSetCompletion).toHaveBeenCalledWith({
+      setId: 'set-2',
+      completed: true,
+    }));
+    expect(onExercisesChange).toHaveBeenCalledWith([
+      expect.objectContaining({
+        workout_sets: [expect.objectContaining({ id: 'set-2', completed: true })],
+      }),
+    ]);
+    expect(onPersistedExercisesChange).toHaveBeenCalledWith([
+      expect.objectContaining({
+        workout_sets: [expect.objectContaining({ id: 'set-2', completed: true })],
+      }),
+    ]);
+  });
+
+  it('allows cardio segments to be marked incomplete', async () => {
+    const onExercisesChange = jest.fn();
+    const cardio = cardioExercise(true);
+    cardio.workout_sets[0].completed = true;
+    render(
+      <WorkoutDetails
+        workoutId="workout-1"
+        date="2026-09-19"
+        status="scheduled"
+        exercises={[cardio]}
+        onDateChange={jest.fn()}
+        onSave={jest.fn().mockResolvedValue(undefined)}
+        onStatusChange={jest.fn()}
+        onExercisesChange={onExercisesChange}
+        onDelete={jest.fn()}
+      />
+    );
+
+    const completionButton = screen.getByRole('button', { name: 'Mark incomplete segment 1' });
+    expect(completionButton).toHaveTextContent('✓');
+    fireEvent.click(completionButton);
+
+    await waitFor(() => expect(updateWorkoutSetCompletion).toHaveBeenCalledWith({
+      setId: 'set-1',
+      completed: false,
+    }));
   });
 });
 

@@ -64,15 +64,35 @@ const resolveValue = (
   const value = declarations.get(token);
   if (!value) throw new Error(`Missing token: ${token}`);
 
-  const reference = value.match(/^var\((--[_a-z0-9-]+)\)$/);
-  return reference ? resolveValue(reference[1], declarations, seen) : value;
+  return value.replace(/var\((--[_a-z0-9-]+)\)/g, (_, reference: string) =>
+    resolveValue(reference, declarations, new Set(seen))
+  );
 };
 
-const luminance = (hex: string) => {
-  const channels = hex
-    .slice(1)
-    .match(/.{2}/g)!
-    .map((value) => parseInt(value, 16) / 255)
+type RgbColor = [number, number, number];
+
+const parseColor = (value: string, backdrop: RgbColor): RgbColor => {
+  if (value.startsWith('#')) {
+    return value
+      .slice(1)
+      .match(/.{2}/g)!
+      .map((channel) => parseInt(channel, 16)) as RgbColor;
+  }
+
+  const match = value.match(
+    /^rgba\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*,\s*(0(?:\.\d+)?|1(?:\.0+)?)\s*\)$/i
+  );
+  if (!match) throw new Error(`Unsupported color: ${value}`);
+
+  const alpha = Number(match[4]);
+  return [Number(match[1]), Number(match[2]), Number(match[3])].map(
+    (channel, index) => channel * alpha + backdrop[index] * (1 - alpha)
+  ) as RgbColor;
+};
+
+const luminance = (color: RgbColor) => {
+  const channels = color
+    .map((value) => value / 255)
     .map((value) =>
       value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4
     );
@@ -80,9 +100,18 @@ const luminance = (hex: string) => {
   return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
 };
 
-const contrast = (first: string, second: string) => {
-  const light = Math.max(luminance(first), luminance(second));
-  const dark = Math.min(luminance(first), luminance(second));
+const contrast = (first: string, second: string, backdrop?: string) => {
+  const backdropColor = backdrop
+    ? parseColor(backdrop, [255, 255, 255])
+    : [255, 255, 255] as RgbColor;
+  const light = Math.max(
+    luminance(parseColor(first, backdropColor)),
+    luminance(parseColor(second, backdropColor))
+  );
+  const dark = Math.min(
+    luminance(parseColor(first, backdropColor)),
+    luminance(parseColor(second, backdropColor))
+  );
   return (light + 0.05) / (dark + 0.05);
 };
 
@@ -125,9 +154,10 @@ describe.each(themeFiles)('%s token contract', (themeFile) => {
     (surface, content) => {
       const surfaceValue = resolveValue(surface, declarations);
       const contentValue = resolveValue(content, declarations);
-      expect(surfaceValue).toMatch(/^#[0-9a-f]{6}$/i);
+      const canvasValue = resolveValue('--color-surface-canvas', declarations);
+      expect(surfaceValue).toMatch(/^(?:#[0-9a-f]{6}|rgba\(.+\))$/i);
       expect(contentValue).toMatch(/^#[0-9a-f]{6}$/i);
-      expect(contrast(surfaceValue, contentValue)).toBeGreaterThanOrEqual(4.5);
+      expect(contrast(surfaceValue, contentValue, canvasValue)).toBeGreaterThanOrEqual(4.5);
     }
   );
 });
@@ -288,9 +318,81 @@ describe('Sunset functional tone recipes', () => {
     tonePairs.forEach(([surface, content]) => {
       const surfaceValue = resolveValue(surface, declarations);
       const contentValue = resolveValue(content, declarations);
-      expect(surfaceValue).toMatch(/^#[0-9a-f]{6}$/i);
+      expect(surfaceValue).toMatch(
+        surface.startsWith('--_tone-surface')
+          ? /^rgba\(.+\)$/i
+          : /^#[0-9a-f]{6}$/i
+      );
       expect(contentValue).toMatch(/^#[0-9a-f]{6}$/i);
-      expect(contrast(surfaceValue, contentValue)).toBeGreaterThanOrEqual(4.5);
+      expect(
+        contrast(
+          surfaceValue,
+          contentValue,
+          resolveValue('--color-surface-canvas', declarations)
+        )
+      ).toBeGreaterThanOrEqual(4.5);
+    });
+  });
+
+  it('keeps the canvas opaque while making semantic surfaces translucent', () => {
+    const configuredOpacity = Number(
+      themeDeclarations.get('--sunset-surface-opacity')
+    );
+    expect(configuredOpacity).toBeGreaterThan(0);
+    expect(configuredOpacity).toBeLessThan(1);
+    expect(resolveValue('--color-surface-canvas', themeDeclarations)).toMatch(
+      /^#[0-9a-f]{6}$/i
+    );
+
+    [
+      '--color-surface-default',
+      '--color-surface-raised',
+      '--color-surface-sunken',
+      '--color-surface-inverse',
+      '--color-surface-inverse-subtle',
+      '--color-surface-overlay',
+      '--color-accent-primary-subtle',
+      '--color-accent-secondary-subtle',
+      '--color-feedback-info-surface',
+      '--color-feedback-success-surface',
+      '--color-feedback-danger-surface',
+    ].forEach((token) => {
+      const resolvedSurface = resolveValue(token, themeDeclarations);
+      const alpha = resolvedSurface.match(/,\s*([01](?:\.\d+)?)\)$/)?.[1];
+      expect(resolvedSurface).toMatch(/^rgba\(.+\)$/i);
+      expect(Number(alpha)).toBe(configuredOpacity);
+    });
+  });
+
+  it('keeps the drawer shell translucent and its tonal contents opaque', () => {
+    const drawerDeclarations = getRuleDeclarations(
+      css,
+      "[data-theme='sunset'] .drawer-panel"
+    );
+    const declarations = new Map([
+      ...Array.from(themeDeclarations.entries()),
+      ...Array.from(drawerDeclarations.entries()),
+    ]);
+
+    expect(resolveValue('--_drawer-surface', declarations)).toMatch(/^rgba\(.+\)$/i);
+
+    ['workout', 'library', 'selection'].forEach((tone) => {
+      const selector =
+        `[data-theme='sunset'] .drawer-panel[data-tone='${tone}'], ` +
+        `[data-theme='sunset'] .drawer-panel [data-tone='${tone}']`;
+      const opaqueToneDeclarations = getRuleDeclarations(css, selector);
+      const opaqueDeclarations = new Map([
+        ...Array.from(themeDeclarations.entries()),
+        ...Array.from(opaqueToneDeclarations.entries()),
+      ]);
+
+      [
+        '--_tone-surface-sunken',
+        '--_tone-surface',
+        '--_tone-surface-raised',
+      ].forEach((token) => {
+        expect(resolveValue(token, opaqueDeclarations)).toMatch(/^#[0-9a-f]{6}$/i);
+      });
     });
   });
 

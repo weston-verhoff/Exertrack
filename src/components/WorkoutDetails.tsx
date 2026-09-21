@@ -9,6 +9,7 @@ import {
 	deleteWorkoutSet,
   duplicateWorkoutFromExercises,
   updateWorkoutStatus,
+	updateWorkoutSetCompletion,
 	insertWorkoutSet,
 } from '../services/workoutService';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
@@ -42,6 +43,7 @@ interface Props {
   errorMessage?: string | null;
 	onStatusChange: (status: string) => void;
 	onExercisesChange: (exercises: WorkoutExercise[]) => void;
+	onPersistedExercisesChange?: (exercises: WorkoutExercise[]) => void;
 	onDelete: () => void;
 	onClose?: () => void;
 	fullPage?: boolean;
@@ -66,7 +68,9 @@ function NumericInput({ value, onChange, style }: NumericInputProps) {
 
   return (
     <input
-      type="number"
+      className="workout-details__numeric-input"
+      type="text"
+      inputMode="decimal"
       value={displayValue}
       onChange={e => {
         const value = e.target.value;
@@ -91,6 +95,7 @@ export function WorkoutDetails({
   errorMessage,
 	onStatusChange,
 	onExercisesChange,
+	onPersistedExercisesChange,
 	onDelete,
 	onClose,
 	fullPage = false,
@@ -109,6 +114,7 @@ export function WorkoutDetails({
   const [duplicateMessage, setDuplicateMessage] = useState<string | null>(null);
 	const [removingSetId, setRemovingSetId] = useState<string | null>(null);
 	const [addingSetId, setAddingSetId] = useState<string | null>(null);
+	const [updatingCompletionSetId, setUpdatingCompletionSetId] = useState<string | null>(null);
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
 	const toBuilderExercises = (items: WorkoutExercise[]): BuilderExerciseConfig[] =>
     items.map((we, index) => ({
@@ -218,7 +224,7 @@ export function WorkoutDetails({
         const tracksLaps = isCardio && Boolean(we.exercise?.track_laps);
 
         return (
-        <div key={we.id} className="exercise-item">
+		<div key={we.id} className="exercise-item">
           <strong>{we.exercise?.name ?? 'Unknown'}</strong>
 					{(!isCardio || tracksLaps) && (
 					<WorkoutButton
@@ -271,7 +277,50 @@ export function WorkoutDetails({
 						{[...we.workout_sets]
 							.sort((a, b) => a.set_number - b.set_number)
 							.map(set => (
-              <li key={set.id ?? `${we.id}-${set.set_number}`}>
+								<li
+								  key={set.id ?? `${we.id}-${set.set_number}`}
+								  className={set.completed ? 'exercise-set-row exercise-set-row--completed' : 'exercise-set-row'}
+								>
+								<button
+								  type="button"
+								  className="exercise-set-completion"
+								  aria-label={`${set.completed ? 'Mark incomplete' : 'Mark completed'} ${isCardio ? 'segment' : 'set'} ${set.set_number}`}
+								  aria-pressed={Boolean(set.completed)}
+								  title={set.completed ? 'Mark incomplete' : 'Mark completed'}
+								  disabled={!set.id || updatingCompletionSetId !== null}
+								  onClick={async () => {
+								    if (!set.id || authLoading || !userId) return;
+								    const completed = !set.completed;
+								    setUpdatingCompletionSetId(set.id);
+								    const { error } = await updateWorkoutSetCompletion({
+								      setId: set.id,
+								      completed,
+								    });
+
+								    if (error) {
+								      console.error(error);
+								      showAlert(`Failed to mark ${isCardio ? 'segment' : 'set'} ${completed ? 'completed' : 'incomplete'}.`, { tone: 'error' });
+								      setUpdatingCompletionSetId(null);
+								      return;
+								    }
+
+								    const updatedExercises = exercises.map(ex =>
+								        ex.id !== we.id
+								          ? ex
+								          : {
+								              ...ex,
+								              workout_sets: ex.workout_sets.map(s =>
+								                s.id === set.id ? { ...s, completed } : s
+								              ),
+								            }
+								      );
+								    onExercisesChange(updatedExercises);
+								    onPersistedExercisesChange?.(updatedExercises);
+								    setUpdatingCompletionSetId(null);
+								  }}
+								>
+								  {set.completed ? '✓' : ''}
+								</button>
 				{isCardio ? <>
 				{tracksLaps && <>Segment {set.set_number}:{' '}</>}
 				<NumericInput value={Math.round((set.duration_seconds ?? 0) / 60)} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, duration_seconds: Math.max(0, value) * 60 } : s) })))} style={{ width: 60 }} /> min{' '}
@@ -322,7 +371,7 @@ export function WorkoutDetails({
                   }}
                   style={{ width: 70, marginLeft: 6 }}
                 />
-	                {weightUnitLabel}
+	                {weightUnitLabel.toLocaleLowerCase()}
 				</>}
 								{(!isCardio || tracksLaps) && (
 									<button

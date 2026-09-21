@@ -17,6 +17,7 @@ export interface WorkoutSet extends CardioMetrics {
   id?: string;
 	workout_exercise_id?: string;
   set_number: number;
+  completed?: boolean;
   reps?: number | null;
   weight?: number | null;
   intensity_type?: string;

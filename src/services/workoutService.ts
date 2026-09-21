@@ -61,6 +61,7 @@ const WORKOUT_SELECT_FIELDS = `
       id,
       workout_exercise_id,
       set_number,
+      completed,
       reps,
       weight,
       intensity_type,
@@ -90,6 +91,7 @@ const WORKOUT_SELECT_FIELDS_WITH_TEMPLATE = `
       id,
       workout_exercise_id,
       set_number,
+      completed,
       reps,
       weight,
       intensity_type,
@@ -214,6 +216,7 @@ const buildWorkoutSetRows = (
         ...(set.id ? { id: set.id } : {}),
         workout_exercise_id: set.workout_exercise_id ?? ex.id,
         set_number: set.set_number,
+        completed: set.completed ?? false,
         reps: set.reps,
         weight: set.weight,
         duration_seconds: set.duration_seconds ?? null,
@@ -437,6 +440,30 @@ export async function updateWorkoutStatus({
   return { data: null, error: null };
 }
 
+export async function updateWorkoutSetCompletion({
+  setId,
+  completed,
+}: {
+  setId: string;
+  completed: boolean;
+}): Promise<ServiceResult<null>> {
+  const { data, error } = await supabase
+    .from('workout_sets')
+    .update({ completed })
+    .eq('id', setId)
+    .select('id')
+    .maybeSingle();
+
+  if (error || !data) {
+    return {
+      data: null,
+      error: logAndReturnError('Failed to update workout set completion.', error),
+    };
+  }
+
+  return { data: null, error: null };
+}
+
 export async function insertWorkoutSet({
   workoutExerciseId,
   setNumber,
@@ -489,6 +516,7 @@ export async function insertWorkoutSet({
       id: data.id,
       workout_exercise_id: data.workout_exercise_id,
       set_number: data.set_number,
+      completed: data.completed ?? false,
       reps: data.reps,
       weight: data.weight,
       intensity_type: data.intensity_type,
@@ -1005,6 +1033,7 @@ export const workoutService = {
   fetchWorkoutBuilderExercises,
   saveWorkout,
   updateWorkoutStatus,
+  updateWorkoutSetCompletion,
   deleteWorkout,
   createWorkoutFromBuilder,
   updateWorkoutFromBuilder,
