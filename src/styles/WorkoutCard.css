@@ -41,9 +41,15 @@
 	--_card-header-content: var(--_tone-on-strong, var(--color-on-accent-secondary-subtle));
 }
 
+[data-theme='default'] .workout-card {
+	--_card-header-surface: var(--_card-surface);
+	--_card-header-content: var(--_card-content);
+}
+
 .workout-head {
 	background-color: var(--_card-header-surface);
 	color: var(--_card-header-content);
+	border-bottom: 1px solid var(--_card-border);
 	font-weight:bold;
 	text-transform: uppercase;
 	display: flex;

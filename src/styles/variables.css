@@ -1,6 +1,7 @@
 :root {
   --font-headline: 'Roboto', sans-serif;
   --font-body: 'Roboto', sans-serif;
+  --global-header-height: 64px;
   --image-surface-canvas: none;
   --image-brand-mark: url('../assets/branding/default/mark.png');
   --image-brand-mark-alternate: var(--image-brand-mark);
