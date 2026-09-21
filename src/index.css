@@ -198,7 +198,6 @@ select{
 	--_header-hover: var(--color-hover-on-inverse);
 	top:0;
 	position: fixed;
-  min-height: var(--global-header-height);
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -313,7 +312,7 @@ input.exerciseSearch{
 
 /* ====Dashboard==== */
 .clearfix{
-	padding-top: 1px;
+	padding-top: var(--global-header-height);
 	overflow-x: hidden;
 }
 .dashboardHero {
@@ -331,7 +330,7 @@ input.exerciseSearch{
 	min-height: 350px;
 	/* height: 25vh; */
 	padding:4rem 2rem;
-	margin-top: var(--global-header-height);
+	margin-top: 0;
 }
 .dashboardHero h1{
 		font-style: italic;

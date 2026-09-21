@@ -23,6 +23,7 @@ describe('GlobalHeader', () => {
     mockNavigate.mockReset();
     mockSignOut.mockReset();
     mockUser = null;
+    document.documentElement.style.removeProperty('--global-header-height');
   });
 
   afterEach(() => {
@@ -34,6 +35,18 @@ describe('GlobalHeader', () => {
 
     expect(screen.getByRole('banner')).toHaveClass('global-header');
     expect(screen.getByRole('banner')).not.toHaveClass('global-header--secondary');
+  });
+
+  it('publishes its rendered height for fixed-page offsets', () => {
+    jest.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockReturnValue({
+      height: 57.5,
+    } as DOMRect);
+
+    render(<GlobalHeader />);
+
+    expect(document.documentElement).toHaveStyle(
+      '--global-header-height: 57.5px'
+    );
   });
 
   it('exposes semantic secondary intent and one theme-controlled logo', () => {

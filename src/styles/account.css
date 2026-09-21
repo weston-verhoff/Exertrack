@@ -1,7 +1,7 @@
 .account-page {
-  min-height: 100vh;
-  padding-top: 56px;
-  color: var(--color-on-canvas);
+    min-height: 100vh;
+    padding-top: var(--global-header-height);
+    color: var(--color-on-canvas);
 }
 
 .account-hero {
@@ -367,7 +367,7 @@
 
 @media (max-width: 620px) {
   .account-page {
-    padding-top: 64px;
+    padding-top: var(--global-header-height);
   }
 
   .account-hero {

@@ -3,10 +3,9 @@
     "",
     "\\src",
     "\\src\\components",
-    "\\src\\pages",
     "\\src\\styles",
     "\\src\\utils"
   ],
-  "SelectedNode": "\\src\\styles\\variables.css",
+  "SelectedNode": "\\src\\index.css",
   "PreviewInSolutionExplorer": false
 }

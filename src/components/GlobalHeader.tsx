@@ -1,5 +1,5 @@
 // src/components/GlobalHeader.tsx
-import { useState, type ReactNode } from 'react';
+import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
@@ -12,6 +12,7 @@ type GlobalHeaderProps = {
 
 export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 	const location = useLocation();
@@ -31,6 +32,35 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
   ];
   const loggedOutLinks: Array<{ to: string; label: ReactNode }> = [];
 
+  useLayoutEffect(() => {
+    const header = headerRef.current;
+    if (!header) return;
+
+    const syncHeaderHeight = () => {
+      const height = header.getBoundingClientRect().height;
+      if (height > 0) {
+        document.documentElement.style.setProperty(
+          '--global-header-height',
+          `${height}px`
+        );
+      }
+    };
+
+    syncHeaderHeight();
+    window.addEventListener('resize', syncHeaderHeight);
+
+    const resizeObserver =
+      typeof ResizeObserver === 'undefined'
+        ? null
+        : new ResizeObserver(syncHeaderHeight);
+    resizeObserver?.observe(header);
+
+    return () => {
+      window.removeEventListener('resize', syncHeaderHeight);
+      resizeObserver?.disconnect();
+    };
+  }, []);
+
   const handleSignOut = async () => {
     const returnPath = `${location.pathname}${location.search}${location.hash}`;
     navigate('/login', { replace: true, state: null });
@@ -46,7 +76,10 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
   };
 
   return (
-    <header className={`global-header${variant === 'secondary' ? ' global-header--secondary' : ''}`}>
+    <header
+      ref={headerRef}
+      className={`global-header${variant === 'secondary' ? ' global-header--secondary' : ''}`}
+    >
 			<Link
         aria-label="IWYN home"
         className="logo font-white"
