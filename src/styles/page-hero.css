@@ -1,0 +1,31 @@
+.global-header-offset {
+  padding-top: calc(var(--global-header-height) + var(--global-header-content-gap));
+}
+
+.page-hero-surface {
+  --_page-hero-surface: var(--color-surface-inverse);
+  --_page-hero-raised-surface: var(--color-surface-inverse-subtle);
+  --_page-hero-content: var(--color-on-inverse);
+  --_page-hero-muted-content: var(--color-on-inverse-muted);
+  --_page-hero-border: var(--color-border-on-inverse);
+  --_page-hero-wordmark: var(--image-brand-wordmark);
+
+  margin-inline: var(--global-header-content-gap);
+  background-color: var(--_page-hero-surface);
+  background-image: var(--image-surface-hero);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: var(--_page-hero-content);
+  border: 1px solid var(--_page-hero-border);
+  border-radius: 1rem;
+}
+
+[data-theme='default'] .page-hero-surface {
+  --_page-hero-surface: var(--color-surface-default);
+  --_page-hero-raised-surface: var(--color-surface-raised);
+  --_page-hero-content: var(--color-on-surface);
+  --_page-hero-muted-content: var(--color-content-muted);
+  --_page-hero-border: var(--color-border-default);
+  --_page-hero-wordmark: url('../assets/branding/default/wordmark-alternate.png');
+}

@@ -123,6 +123,7 @@ return (
 	</h1>
 
 <WorkoutDetails
+fullPage
 workoutId={workout.id}
 date={workout.date}
 status={workout.status}

@@ -1,4 +1,5 @@
 import { useNavigate } from 'react-router-dom';
+import '../styles/drawer.css';
 import { WorkoutButton } from './WorkoutButton';
 import { supabase } from '../supabase/client'
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
@@ -43,6 +44,7 @@ interface Props {
 	onExercisesChange: (exercises: WorkoutExercise[]) => void;
 	onDelete: () => void;
 	onClose?: () => void;
+	fullPage?: boolean;
 }
 
 type NumericInputProps = {
@@ -91,6 +93,7 @@ export function WorkoutDetails({
 	onExercisesChange,
 	onDelete,
 	onClose,
+	fullPage = false,
 }: Props) {
   const navigate = useNavigate();
 	const { showAlert } = useSystemAlerts();
@@ -188,7 +191,7 @@ export function WorkoutDetails({
   /* ------------------ Render ------------------ */
 
   return (
-    <div className="workout-details">
+    <div className={`workout-details${fullPage ? ' workout-details--full-page' : ''}`}>
       <header className="workout-details__header">
       <label className="workout-details__date">
         <span>Date</span>
@@ -410,12 +413,12 @@ export function WorkoutDetails({
 		</section>
 
 			{duplicateMessage && (
-        <p style={{ marginTop: '0.5rem', color: 'inherit' }}>
+        <p className="workout-details__message" style={{ marginTop: '0.5rem', color: 'inherit' }}>
           {duplicateMessage}
         </p>
       )}
       {duplicateError && (
-        <p style={{ marginTop: '0.5rem', color: 'var(--color-on-inverse-danger)' }}>
+        <p className="workout-details__message" style={{ marginTop: '0.5rem', color: 'var(--color-on-inverse-danger)' }}>
           {duplicateError}
         </p>
       )}
@@ -468,7 +471,7 @@ export function WorkoutDetails({
         )}
         </div>
 
-	      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', justifyContent: 'center' }}>
+	      <div className="workout-details__actions">
 	        {status !== 'completed' && (
 	          <>
 	            <WorkoutButton

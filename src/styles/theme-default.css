@@ -52,7 +52,7 @@
 
   /* Neutral foundations */
   --color-surface-canvas: var(--ref-neutral-50);
-  --color-surface-default: var(--ref-neutral-0);
+  --color-surface-default: var(--ref-neutral-100);
   --color-surface-raised: var(--ref-neutral-25);
   --color-surface-sunken: var(--ref-neutral-100);
   --color-surface-inverse: var(--ref-neutral-900);

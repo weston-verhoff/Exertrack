@@ -2,6 +2,10 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { WorkoutButton } from '../components/WorkoutButton';
 import { WorkoutCard } from '../components/WorkoutCard';
+import {
+  WorkoutCardSkeleton,
+  WorkoutCardSkeletonGrid,
+} from '../components/LoadingSkeletons';
 import { motion } from 'framer-motion'; // ✅ Import motion
 import { Workout } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
@@ -146,8 +150,8 @@ export default function Dashboard() {
     : completedWorkouts.slice(0, 9);
 
   return (
-    <div className="clearfix">
-      <div className='dashboardHero'>
+    <div className="clearfix global-header-offset">
+      <div className="dashboardHero page-hero-surface">
 				<div className="dash-content">
 					<div
 	          className="dashboard-logo"
@@ -179,7 +183,9 @@ export default function Dashboard() {
 
 					</div>
 				</div>
-				{nextWorkout ? (
+				{loading ? (
+				  <WorkoutCardSkeleton tone="workout" />
+				) : nextWorkout ? (
 				  <WorkoutCard
 				    workout={nextWorkout}
 						tone="workout"
@@ -199,7 +205,9 @@ export default function Dashboard() {
         )}
       </div>
       {loading ? (
-        <p>Loading workouts...</p>
+        <section className="past-workout-container">
+          <WorkoutCardSkeletonGrid rows={2} label="Loading home workouts" />
+        </section>
       ) : (
         <>
           {/* FUTURE WORKOUTS with drag scrolling */}

@@ -265,6 +265,18 @@ select{
   cursor: pointer;
 }
 
+[data-theme='default'] .global-header {
+	--_header-surface: var(--color-surface-default);
+	--_header-content: var(--color-on-surface);
+	--_header-border: var(--color-border-default);
+	--_header-hover: var(--color-interactive-subtle);
+	border-bottom: 1px solid var(--_header-border);
+}
+
+[data-theme='default'] .global-header .logo .logo-image {
+	background-image: url('./assets/branding/default/mark-alternate.png');
+}
+
 [data-theme='up-and-up'] .global-header--secondary {
 	--_header-surface: var(--color-accent-secondary);
 	--_header-content: var(--color-on-accent-secondary);
@@ -312,25 +324,16 @@ input.exerciseSearch{
 
 /* ====Dashboard==== */
 .clearfix{
-	padding-top: var(--global-header-height);
 	overflow-x: hidden;
 }
 .dashboardHero {
-	--_hero-surface: var(--color-surface-inverse);
-	--_hero-content: var(--color-on-inverse);
-	--_hero-border: var(--color-border-on-inverse);
 	display:flex;
 	align-items: center;
 	justify-content: center;
 	max-width:100vw;
-	background-color: var(--_hero-surface);
-	background-image: var(--image-surface-hero);
-	color: var(--_hero-content);
-	background-size: cover;
 	min-height: 350px;
-	/* height: 25vh; */
+	height: 25vh;
 	padding:4rem 2rem;
-	margin-top: 0;
 }
 .dashboardHero h1{
 		font-style: italic;
@@ -340,7 +343,7 @@ input.exerciseSearch{
 	display: block;
 	width: min(420px, 80vw);
 	aspect-ratio: 617 / 269;
-	background-image: var(--image-brand-wordmark);
+	background-image: var(--_page-hero-wordmark, var(--image-brand-wordmark));
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: contain;
@@ -386,9 +389,9 @@ input.exerciseSearch{
 	line-height: 1.4;
 }
 .empty-workout-card--hero {
-	--_empty-surface: var(--_tone-surface, var(--color-surface-inverse-subtle));
-	--_empty-content: var(--_tone-content, var(--color-on-inverse));
-	--_empty-border: var(--_tone-border, var(--color-border-on-inverse));
+	--_empty-surface: var(--_tone-surface, var(--_page-hero-raised-surface, var(--color-surface-inverse-subtle)));
+	--_empty-content: var(--_tone-content, var(--_page-hero-content, var(--color-on-inverse)));
+	--_empty-border: var(--_tone-border, var(--_page-hero-border, var(--color-border-on-inverse)));
 }
 
 .dash-content {
@@ -442,6 +445,12 @@ input.exerciseSearch{
   flex-wrap:wrap;
   justify-content: center;
 }
+.past-workouts-page {
+	display: flex;
+	width: 100%;
+	min-width: 0;
+	flex-direction: column;
+}
 .past-workouts-footer {
   display: flex;
   justify-content: center;
@@ -493,6 +502,7 @@ input.exerciseSearch{
 	}
 	.global-header .nav-links .sign-out-button {
 		border: 1px solid var(--color-border-on-inverse);
+		color: var(--color-on-inverse);
 		padding: 0.75rem 1rem;
 		width: 100%;
 		text-align: left;

@@ -16,6 +16,10 @@ import { Drawer } from '../components/Drawer';
 import { ExerciseChip } from '../components/ExerciseChip';
 import { ResponsiveSegmentedControl } from '../components/ResponsiveSegmentedControl';
 import { WorkoutCard } from '../components/WorkoutCard';
+import {
+  ChartSkeleton,
+  WorkoutCardSkeletonGrid,
+} from '../components/LoadingSkeletons';
 import { SwitchField } from '../components/SwitchField';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -354,8 +358,11 @@ export default function AccountPage() {
   const firstName = settings.firstName.trim();
 
   return (
-    <div id="account-top" className="account-page">
-      <section className="account-hero" aria-labelledby="account-greeting">
+    <div id="account-top" className="account-page global-header-offset">
+      <section
+        className="account-hero page-hero-surface"
+        aria-labelledby="account-greeting"
+      >
         <h1 id="account-greeting">{firstName ? `Hello, ${firstName}!` : 'Hello!'}</h1>
         <div className="account-stat-grid" aria-label="Workout summary">
           <article className="account-stat-card" data-tone="workout">
@@ -396,7 +403,7 @@ export default function AccountPage() {
           <section id="recent-workouts" className="account-section">
             <h2>Recent Workouts</h2>
             {loading ? (
-              <p>Loading workouts...</p>
+              <WorkoutCardSkeletonGrid rows={1} label="Loading recent workouts" />
             ) : recentWorkouts.length ? (
               <div className="account-recent-grid">
                 {recentWorkouts.map((workout) => (
@@ -436,7 +443,9 @@ export default function AccountPage() {
               </label>
             </div>
             <div className="account-chart color-context color-context--raised" data-tone="workout" aria-label="Strength volume chart">
-              {workouts.length ? (
+              {loading ? (
+                <ChartSkeleton />
+              ) : workouts.length ? (
                 <Line
                   data={chartData}
                   options={{

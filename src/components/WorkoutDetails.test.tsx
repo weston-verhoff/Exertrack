@@ -72,9 +72,13 @@ const strengthExercise: WorkoutExercise = {
   ],
 };
 
-const renderDetails = (exercise: WorkoutExercise | WorkoutExercise[]) =>
+const renderDetails = (
+  exercise: WorkoutExercise | WorkoutExercise[],
+  fullPage = false
+) =>
   render(
     <WorkoutDetails
+      fullPage={fullPage}
       workoutId="workout-1"
       date="2026-09-19"
       status="scheduled"
@@ -86,6 +90,21 @@ const renderDetails = (exercise: WorkoutExercise | WorkoutExercise[]) =>
       onDelete={jest.fn()}
     />
   );
+
+describe('WorkoutDetails layout', () => {
+  it('scopes the wide two-column layout to the full-page view', () => {
+    const drawerView = renderDetails(strengthExercise);
+    expect(drawerView.container.firstChild).not.toHaveClass(
+      'workout-details--full-page'
+    );
+    drawerView.unmount();
+
+    const fullPageView = renderDetails(strengthExercise, true);
+    expect(fullPageView.container.firstChild).toHaveClass(
+      'workout-details--full-page'
+    );
+  });
+});
 
 describe('WorkoutDetails cardio controls', () => {
   it('uses the configured unit without segment controls when laps are disabled', () => {

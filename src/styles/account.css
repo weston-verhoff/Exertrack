@@ -1,13 +1,10 @@
 .account-page {
     min-height: 100vh;
-    padding-top: var(--global-header-height);
     color: var(--color-on-canvas);
 }
 
 .account-hero {
   padding: 2.5rem 1.5rem 3rem;
-  background: var(--color-surface-inverse) var(--image-surface-hero) center / cover;
-  color: var(--color-on-inverse);
   text-align: center;
 }
 
@@ -32,10 +29,10 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 1px solid var(--_tone-border, var(--color-border-on-inverse));
+  border: 1px solid var(--_tone-border, var(--_page-hero-border, var(--color-border-on-inverse)));
   border-radius: 12px;
-  background: var(--_tone-surface, var(--color-surface-inverse-subtle));
-  color: var(--_tone-content, var(--color-on-inverse));
+  background: var(--_tone-surface, var(--_page-hero-raised-surface, var(--color-surface-inverse-subtle)));
+  color: var(--_tone-content, var(--_page-hero-content, var(--color-on-inverse)));
 }
 
 .account-stat-card span {
@@ -366,10 +363,6 @@
 }
 
 @media (max-width: 620px) {
-  .account-page {
-    padding-top: var(--global-header-height);
-  }
-
   .account-hero {
     padding-inline: 1rem;
   }

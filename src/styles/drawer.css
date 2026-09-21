@@ -190,6 +190,61 @@
 	display: flex;
 	justify-content: center;
 }
+
+.workout-details__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+@media screen and (min-width: 960px) {
+  .workout-details--full-page {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
+  }
+
+  .workout-details--full-page > .workout-details__header,
+  .workout-details--full-page > .workout-details__message,
+  .workout-details--full-page > .workout-details__actions {
+    grid-column: 1 / -1;
+  }
+
+  .workout-details--full-page > .workout-details__section {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .workout-details--full-page > .workout-details__summaries {
+    grid-column: 1;
+    grid-row: 2;
+    display: grid;
+    grid-auto-rows: minmax(0, 1fr);
+    align-self: stretch;
+  }
+
+  .workout-details--full-page
+    > .workout-details__summaries
+    > .workout-details__section {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .workout-details--full-page
+    > .workout-details__summaries
+    > .workout-details__section
+    > ul {
+    width: fit-content;
+    margin: 0;
+    padding-left: 1.25rem;
+    text-align: left;
+  }
+}
+
 @media screen and (max-width: 800px){
 	.drawer-panel {
 		max-width: 90%;

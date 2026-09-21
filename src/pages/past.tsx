@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Layout } from '../components/Layout'
 import { WorkoutCard } from '../components/WorkoutCard'
 import { WorkoutButton } from '../components/WorkoutButton'
+import { WorkoutCardSkeletonGrid } from '../components/LoadingSkeletons'
 import { useAuth } from '../context/AuthContext'
 import { fetchWorkoutExportData } from '../services/workoutExportService'
 import {
@@ -161,10 +162,12 @@ export default function PastWorkouts() {
 
   return (
     <Layout>
-		<div style={{display:'flex', flexDirection:'column'}}>
+		<div className="past-workouts-page">
 			<h2 style={{textAlign:'center'}}>Future Workouts</h2>
 			{loading ? (
-        <p>Loading...</p>
+        <div style={{marginBottom:"4rem"}}>
+          <WorkoutCardSkeletonGrid rows={1} label="Loading future workouts" />
+        </div>
       ) : scheduledWorkouts.length === 0 ? (
         <div className="past-workouts" style={{marginBottom:"4rem"}}>
           <button
@@ -216,7 +219,7 @@ export default function PastWorkouts() {
         <p role="alert" style={{textAlign:'center'}}>{exportError}</p>
       )}
       {loading ? (
-        <p>Loading...</p>
+        <WorkoutCardSkeletonGrid rows={1} label="Loading past workouts" />
       ) : completedWorkouts.length === 0 ? (
         <p>No past workouts found.</p>
       ) : (

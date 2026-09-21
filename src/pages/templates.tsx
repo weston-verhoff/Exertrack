@@ -3,6 +3,7 @@ import { Search } from 'lucide-react';
 import { Layout } from '../components/Layout';
 import { ResponsiveSegmentedControl } from '../components/ResponsiveSegmentedControl';
 import { TemplateCard } from '../components/TemplateCard';
+import { WorkoutCardSkeletonGrid } from '../components/LoadingSkeletons';
 import { useAuth } from '../context/AuthContext';
 import { useSystemAlerts } from '../context/SystemAlertContext';
 import { supabase } from '../supabase/client';
@@ -261,7 +262,11 @@ export default function TemplatesPage() {
       )}
 
       {loading ? (
-        <p>Loading templates...</p>
+        <WorkoutCardSkeletonGrid
+          rows={2}
+          tone="library"
+          label="Loading workout templates"
+        />
       ) : templates.length === 0 ? (
         <p className="templates-page__empty">No templates found.</p>
       ) : visibleTemplates.length === 0 ? (
