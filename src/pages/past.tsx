@@ -6,6 +6,7 @@ import { WorkoutCard } from '../components/WorkoutCard'
 import { WorkoutButton } from '../components/WorkoutButton'
 import { WorkoutCardSkeletonGrid } from '../components/LoadingSkeletons'
 import { useAuth } from '../context/AuthContext'
+import { getAccountSettings } from '../services/accountService'
 import { fetchWorkoutExportData } from '../services/workoutExportService'
 import {
   fetchAllCompletedWorkouts,
@@ -16,8 +17,34 @@ import { useSystemAlerts } from '../context/SystemAlertContext'
 import {
   buildWorkoutExportFilename,
   downloadTextFile,
+  filterWorkoutsForExport,
   formatWorkoutsAsText,
+  WorkoutExportScope,
 } from '../utils/workoutExport'
+import { getWeekStartDateKey } from '../utils/accountMetrics'
+
+const EXPORT_MESSAGES: Record<WorkoutExportScope, { exporting: string; exported: string }> = {
+  all: {
+    exporting: 'Exporting all workouts...',
+    exported: 'Exported all workouts.',
+  },
+  planned: {
+    exporting: 'Exporting planned workouts...',
+    exported: 'Exported planned workouts.',
+  },
+  past: {
+    exporting: 'Exporting all past workouts...',
+    exported: 'Exported all past workouts.',
+  },
+  'this-week': {
+    exporting: "Exporting this week's workouts...",
+    exported: "Exported this week's workouts.",
+  },
+  '2-weeks': {
+    exporting: 'Exporting last 2 weeks...',
+    exported: 'Exported last 2 weeks.',
+  },
+}
 
 export default function PastWorkouts() {
   const navigate = useNavigate()
@@ -26,9 +53,8 @@ export default function PastWorkouts() {
 	const [showAllPast, setShowAllPast] = useState(false)
   const [loadingAllPast, setLoadingAllPast] = useState(false)
   const [completedTotalCount, setCompletedTotalCount] = useState<number>(0)
-  const [exportingWorkouts, setExportingWorkouts] = useState(false)
-  const [exportError, setExportError] = useState<string | null>(null)
-	const { userId, loading: authLoading } = useAuth()
+  const [exportingScope, setExportingScope] = useState<WorkoutExportScope | null>(null)
+	const { user, userId, loading: authLoading } = useAuth()
 	const { showAlert } = useSystemAlerts()
 	const handleStatusChange = (id: string, status: string) => {
 	  setWorkouts(prev =>
@@ -129,34 +155,63 @@ export default function PastWorkouts() {
 	  setLoadingAllPast(false)
 	};
 
-  const exportAllWorkouts = async () => {
-    if (!userId || exportingWorkouts) return
+  const exportWorkouts = async (
+    scope: WorkoutExportScope
+  ) => {
+    if (!user || !userId || exportingScope) return
 
-    setExportingWorkouts(true)
-    setExportError(null)
+    setExportingScope(scope)
+    showAlert(EXPORT_MESSAGES[scope].exporting, {
+      replaceKey: 'workout-export',
+      duration: 300000,
+    })
 
     try {
       const { data, error } = await fetchWorkoutExportData({ userId })
 
       if (error || !data) {
-        setExportError(error ?? 'Failed to export workouts. Please try again.')
+        showAlert(error ?? 'Failed to export workouts. Please try again.', {
+          tone: 'error',
+          replaceKey: 'workout-export',
+        })
         return
       }
 
-      if (data.length === 0) {
-        setExportError('No workouts are available to export.')
+      const exportDate = new Date()
+      const filteredWorkouts = filterWorkoutsForExport({
+        workouts: data,
+        scope,
+        today: exportDate,
+        weekStart: getWeekStartDateKey(
+          getAccountSettings(user).startOfWeek,
+          exportDate
+        ),
+      })
+
+      if (filteredWorkouts.length === 0) {
+        showAlert('No workouts are available for this export.', {
+          tone: 'error',
+          replaceKey: 'workout-export',
+        })
         return
       }
 
       downloadTextFile({
-        content: formatWorkoutsAsText(data),
-        filename: buildWorkoutExportFilename(),
+        content: formatWorkoutsAsText(filteredWorkouts),
+        filename: buildWorkoutExportFilename(scope, exportDate),
+      })
+      showAlert(EXPORT_MESSAGES[scope].exported, {
+        tone: 'success',
+        replaceKey: 'workout-export',
       })
     } catch (error) {
       console.error('Failed to export workouts.', error)
-      setExportError('Failed to export workouts. Please try again.')
+      showAlert('Failed to export workouts. Please try again.', {
+        tone: 'error',
+        replaceKey: 'workout-export',
+      })
     } finally {
-      setExportingWorkouts(false)
+      setExportingScope(null)
     }
   }
 
@@ -164,6 +219,25 @@ export default function PastWorkouts() {
     <Layout>
 		<div className="past-workouts-page">
 			<h2 style={{textAlign:'center'}}>Future Workouts</h2>
+			<div className="workout-export-links" aria-label="Future workout exports">
+				<WorkoutButton
+					label="Export All"
+					disabled={!userId || exportingScope !== null}
+					variant="completedSectionLink"
+					size="md"
+					tone="selection"
+					onClick={() => exportWorkouts('all')}
+				/>
+				<span aria-hidden="true">|</span>
+				<WorkoutButton
+					label="Export Planned Workouts"
+					disabled={!userId || exportingScope !== null}
+					variant="completedSectionLink"
+					size="md"
+					tone="selection"
+					onClick={() => exportWorkouts('planned')}
+				/>
+			</div>
 			{loading ? (
         <div style={{marginBottom:"4rem"}}>
           <WorkoutCardSkeletonGrid rows={1} label="Loading future workouts" />
@@ -203,21 +277,34 @@ export default function PastWorkouts() {
 				</div>
       )}
 			<h2 style={{textAlign:'center'}}>Past Workouts</h2>
-      <div style={{display:'flex', justifyContent:'center', marginBottom:'1rem'}}>
+      <div className="workout-export-links" aria-label="Past workout exports">
         <WorkoutButton
-          label="Export All"
-          loadingLabel="Exporting..."
-          loading={exportingWorkouts}
-          disabled={!userId}
-          variant="secondary"
-          size="lg"
+          label="Export All Past Workouts"
+          disabled={!userId || exportingScope !== null}
+          variant="completedSectionLink"
+          size="md"
           tone="selection"
-          onClick={exportAllWorkouts}
+          onClick={() => exportWorkouts('past')}
+        />
+        <span aria-hidden="true">|</span>
+        <WorkoutButton
+          label="Export This Week"
+          disabled={!userId || exportingScope !== null}
+          variant="completedSectionLink"
+          size="md"
+          tone="selection"
+          onClick={() => exportWorkouts('this-week')}
+        />
+        <span aria-hidden="true">|</span>
+        <WorkoutButton
+          label="Export 2 weeks"
+          disabled={!userId || exportingScope !== null}
+          variant="completedSectionLink"
+          size="md"
+          tone="selection"
+          onClick={() => exportWorkouts('2-weeks')}
         />
       </div>
-      {exportError && (
-        <p role="alert" style={{textAlign:'center'}}>{exportError}</p>
-      )}
       {loading ? (
         <WorkoutCardSkeletonGrid rows={1} label="Loading past workouts" />
       ) : completedWorkouts.length === 0 ? (

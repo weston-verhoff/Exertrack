@@ -31,6 +31,7 @@ const EXPORT_WORKOUT_SELECT_FIELDS = `
       id,
       workout_exercise_id,
       set_number,
+      completed,
       reps,
       weight,
       intensity_type,

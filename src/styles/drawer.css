@@ -227,9 +227,11 @@
 	cursor: pointer;
 }
 
-.exercise-set-completion[aria-pressed='true'] {
-	border-color: var(--color-interactive-positive);
+.exercise-set-completion[aria-pressed='true'],
+.workout-details .exercise-item .exercise-set-completion[aria-pressed='true'] {
+	border-color: var(--_context-border);
 	background: var(--color-interactive-positive);
+	color: var(--color-on-interactive-positive);
 }
 
 .exercise-set-completion:disabled {
