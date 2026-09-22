@@ -78,7 +78,8 @@ export function WorkoutCard({
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const [localStatus, setLocalStatus] = useState(workout.status);
 	const [isSaving, setIsSaving] = useState(false);
-	const showsDetailsDrawer = variant === 'past-workout' || localStatus === 'completed';
+	const showsFullPageDetails = variant === 'highlighted';
+	const showsDetailsDrawer = !showsFullPageDetails;
 	const [editedExercises, setEditedExercises] = useState(() =>
 	  workout.workout_exercises.map(ex => ({
 	    ...ex,
@@ -140,7 +141,7 @@ const openDetailsDrawer = () => {
 			</div>
 
       <div className="workout-btns">
-        {variant !== 'past-workout'  && localStatus !== 'completed' && (
+        {showsFullPageDetails && (
           <button
 					className="start-btn btn"
 					onClick={() => navigate(`/workout/${workout.id}`)}

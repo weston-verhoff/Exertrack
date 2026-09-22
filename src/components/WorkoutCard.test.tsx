@@ -93,7 +93,7 @@ describe('WorkoutCard actions', () => {
     mockNavigate.mockClear();
   });
 
-  it('uses a full-page details action without a drawer action for scheduled workouts', () => {
+  it('opens scheduled future workouts in the details drawer', () => {
     render(
       <WorkoutCard
         workout={workout}
@@ -105,10 +105,24 @@ describe('WorkoutCard actions', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Details' }));
-    expect(mockNavigate).toHaveBeenCalledWith('/workout/workout-1');
+    expect(mockNavigate).not.toHaveBeenCalled();
+    expect(screen.getByRole('button', { name: 'Persist completion' })).toBeInTheDocument();
+  });
 
-    const deleteButton = screen.getByRole('button', { name: 'Delete' });
-    expect(deleteButton).toBeEmptyDOMElement();
+  it('uses the full-page details action for the highlighted next workout', () => {
+    render(
+      <WorkoutCard
+        workout={workout}
+        variant="highlighted"
+        onDelete={jest.fn()}
+        onStatusChange={jest.fn()}
+        onWorkoutUpdated={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Details' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/workout/workout-1');
+    expect(screen.queryByRole('button', { name: 'Persist completion' })).not.toBeInTheDocument();
   });
 
   it('retains the drawer details action for completed workouts', () => {
