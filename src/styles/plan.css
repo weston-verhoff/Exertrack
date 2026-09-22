@@ -163,13 +163,16 @@
 
 .stat-field input, .stat-field select {
   width:100%;
+  min-width:50px;
+}
+
+.stat-field select {
   border: 1px solid var(--_context-border);
+  border-radius: 4px;
   background: var(--_context-surface-sunken);
   color: var(--_context-content);
-  border-radius: 4px;
   font-size: 1rem;
   padding: 0.3rem 0.35rem;
-  min-width:50px;
 }
 
 .stat-label {
@@ -369,22 +372,58 @@
 }
 
 @media (max-width: 680px) {
+  .builder-row__name{
+    margin-top:0.25rem;
+  }
   .plan-page {
     padding: 6rem 2rem 3rem;
   }
 
   .builder-row {
-   gap:0.5rem;
-   width:100%;
+    display: grid;
+    width: 100%;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: auto auto;
+    gap: 0.5rem;
   }
-  .builder-row__stats {flex-wrap:wrap;min-width:90px;justify-content:end;}
-  .builder-row__stats .stat-field{width:min-content;}
-  .stat-field > select{min-width:45px;}
-  .stat-field > input{min-width:40px;}
-  .drag-handle{padding:0.5rem;}
-  .remove-chip{padding:0.5rem;}
-  .builder-row__info{
-	  flex:1;
-	  min-width:30px;
+
+  .builder-row__info {
+    grid-column: 2;
+    grid-row: 1;
+	min-width: 0;
+  }
+
+  .builder-row__stats {
+    display: grid;
+    width: 100%;
+    min-width: 0;
+    grid-column: 2;
+    grid-row: 2;
+    grid-template-columns: repeat(auto-fit, minmax(2.5rem, 1fr));
+    gap: 0.25rem;
+  }
+
+  .builder-row__stats .stat-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .builder-row__stats .metric-field__control {
+    min-width: 0;
+  }
+
+  .drag-handle,
+  .remove-chip {
+    grid-row: 1 / 3;
+  }
+
+  .drag-handle {
+    grid-column: 1;
+    padding: 0.5rem;
+  }
+
+  .remove-chip {
+    grid-column: 3;
+    padding: 0.5rem;
   }
 }

@@ -1,0 +1,27 @@
+.metric-field {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.75rem;
+}
+
+.metric-field > .metric-field__control {
+  min-width: 2.5rem;
+  padding: 0.5rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 2rem;
+  background: var(--_context-surface-sunken);
+  box-shadow: none;
+  color: var(--_context-content);
+  font-size: 1rem;
+  text-align: center;
+  appearance: none;
+}
+
+.metric-field__label {
+  font-size: 0.7rem;
+  line-height: 1;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}

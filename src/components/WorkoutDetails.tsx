@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import '../styles/drawer.css';
+import '../styles/metric-fields.css';
 import { WorkoutButton } from './WorkoutButton';
 import { supabase } from '../supabase/client'
 import { WorkoutExercise, WorkoutSet } from '../types/workout';
@@ -68,7 +69,7 @@ function NumericInput({ value, onChange, style }: NumericInputProps) {
 
   return (
     <input
-      className="workout-details__numeric-input"
+      className="workout-details__numeric-input metric-field__control"
       type="text"
       inputMode="decimal"
       value={displayValue}
@@ -323,14 +324,20 @@ export function WorkoutDetails({
 								  {set.completed ? '✓' : ''}
 								</button>
 				{isCardio ? <>
-				{tracksLaps && <>Segment {set.set_number}:{' '}</>}
-				<NumericInput value={Math.round((set.duration_seconds ?? 0) / 60)} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, duration_seconds: Math.max(0, value) * 60 } : s) })))} style={{ width: 60 }} /> min{' '}
-				<NumericInput value={set.distance_value ?? 0} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, distance_value: Math.max(0, value) } : s) })))} style={{ width: 70 }} />{' '}
-				<span aria-label="Distance unit">
-				  {set.distance_unit ?? we.exercise?.default_distance_unit ?? fallbackDistanceUnit}
-				</span>
+				{tracksLaps && <span>Segment {set.set_number}:</span>}
+				<label className="metric-field">
+				  <NumericInput value={Math.round((set.duration_seconds ?? 0) / 60)} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, duration_seconds: Math.max(0, value) * 60 } : s) })))} style={{ width: 60 }} />
+				  <span className="metric-field__label">MIN</span>
+				</label>
+				<label className="metric-field">
+				  <NumericInput value={set.distance_value ?? 0} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, distance_value: Math.max(0, value) } : s) })))} style={{ width: 70 }} />
+				  <span className="metric-field__label" aria-label="Distance unit">
+				    DIST ({(set.distance_unit ?? we.exercise?.default_distance_unit ?? fallbackDistanceUnit).toUpperCase()})
+				  </span>
+				</label>
 				</> : <>
-                Set {set.set_number}:{' '}
+                <span>Set {set.set_number}:</span>
+								<label className="metric-field">
 								<NumericInput
                   value={set.reps ?? 0}
                   onChange={value => {
@@ -351,7 +358,9 @@ export function WorkoutDetails({
                   }}
                   style={{ width: 60 }}
                 />
-                reps
+								<span className="metric-field__label">REPS</span>
+								</label>
+								<label className="metric-field">
 								<NumericInput
                   value={set.weight ?? 0}
                   onChange={value => {
@@ -370,9 +379,10 @@ export function WorkoutDetails({
                       )
                     );
                   }}
-                  style={{ width: 70, marginLeft: 6 }}
+                  style={{ width: 70 }}
                 />
-	                {weightUnitLabel.toLocaleLowerCase()}
+								<span className="metric-field__label">{weightUnitLabel}</span>
+								</label>
 				</>}
 								{(!isCardio || tracksLaps) && (
 									<button

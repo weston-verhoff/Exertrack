@@ -57,3 +57,28 @@ describe('cardio planning card', () => {
     expect(screen.getByText('LAPS')).toBeInTheDocument();
   });
 });
+
+describe('planner metric fields', () => {
+  it('uses the shared control and below-field label styling', () => {
+    const { container } = renderBuilderRow(cardioExercise(false));
+    const fields = container.querySelectorAll('.metric-field');
+
+    expect(fields).toHaveLength(2);
+    fields.forEach(field => {
+      expect(field.firstElementChild).toHaveClass('metric-field__control');
+      expect(field.lastElementChild).toHaveClass('metric-field__label');
+    });
+  });
+
+  it('uses spinner-free decimal inputs', () => {
+    const { container } = renderBuilderRow(cardioExercise(false));
+    const inputs = container.querySelectorAll('.metric-field__control');
+
+    expect(inputs).toHaveLength(2);
+    inputs.forEach(input => {
+      expect(input).toHaveAttribute('type', 'text');
+      expect(input).toHaveAttribute('inputmode', 'decimal');
+    });
+    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+  });
+});

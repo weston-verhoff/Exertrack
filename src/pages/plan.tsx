@@ -26,6 +26,7 @@ import { SwitchField } from '../components/SwitchField';
 import { ExerciseChip } from '../components/ExerciseChip';
 import { GripVertical, Plus, Search, X } from 'lucide-react';
 import '../styles/plan.css';
+import '../styles/metric-fields.css';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
 import { DistanceUnit, ExerciseType } from '../types/workout';
 import { useSystemAlerts } from '../context/SystemAlertContext';
@@ -57,11 +58,10 @@ type BuilderRowProps = {
 
 type BuilderNumberInputProps = {
   value: number;
-  min?: number;
   onChange: (value: number) => void;
 };
 
-function BuilderNumberInput({ value, min, onChange }: BuilderNumberInputProps) {
+function BuilderNumberInput({ value, onChange }: BuilderNumberInputProps) {
   const [displayValue, setDisplayValue] = useState<string>(String(value));
 
   useEffect(() => {
@@ -74,9 +74,10 @@ function BuilderNumberInput({ value, min, onChange }: BuilderNumberInputProps) {
 
   return (
     <input
-      type="number"
+      className="metric-field__control"
+      type="text"
+      inputMode="decimal"
       value={displayValue}
-      min={min}
       onChange={e => {
         const rawValue = e.target.value;
         setDisplayValue(rawValue);
@@ -119,42 +120,39 @@ export function BuilderRow({
 
       <div className="builder-row__stats">
         {(exercise.exercise_type === 'strength' || exercise.track_laps) && (
-          <label className="stat-field">
+          <label className="stat-field metric-field">
             <BuilderNumberInput
               value={exercise.sets.length}
-              min={0}
               onChange={value => onChange(exercise.id, 'sets', value)}
             />
-            <span className="stat-label">{exercise.exercise_type === 'cardio' ? 'LAPS' : 'SETS'}</span>
+            <span className="stat-label metric-field__label">{exercise.exercise_type === 'cardio' ? 'LAPS' : 'SETS'}</span>
           </label>
         )}
         {exercise.exercise_type === 'cardio' ? <>
-        <label className="stat-field">
-          <BuilderNumberInput value={Math.round((exercise.sets[0]?.duration_seconds ?? 0) / 60)} min={0} onChange={value => onChange(exercise.id, 'duration_seconds', value * 60)} />
-          <span className="stat-label">MIN</span>
+        <label className="stat-field metric-field">
+          <BuilderNumberInput value={Math.round((exercise.sets[0]?.duration_seconds ?? 0) / 60)} onChange={value => onChange(exercise.id, 'duration_seconds', value * 60)} />
+          <span className="stat-label metric-field__label">MIN</span>
         </label>
-        <label className="stat-field">
-          <BuilderNumberInput value={exercise.sets[0]?.distance_value ?? 0} min={0} onChange={value => onChange(exercise.id, 'distance_value', value)} />
-          <span className="stat-label">
+        <label className="stat-field metric-field">
+          <BuilderNumberInput value={exercise.sets[0]?.distance_value ?? 0} onChange={value => onChange(exercise.id, 'distance_value', value)} />
+          <span className="stat-label metric-field__label">
             DIST ({(exercise.sets[0]?.distance_unit ?? 'mi').toUpperCase()})
           </span>
         </label>
         </> : <>
-        <label className="stat-field">
+        <label className="stat-field metric-field">
           <BuilderNumberInput
             value={exercise.sets[0]?.reps ?? 0}
-            min={0}
             onChange={value => onChange(exercise.id, 'reps', value)}
           />
-          <span className="stat-label">REPS</span>
+          <span className="stat-label metric-field__label">REPS</span>
         </label>
-        <label className="stat-field">
+        <label className="stat-field metric-field">
           <BuilderNumberInput
             value={exercise.sets[0]?.weight ?? 0}
-            min={0}
             onChange={value => onChange(exercise.id, 'weight', value)}
           />
-          <span className="stat-label">{weightUnitLabel}</span>
+          <span className="stat-label metric-field__label">{weightUnitLabel}</span>
         </label>
         </>}
       </div>

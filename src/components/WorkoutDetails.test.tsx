@@ -110,6 +110,21 @@ describe('WorkoutDetails layout', () => {
     );
   });
 
+  it('keeps exercises and volume summaries in mobile reading order', () => {
+    renderDetails(strengthExercise, true);
+
+    const exercises = screen.getByRole('heading', { name: 'Exercises' });
+    const muscleVolume = screen.getByRole('heading', { name: 'Muscle Volume Breakdown' });
+    const volumeSummary = screen.getByRole('heading', { name: 'Volume Summary' });
+
+    expect(exercises.compareDocumentPosition(muscleVolume)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+    expect(muscleVolume.compareDocumentPosition(volumeSummary)).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
+  });
+
   it('uses spinner-free text fields with a decimal keyboard hint', () => {
     const { container } = renderDetails(strengthExercise);
     const inputs = container.querySelectorAll('.workout-details__numeric-input');
@@ -120,6 +135,19 @@ describe('WorkoutDetails layout', () => {
       expect(input).toHaveAttribute('inputmode', 'decimal');
     });
     expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+  });
+
+  it('places uppercase metric labels below their fields', () => {
+    const { container } = renderDetails(strengthExercise);
+    const fields = container.querySelectorAll('.metric-field');
+
+    expect(fields).toHaveLength(2);
+    expect(fields[0]).toHaveTextContent('REPS');
+    expect(fields[1]).toHaveTextContent('KG');
+    fields.forEach(field => {
+      expect(field.firstElementChild).toHaveClass('metric-field__control');
+      expect(field.lastElementChild).toHaveClass('metric-field__label');
+    });
   });
 
   it('does not offer the retired workout runner action', () => {
@@ -226,7 +254,7 @@ describe('WorkoutDetails cardio controls', () => {
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Add Segment' })).not.toBeInTheDocument();
     expect(screen.queryByText(/Segment 1:/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Distance unit')).toHaveTextContent('km');
+    expect(screen.getByLabelText('Distance unit')).toHaveTextContent('DIST (KM)');
   });
 
   it('shows segment controls when laps are enabled', () => {
