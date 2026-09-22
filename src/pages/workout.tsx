@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import '../styles/workout.css' // ✅ Import your CSS file
 import { Layout } from '../components/Layout';
 import { Workout, WorkoutExercise, WorkoutSet } from '../types/workout';
-import { WorkoutDetails } from '../components/WorkoutDetails'
+import { WorkoutDetails, WorkoutSaveOptions } from '../components/WorkoutDetails'
 import { useAuth } from '../context/AuthContext';
 import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
 import { confirmAndDeleteWorkout } from '../utils/workoutActions';
@@ -52,9 +52,10 @@ export default function WorkoutRecap() {
     fetchWorkout()
   }, [authLoading, id, userId])
 
-	const saveUpdates = async (): Promise<void> => {
-	  if (!workout) return;
-    if (!userId) return;
+	const saveUpdates = async (
+    { announceSuccess = true }: WorkoutSaveOptions = {}
+  ): Promise<boolean> => {
+	  if (!workout || !userId) return false;
 
 	  setSaving(true);
 	  showAlert('Saving workout...', { replaceKey: 'workout-save' });
@@ -71,11 +72,17 @@ export default function WorkoutRecap() {
 
 	    if (error) throw new Error(error);
 
-	    showAlert('Workout saved!', { tone: 'success', replaceKey: 'workout-save' });
+	    if (announceSuccess) {
+        showAlert('Workout saved!', { tone: 'success', replaceKey: 'workout-save' });
+      } else {
+        dismissAlertGroup('workout-save');
+      }
+	    return true;
 	  } catch (err) {
 	    console.error(err);
 			dismissAlertGroup('workout-save');
 			showAlert('Failed to save workout. Please try again.', { tone: 'error' });
+			return false;
 	} finally {
 		setSaving(false);
 	}
@@ -119,7 +126,7 @@ const handleDeleteWorkout = async () => {
 return (
 	<Layout padded maxWidth="xl" scrollable>
 	<h1 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-	  <TrendingUp aria-hidden="true" size={28} /> Workout Recap
+	  <TrendingUp aria-hidden="true" size={28} /> Workout Details
 	</h1>
 
 <WorkoutDetails

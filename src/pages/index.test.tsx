@@ -1,9 +1,11 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import Dashboard from './index';
 import { fetchWorkoutOverview } from '../services/workoutService';
 
+const mockNavigate = jest.fn();
+
 jest.mock('react-router-dom', () => ({
-  useNavigate: () => jest.fn(),
+  useNavigate: () => mockNavigate,
 }), { virtual: true });
 
 jest.mock('framer-motion', () => ({
@@ -82,5 +84,21 @@ describe('Dashboard future workouts', () => {
 
     expect(await screen.findByRole('heading', { name: 'Future Workouts' })).toBeInTheDocument();
     expect(screen.getAllByTestId('workout-card')).toHaveLength(2);
+  });
+
+  it('opens the next workout in the full-page details view', async () => {
+    (fetchWorkoutOverview as jest.Mock).mockResolvedValue({
+      data: {
+        scheduled: [{ id: 'workout-1', name: 'Tomorrow', date: '2026-09-21', status: 'scheduled' }],
+        completed: [],
+        completedCount: 0,
+      },
+      error: null,
+    });
+
+    renderDashboard();
+    fireEvent.click(await screen.findByRole('button', { name: 'Next Workout' }));
+
+    expect(mockNavigate).toHaveBeenCalledWith('/workout/workout-1');
   });
 });

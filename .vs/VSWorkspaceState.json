@@ -6,6 +6,6 @@
     "\\src\\styles",
     "\\src\\utils"
   ],
-  "SelectedNode": "\\src\\styles\\drawer.css",
+  "SelectedNode": "\\src\\components\\WorkoutCard.tsx",
   "PreviewInSolutionExplorer": false
 }

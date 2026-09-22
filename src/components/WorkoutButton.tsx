@@ -11,8 +11,9 @@ interface WorkoutButtonProps {
   loadingLabel?: string
   type?: 'button' | 'submit' | 'reset'
 	size?: 'sm' | 'md' | 'lg'
-	rounded?: 'default' | 'full'
+  rounded?: 'default' | 'full'
   tone?: ComponentTone
+  iconOnly?: boolean
 }
 
 const variantStyles: Record<string, React.CSSProperties> = {
@@ -78,12 +79,14 @@ export function WorkoutButton({
   type = 'button',
 	rounded = 'default',
   tone,
+  iconOnly = false,
 }: WorkoutButtonProps) {
   const [isPressed, setIsPressed] = useState(false)
 
   const baseStyle: React.CSSProperties = {
     ...variantStyles[variant],
 		...sizeStyles[size],
+    ...(iconOnly ? { padding: '0.4rem', minWidth: '2.125rem' } : {}),
     border: 'none',
     borderRadius: rounded==='full'?'999px':'8px',
 		fontFamily: 'var(--font-body)',
@@ -118,9 +121,10 @@ export function WorkoutButton({
       disabled={isDisabled}
       aria-disabled={isDisabled}
       aria-busy={loading}
+      aria-label={iconOnly ? displayLabel : undefined}
     >
       {icon ? <span aria-hidden="true" style={{ display: 'inline-flex' }}>{icon}</span> : null}
-      <span>{displayLabel}</span>
+      {!iconOnly && <span>{displayLabel}</span>}
     </button>
   )
 }

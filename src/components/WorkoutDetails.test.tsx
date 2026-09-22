@@ -1,7 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { WorkoutDetails } from './WorkoutDetails';
 import { WorkoutExercise } from '../types/workout';
-import { updateWorkoutSetCompletion } from '../services/workoutService';
+import {
+  updateWorkoutSetCompletion,
+  updateWorkoutStatus,
+} from '../services/workoutService';
 
 jest.mock(
   'react-router-dom',
@@ -86,7 +89,7 @@ const renderDetails = (
       status="scheduled"
       exercises={Array.isArray(exercise) ? exercise : [exercise]}
       onDateChange={jest.fn()}
-      onSave={jest.fn().mockResolvedValue(undefined)}
+      onSave={jest.fn().mockResolvedValue(true)}
       onStatusChange={jest.fn()}
       onExercisesChange={jest.fn()}
       onDelete={jest.fn()}
@@ -117,6 +120,102 @@ describe('WorkoutDetails layout', () => {
       expect(input).toHaveAttribute('inputmode', 'decimal');
     });
     expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+  });
+
+  it('does not offer the retired workout runner action', () => {
+    renderDetails(strengthExercise, true);
+
+    expect(screen.queryByRole('button', { name: 'Start Workout' })).not.toBeInTheDocument();
+  });
+});
+
+describe('WorkoutDetails completion', () => {
+  beforeEach(() => {
+    jest.mocked(updateWorkoutStatus).mockResolvedValue({ data: null, error: null });
+  });
+
+  it('saves changes before marking the workout completed', async () => {
+    const onSave = jest.fn().mockResolvedValue(true);
+    const onStatusChange = jest.fn();
+    render(
+      <WorkoutDetails
+        fullPage
+        workoutId="workout-1"
+        date="2026-09-19"
+        status="scheduled"
+        exercises={[strengthExercise]}
+        onDateChange={jest.fn()}
+        onSave={onSave}
+        onStatusChange={onStatusChange}
+        onExercisesChange={jest.fn()}
+        onDelete={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark Completed' }));
+
+    await waitFor(() => expect(onStatusChange).toHaveBeenCalledWith('completed'));
+    expect(onSave).toHaveBeenCalledWith({ announceSuccess: false });
+    expect(updateWorkoutStatus).toHaveBeenCalledWith({
+      workoutId: 'workout-1',
+      userId: 'user-1',
+      status: 'completed',
+    });
+    expect(onSave.mock.invocationCallOrder[0]).toBeLessThan(
+      jest.mocked(updateWorkoutStatus).mock.invocationCallOrder[0]
+    );
+  });
+
+  it('does not complete the workout when saving fails', async () => {
+    const onSave = jest.fn().mockResolvedValue(false);
+    render(
+      <WorkoutDetails
+        fullPage
+        workoutId="workout-1"
+        date="2026-09-19"
+        status="scheduled"
+        exercises={[strengthExercise]}
+        onDateChange={jest.fn()}
+        onSave={onSave}
+        onStatusChange={jest.fn()}
+        onExercisesChange={jest.fn()}
+        onDelete={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark Completed' }));
+
+    await waitFor(() => expect(onSave).toHaveBeenCalled());
+    expect(updateWorkoutStatus).not.toHaveBeenCalled();
+  });
+
+  it('does not report completion when the status update fails', async () => {
+    const consoleError = jest.spyOn(console, 'error').mockImplementation(() => undefined);
+    jest.mocked(updateWorkoutStatus).mockResolvedValueOnce({
+      data: null,
+      error: 'status update failed',
+    });
+    const onStatusChange = jest.fn();
+    render(
+      <WorkoutDetails
+        fullPage
+        workoutId="workout-1"
+        date="2026-09-19"
+        status="scheduled"
+        exercises={[strengthExercise]}
+        onDateChange={jest.fn()}
+        onSave={jest.fn().mockResolvedValue(true)}
+        onStatusChange={onStatusChange}
+        onExercisesChange={jest.fn()}
+        onDelete={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Mark Completed' }));
+
+    await waitFor(() => expect(updateWorkoutStatus).toHaveBeenCalled());
+    expect(onStatusChange).not.toHaveBeenCalled();
+    consoleError.mockRestore();
   });
 });
 
@@ -154,7 +253,7 @@ describe('WorkoutDetails set completion', () => {
         status="scheduled"
         exercises={[strengthExercise]}
         onDateChange={jest.fn()}
-        onSave={jest.fn().mockResolvedValue(undefined)}
+        onSave={jest.fn().mockResolvedValue(true)}
         onStatusChange={jest.fn()}
         onExercisesChange={onExercisesChange}
         onPersistedExercisesChange={onPersistedExercisesChange}
@@ -191,7 +290,7 @@ describe('WorkoutDetails set completion', () => {
         status="scheduled"
         exercises={[cardio]}
         onDateChange={jest.fn()}
-        onSave={jest.fn().mockResolvedValue(undefined)}
+        onSave={jest.fn().mockResolvedValue(true)}
         onStatusChange={jest.fn()}
         onExercisesChange={onExercisesChange}
         onDelete={jest.fn()}

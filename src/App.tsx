@@ -5,18 +5,19 @@ import {
   Routes,
   Route,
   useLocation,
+  useParams,
 } from 'react-router-dom';
 import { GlobalHeader } from './components/GlobalHeader';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { getGlobalHeaderVariant } from './utils/header';
 import { SystemAlertProvider } from './context/SystemAlertContext';
+import { getLegacyRunnerRedirect } from './utils/routes';
 import './index.css';
 
 const Dashboard = lazy(() => import('./pages/index'));
 const PlanSession = lazy(() => import('./pages/plan'));
 const Templates = lazy(() => import('./pages/templates'));
-const WorkoutRunner = lazy(() => import('./pages/runner'));
 const Recap = lazy(() => import('./pages/recap'));
 const PastWorkouts = lazy(() => import('./pages/past'));
 const Account = lazy(() => import('./pages/account'));
@@ -28,6 +29,12 @@ function RouteAwareGlobalHeader() {
   const { pathname } = useLocation();
 
   return <GlobalHeader variant={getGlobalHeaderVariant(pathname)} />;
+}
+
+export function LegacyRunnerRedirect() {
+  const { id } = useParams();
+
+  return <Navigate to={getLegacyRunnerRedirect(id)} replace />;
 }
 
 function App() {
@@ -77,7 +84,7 @@ function App() {
                 path="/runner"
                 element={
                   <ProtectedRoute>
-                    <WorkoutRunner />
+                    <LegacyRunnerRedirect />
                   </ProtectedRoute>
                 }
               />
@@ -126,7 +133,7 @@ function App() {
                 path="/runner/:id"
                 element={
                   <ProtectedRoute>
-                    <WorkoutRunner />
+                    <LegacyRunnerRedirect />
                   </ProtectedRoute>
                 }
               />

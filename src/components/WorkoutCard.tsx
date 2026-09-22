@@ -20,11 +20,8 @@ interface Props {
   isToday?: boolean;
   onDelete: (id: string) => void;
 	onStatusChange: (id: string, status: string) => void;
-	onWorkoutUpdated: (workout: Workout) => void;
+  onWorkoutUpdated: (workout: Workout) => void;
   tone?: ComponentTone;
-
-	onDrawerOpen?: () => void;
-  onDrawerClose?: () => void;
 }
 
 function summarizeSets(sets: WorkoutSetType[], isCardio: boolean) {
@@ -69,8 +66,6 @@ export function WorkoutCard({
   isToday,
   onDelete,
 	onStatusChange,
-	onDrawerOpen,
-	onDrawerClose,
 	onWorkoutUpdated,
   tone,
 }: Props) {
@@ -83,6 +78,7 @@ export function WorkoutCard({
 	const [drawerOpen, setDrawerOpen] = useState(false);
 	const [localStatus, setLocalStatus] = useState(workout.status);
 	const [isSaving, setIsSaving] = useState(false);
+	const showsDetailsDrawer = variant === 'past-workout' || localStatus === 'completed';
 	const [editedExercises, setEditedExercises] = useState(() =>
 	  workout.workout_exercises.map(ex => ({
 	    ...ex,
@@ -114,27 +110,19 @@ export function WorkoutCard({
 const closeDrawer = () => {
   resetDraftState();
   setDrawerOpen(false);
-  onDrawerClose?.();
 };
 const closeDrawerAfterSave = () => {
   setDrawerOpen(false);
-  onDrawerClose?.();
+};
+const openDetailsDrawer = () => {
+  resetDraftState();
+  setDrawerOpen(true);
 };
 
   return (
     <div className={variantClass} data-tone={tone}>
       <div className="workout-head">
         <span>{formattedDate}</span>
-				<WorkoutButton
-				  label="Details"
-				  icon=""
-				  variant="unsetText"
-					onClick={() => {
-						resetDraftState();
-				    setDrawerOpen(true);
-				    onDrawerOpen?.(); // 🔑 notify parent
-				  }}
-				/>
       </div>
 
 			<div className="lifts">
@@ -155,9 +143,17 @@ const closeDrawerAfterSave = () => {
         {variant !== 'past-workout'  && localStatus !== 'completed' && (
           <button
 					className="start-btn btn"
-					onClick={() => navigate(`/runner/${workout.id}`)}
+					onClick={() => navigate(`/workout/${workout.id}`)}
 				>
-					Start
+					Details
+				</button>
+			)}
+			{showsDetailsDrawer && (
+				<button
+					className="start-btn btn"
+					onClick={openDetailsDrawer}
+				>
+					Details
 				</button>
 			)}
 			<WorkoutButton
@@ -167,7 +163,7 @@ const closeDrawerAfterSave = () => {
 				onClick={() => onDelete(workout.id)}
 			/>
 		</div>
-		<Drawer
+		{showsDetailsDrawer && <Drawer
 			isOpen={drawerOpen}
 			onClose={closeDrawer}
 			width={520}
@@ -218,8 +214,10 @@ const closeDrawerAfterSave = () => {
 							workout_exercises: editedExercises,
 						});
 						closeDrawerAfterSave();
+						return true;
 					} catch (error) {
 						console.error('Failed to save workout:', error);
+						return false;
 					} finally {
 						setIsSaving(false);
 					}
@@ -232,7 +230,7 @@ const closeDrawerAfterSave = () => {
 					closeDrawer();
 				}}
 			/>
-		</Drawer>
+		</Drawer>}
 	</div>
 );
 }

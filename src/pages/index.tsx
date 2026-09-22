@@ -24,7 +24,6 @@ export default function Dashboard() {
   const navigate = useNavigate();
 	const futureContainerRef = useRef<HTMLDivElement>(null);
   const futureRef = useRef<HTMLDivElement>(null);
-	const [drawerOpen, setDrawerOpen] = useState(false);
   const { userId, loading: authLoading } = useAuth();
   const { showAlert } = useSystemAlerts();
 	const [isOverflowing] = useState(false);
@@ -161,12 +160,12 @@ export default function Dashboard() {
 					<div className="dashboard-buttons">
 					{nextWorkoutId && (
 					  <WorkoutButton
-					    label="Start Next Workout"
+					    label="Next Workout"
 							size="lg"
 					    icon=""
 						    variant="primary"
 							tone="workout"
-					    onClick={() => navigate(`/runner/${nextWorkoutId}`)}
+					    onClick={() => navigate(`/workout/${nextWorkoutId}`)}
 					  />
 					)}
 
@@ -225,12 +224,9 @@ export default function Dashboard() {
 					<motion.div
 					  ref={futureRef}
 					  className={`drag-future-workouts${isOverflowing ? ' is-overflowing' : ' is-centered'}`}
-					  drag={drawerOpen ? false : "x"}
+					  drag="x"
 					  dragConstraints={futureContainerRef}
 					  dragElastic={0.05}
-					  style={{
-					    pointerEvents: drawerOpen ? "none" : "auto",
-					  }}
 					>
 
 					{scheduledWorkouts.map((w) => (
@@ -241,8 +237,6 @@ export default function Dashboard() {
 								onDelete={deleteWorkout}
 								variant="future-workout"
 								onStatusChange={handleStatusChange}
-								onDrawerOpen={() => setDrawerOpen(true)}
-								onDrawerClose={() => setDrawerOpen(false)}
 								onWorkoutUpdated={updatedWorkout => {
 									setWorkouts(prev =>
 										prev.map(w =>

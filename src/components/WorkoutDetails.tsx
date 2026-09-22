@@ -37,7 +37,7 @@ interface Props {
   status?: string;
   exercises: WorkoutExercise[];
   onDateChange: (date: string) => void;
-  onSave: () => Promise<void>;
+  onSave: (options?: WorkoutSaveOptions) => Promise<boolean>;
   isSaving?: boolean;
   statusMessage?: string | null;
   errorMessage?: string | null;
@@ -116,6 +116,7 @@ export function WorkoutDetails({
 	const [addingSetId, setAddingSetId] = useState<string | null>(null);
 	const [updatingCompletionSetId, setUpdatingCompletionSetId] = useState<string | null>(null);
   const [duplicateError, setDuplicateError] = useState<string | null>(null);
+  const [isCompleting, setIsCompleting] = useState(false);
 	const toBuilderExercises = (items: WorkoutExercise[]): BuilderExerciseConfig[] =>
     items.map((we, index) => ({
       id: `dup-${we.id}-${index}`,
@@ -443,8 +444,8 @@ export function WorkoutDetails({
 	        label={isSaving ? 'Saving...' : 'Save Changes'}
 	        icon={<Save size={18} />}
 	        variant="primary"
-	        onClick={onSave}
-	        disabled={isSaving}
+	        onClick={() => { void onSave(); }}
+	        disabled={isSaving || isCompleting}
 	        data-testid="save-workout"
 	      />
 	      </div>
@@ -523,32 +524,36 @@ export function WorkoutDetails({
 	      <div className="workout-details__actions">
 	        {status !== 'completed' && (
 	          <>
-	            <WorkoutButton
-	              label="Start Workout"
-              variant="primary"
-              onClick={() => navigate(`/runner/${workoutId}`)}
-            />
 						<WorkoutButton
-						  label="Mark Completed"
+						  label={isCompleting ? 'Completing...' : 'Mark Completed'}
 						  icon={<CheckCircle2 size={18} />}
 						  variant="secondary"
 						  onClick={async () => {
-								if (authLoading || !userId) return;
-								const { error } = await updateWorkoutStatus({
-                  workoutId,
-                  userId,
-                  status: 'completed',
-                });
-						    if (error) {
-						      console.error(error);
-						      showAlert('Failed to mark workout as completed.', { tone: 'error' });
-						      return;
-						    }
+								if (authLoading || !userId || isCompleting) return;
+                setIsCompleting(true);
+                try {
+                  const saved = await onSave({ announceSuccess: false });
+                  if (!saved) return;
 
-						    // ✅ Update UI immediately
-						    onStatusChange('completed');
-								onClose?.();
+                  const { error } = await updateWorkoutStatus({
+                    workoutId,
+                    userId,
+                    status: 'completed',
+                  });
+                  if (error) {
+                    console.error(error);
+                    showAlert('Workout changes were saved, but the workout could not be marked completed.', { tone: 'error' });
+                    return;
+                  }
+
+						      onStatusChange('completed');
+                  showAlert('Workout completed!', { tone: 'success' });
+								if (!fullPage) onClose?.();
+                } finally {
+                  setIsCompleting(false);
+                }
 						  }}
+						  disabled={isSaving || isCompleting}
 						/>
           </>
         )}
@@ -693,4 +698,8 @@ export function WorkoutDetails({
       </div>
     </div>
   );
+}
+
+export interface WorkoutSaveOptions {
+  announceSuccess?: boolean;
 }

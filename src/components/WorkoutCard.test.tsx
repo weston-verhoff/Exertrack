@@ -2,7 +2,9 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import { WorkoutCard } from './WorkoutCard';
 import { Workout } from '../types/workout';
 
-jest.mock('react-router-dom', () => ({ useNavigate: () => jest.fn() }), {
+const mockNavigate = jest.fn();
+
+jest.mock('react-router-dom', () => ({ useNavigate: () => mockNavigate }), {
   virtual: true,
 });
 
@@ -15,8 +17,10 @@ jest.mock('./Drawer', () => ({
 }));
 
 jest.mock('./WorkoutButton', () => ({
-  WorkoutButton: ({ label, onClick }: any) => (
-    <button type="button" onClick={onClick}>{label}</button>
+  WorkoutButton: ({ label, onClick, iconOnly }: any) => (
+    <button type="button" onClick={onClick} aria-label={iconOnly ? label : undefined}>
+      {iconOnly ? null : label}
+    </button>
   ),
 }));
 
@@ -61,7 +65,8 @@ describe('WorkoutCard persisted set changes', () => {
     const onWorkoutUpdated = jest.fn();
     render(
       <WorkoutCard
-        workout={workout}
+        workout={{ ...workout, status: 'completed' }}
+        variant="past-workout"
         onDelete={jest.fn()}
         onStatusChange={jest.fn()}
         onWorkoutUpdated={onWorkoutUpdated}
@@ -80,5 +85,49 @@ describe('WorkoutCard persisted set changes', () => {
         ],
       })
     );
+  });
+});
+
+describe('WorkoutCard actions', () => {
+  beforeEach(() => {
+    mockNavigate.mockClear();
+  });
+
+  it('uses a full-page details action without a drawer action for scheduled workouts', () => {
+    render(
+      <WorkoutCard
+        workout={workout}
+        variant="future-workout"
+        onDelete={jest.fn()}
+        onStatusChange={jest.fn()}
+        onWorkoutUpdated={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Details' }));
+    expect(mockNavigate).toHaveBeenCalledWith('/workout/workout-1');
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete' });
+    expect(deleteButton).toBeEmptyDOMElement();
+  });
+
+  it('retains the drawer details action for completed workouts', () => {
+    render(
+      <WorkoutCard
+        workout={{ ...workout, status: 'completed' }}
+        variant="past-workout"
+        onDelete={jest.fn()}
+        onStatusChange={jest.fn()}
+        onWorkoutUpdated={jest.fn()}
+      />
+    );
+
+    const detailsButton = screen.getByRole('button', { name: 'Details' });
+    expect(detailsButton.closest('.workout-btns')).not.toBeNull();
+    fireEvent.click(detailsButton);
+    expect(screen.getByRole('button', { name: 'Persist completion' })).toBeInTheDocument();
+
+    const deleteButton = screen.getByRole('button', { name: 'Delete' });
+    expect(deleteButton).toBeEmptyDOMElement();
   });
 });
