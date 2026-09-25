@@ -1,4 +1,5 @@
 import {
+  formatWeightDisplay,
   formatWeightValue,
   fromStoredKilograms,
   getLocalDateKey,
@@ -15,11 +16,18 @@ describe('weight tracking conversions', () => {
   it('round trips imperial values without rewriting stored history', () => {
     const stored = toStoredKilograms(175, 'imperial');
     expect(stored).toBe(79.379);
-    expect(formatWeightValue(stored, 'imperial')).toBe(175.001);
+    expect(formatWeightValue(stored, 'imperial')).toBe(175);
+    expect(formatWeightDisplay(stored, 'imperial')).toBe('175.0');
     expect(toStoredKilograms(formatWeightValue(stored, 'imperial'), 'imperial')).toBe(
       stored
     );
     expect(fromStoredKilograms(stored, 'metric')).toBe(stored);
+  });
+
+  it('rounds displayed values to one decimal without changing storage precision', () => {
+    expect(formatWeightValue(79, 'imperial')).toBe(174.2);
+    expect(formatWeightDisplay(79, 'imperial')).toBe('174.2');
+    expect(formatWeightDisplay(79.379, 'metric')).toBe('79.4');
   });
 
   it('formats local dates without UTC rollover', () => {

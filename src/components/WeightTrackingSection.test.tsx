@@ -76,13 +76,28 @@ describe('WeightTrackingSection', () => {
     });
   });
 
-  it('keeps multiple same-day entries and converts the chart to the preferred unit', async () => {
+  it('charts only the latest same-day entry in the preferred unit', async () => {
     renderSection();
 
     const chart = await screen.findByTestId('weight-chart');
     expect(chart).toHaveTextContent('Body Weight (lbs)');
-    expect(chart.textContent?.match(/Sep 20, 2026/g)).toHaveLength(2);
-    expect(chart).toHaveTextContent('175.001');
+    expect(chart.textContent?.match(/Sep 20, 2026/g)).toHaveLength(1);
+    expect(chart).toHaveTextContent('174.2');
+    expect(chart).not.toHaveTextContent('175');
+  });
+
+  it('keeps every same-day entry in history and displays one decimal place', async () => {
+    renderSection();
+    await screen.findByTestId('weight-chart');
+    fireEvent.click(screen.getByRole('button', { name: 'Edit Weigh-ins' }));
+
+    const drawer = document.querySelector('.drawer-panel') as HTMLElement;
+    const entryButtons = within(drawer).getAllByRole('button', {
+      name: /Sep 20, 2026/,
+    });
+    expect(entryButtons).toHaveLength(2);
+    expect(entryButtons[0]).toHaveTextContent('174.2 lbs');
+    expect(entryButtons[1]).toHaveTextContent('175.0 lbs');
   });
 
   it('adds a dated weigh-in using canonical kilograms', async () => {

@@ -12,6 +12,7 @@ import {
   WeightEntry,
 } from '../services/weightService';
 import {
+  formatWeightDisplay,
   formatWeightValue,
   getLocalDateKey,
   getWeightUnit,
@@ -92,6 +93,19 @@ export function WeightTrackingSection({
     };
   }, [showAlert, userId]);
 
+  const chartEntries = useMemo(() => {
+    const latestByDate = new Map<string, WeightEntry>();
+
+    entries.forEach((entry) => {
+      const current = latestByDate.get(entry.weighed_on);
+      if (!current || timelineSort(current, entry) < 0) {
+        latestByDate.set(entry.weighed_on, entry);
+      }
+    });
+
+    return Array.from(latestByDate.values()).sort(timelineSort);
+  }, [entries]);
+
   const chartData = useMemo(() => {
     void theme;
     const styles = getComputedStyle(document.documentElement);
@@ -103,7 +117,7 @@ export function WeightTrackingSection({
       styles.getPropertyValue('--color-chart-series-1-fill').trim();
 
     return {
-      labels: entries.map((entry) =>
+      labels: chartEntries.map((entry) =>
         new Intl.DateTimeFormat('en-US', {
           month: 'short',
           day: 'numeric',
@@ -113,7 +127,7 @@ export function WeightTrackingSection({
       datasets: [
         {
           label: `Body Weight (${unit})`,
-          data: entries.map((entry) =>
+          data: chartEntries.map((entry) =>
             formatWeightValue(entry.weight_kg, weightSystem)
           ),
           borderColor: lineColor,
@@ -123,7 +137,7 @@ export function WeightTrackingSection({
         },
       ],
     };
-  }, [entries, theme, unit, weightSystem]);
+  }, [chartEntries, theme, unit, weightSystem]);
 
   const closeDrawer = () => {
     setDrawerMode('closed');
@@ -141,7 +155,7 @@ export function WeightTrackingSection({
 
   const openEdit = (entry: WeightEntry) => {
     setEditingEntry(entry);
-    setWeightValue(String(formatWeightValue(entry.weight_kg, weightSystem)));
+    setWeightValue(formatWeightDisplay(entry.weight_kg, weightSystem));
     setWeighedOn(entry.weighed_on);
     setDrawerMode('edit');
   };
@@ -301,7 +315,7 @@ export function WeightTrackingSection({
                       }).format(new Date(`${entry.weighed_on}T00:00:00`))}
                     </span>
                     <strong>
-                      {formatWeightValue(entry.weight_kg, weightSystem)} {unit}
+                      {formatWeightDisplay(entry.weight_kg, weightSystem)} {unit}
                     </strong>
                   </button>
                 ))}

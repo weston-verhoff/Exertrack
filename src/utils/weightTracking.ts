@@ -21,7 +21,12 @@ export const fromStoredKilograms = (
 export const formatWeightValue = (
   kilograms: number,
   system: WeightSystem
-) => Number(fromStoredKilograms(kilograms, system).toFixed(3));
+) => Number(fromStoredKilograms(kilograms, system).toFixed(1));
+
+export const formatWeightDisplay = (
+  kilograms: number,
+  system: WeightSystem
+) => formatWeightValue(kilograms, system).toFixed(1);
 
 export const getWeightUnit = (system: WeightSystem) =>
   system === 'imperial' ? 'lbs' : 'kg';
