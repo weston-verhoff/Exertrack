@@ -84,7 +84,7 @@
               "RelativeDocumentMoniker": "src\\styles\\plan.css",
               "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\plan.css",
               "RelativeToolTip": "src\\styles\\plan.css",
-              "ViewState": "AgIAAHoBAAAAAAAAAAAcwHcBAAAXAAAAAAAAAA==",
+              "ViewState": "AgIAAHoBAAAAAAAAAAAcwHcBAAADAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
               "WhenOpened": "2026-09-22T23:12:25.562Z",
               "EditorCaption": ""
@@ -99,8 +99,7 @@
               "RelativeToolTip": "src\\styles\\metric-fields.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-22T22:24:37.902Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-22T22:24:37.902Z"
             },
             {
               "$type": "Document",
@@ -112,8 +111,7 @@
               "RelativeToolTip": "src\\components\\WorkoutCard.tsx",
               "ViewState": "AgIAAJAAAAAAAAAAAAAewJ8AAAARAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-09-22T02:19:14.65Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-22T02:19:14.65Z"
             },
             {
               "$type": "Document",
@@ -125,8 +123,7 @@
               "RelativeToolTip": "src\\styles\\drawer.css",
               "ViewState": "AgIAALQAAAAAAAAAAAAAAMkAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-21T22:53:00.789Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-21T22:53:00.789Z"
             },
             {
               "$type": "Document",
