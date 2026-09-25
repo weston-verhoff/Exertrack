@@ -166,6 +166,125 @@
   place-items: center;
 }
 
+.weight-tracking__intro {
+  margin: -0.5rem 0 1rem;
+  color: var(--_context-content-muted);
+}
+
+.weight-tracking__actions,
+.weight-editor__actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.weight-tracking__actions button,
+.weight-editor__actions button,
+.weight-editor__date-row button {
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 8px;
+  background: var(--_context-strong);
+  color: var(--_context-on-strong);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.weight-tracking__actions .secondary,
+.weight-editor__actions .secondary,
+.weight-editor__date-row button {
+  background: var(--_context-surface-raised);
+  color: var(--_context-content);
+}
+
+.weight-editor__actions .danger {
+  margin-left: auto;
+  border-color: var(--color-feedback-danger-border);
+  background: var(--color-interactive-danger);
+  color: var(--color-on-interactive-danger);
+}
+
+.weight-editor__actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.weight-editor,
+.weight-history {
+  display: grid;
+  gap: 1.25rem;
+  color: var(--_context-content);
+}
+
+.weight-drawer__header {
+  padding-right: 2rem;
+}
+
+.weight-drawer__header h2 {
+  margin: 0;
+  font-family: var(--font-headline);
+  font-size: 1.8rem;
+}
+
+.weight-drawer__header p {
+  margin: 0.5rem 0 0;
+  color: var(--_context-content-muted);
+}
+
+.weight-editor > label {
+  display: grid;
+  gap: 0.5rem;
+  font-weight: 700;
+}
+
+.weight-editor__weight {
+  justify-items: start;
+}
+
+.weight-editor__weight .metric-field__control {
+  width: 8rem;
+}
+
+.weight-editor__date-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.weight-editor__date-row input {
+  min-width: 0;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 8px;
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
+}
+
+.weight-history__list {
+  display: grid;
+  gap: 0.65rem;
+}
+
+.weight-history__list button {
+  display: flex;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 10px;
+  background: var(--_context-surface-raised);
+  color: var(--_context-content);
+  text-align: left;
+  cursor: pointer;
+}
+
+.weight-history__list button:hover {
+  background: var(--color-interactive-subtle);
+}
+
 .account-search {
   display: flex;
   padding: 0 1rem;
@@ -398,6 +517,21 @@
   .account-chart {
     height: 300px;
     padding: 0.75rem;
+  }
+
+  .weight-editor__date-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .weight-editor__date-row button,
+  .weight-editor__actions button,
+  .weight-tracking__actions button {
+    flex: 1 1 auto;
+  }
+
+  .weight-editor__actions .danger {
+    margin-left: 0;
   }
 
 }

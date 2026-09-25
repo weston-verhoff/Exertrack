@@ -21,6 +21,7 @@ import {
   WorkoutCardSkeletonGrid,
 } from '../components/LoadingSkeletons';
 import { SwitchField } from '../components/SwitchField';
+import { WeightTrackingSection } from '../components/WeightTrackingSection';
 import { useAuth } from '../context/AuthContext';
 import {
   AccountSettings,
@@ -101,6 +102,7 @@ const THEME_OPTIONS: Array<{
 const SECTION_LINKS = [
   { href: '#recent-workouts', label: 'Recent Workouts' },
   { href: '#training-analytics', label: 'Analytics' },
+  { href: '#weight-tracking', label: 'Weight Tracking' },
   { href: '#custom-exercises', label: 'Custom Exercises' },
   { href: '#account-settings', label: 'Account Settings' },
 ];
@@ -460,6 +462,14 @@ export default function AccountPage() {
               )}
             </div>
           </section>
+
+          {userId && (
+            <WeightTrackingSection
+              userId={userId}
+              weightSystem={settings.weightSystem}
+              theme={settings.theme}
+            />
+          )}
 
           <section id="custom-exercises" className="account-section">
             <h2>Custom Exercises</h2>

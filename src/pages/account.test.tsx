@@ -35,6 +35,10 @@ jest.mock('../components/WorkoutCard', () => ({
   WorkoutCard: () => <div data-testid="workout-card" />,
 }));
 
+jest.mock('../components/WeightTrackingSection', () => ({
+  WeightTrackingSection: () => <div data-testid="weight-tracking" />,
+}));
+
 jest.mock('../context/AuthContext', () => ({
   useAuth: () => ({
     user: { user_metadata: {} },
