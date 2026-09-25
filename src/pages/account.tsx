@@ -1,4 +1,4 @@
-import React, { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
+import React, { FormEvent, PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CategoryScale,
   Chart as ChartJS,
@@ -11,10 +11,11 @@ import {
   Tooltip,
 } from 'chart.js';
 import { Line } from 'react-chartjs-2';
-import { ArrowUp, Pencil, Search } from 'lucide-react';
+import { ArrowUp, LogOut, Pencil, Plus, Search } from 'lucide-react';
 import { Drawer } from '../components/Drawer';
 import { ExerciseChip } from '../components/ExerciseChip';
 import { ResponsiveSegmentedControl } from '../components/ResponsiveSegmentedControl';
+import { WorkoutButton } from '../components/WorkoutButton';
 import { WorkoutCard } from '../components/WorkoutCard';
 import {
   ChartSkeleton,
@@ -22,6 +23,7 @@ import {
 } from '../components/LoadingSkeletons';
 import { SwitchField } from '../components/SwitchField';
 import { WeightTrackingSection } from '../components/WeightTrackingSection';
+import { TagNameDialog } from '../components/TagNameDialog';
 import { useAuth } from '../context/AuthContext';
 import {
   AccountSettings,
@@ -47,6 +49,13 @@ import { applyTheme } from '../utils/theme';
 import { getDistanceUnitOptions, normalizeDistanceUnit } from '../utils/unitPreferences';
 import { DistanceUnit } from '../types/workout';
 import { useSystemAlerts } from '../context/SystemAlertContext';
+import {
+  createTemplateTag,
+  deleteTemplateTag,
+  fetchTemplateTags,
+  renameTemplateTag,
+  TemplateTag,
+} from '../services/templateTagService';
 import '../styles/account.css';
 
 ChartJS.register(
@@ -104,6 +113,7 @@ const SECTION_LINKS = [
   { href: '#training-analytics', label: 'Analytics' },
   { href: '#weight-tracking', label: 'Weight Tracking' },
   { href: '#custom-exercises', label: 'Custom Exercises' },
+  { href: '#template-tags', label: 'Template Tags' },
   { href: '#account-settings', label: 'Account Settings' },
 ];
 
@@ -112,6 +122,10 @@ export default function AccountPage() {
   const [workouts, setWorkouts] = useState<WorkoutDetailSummary[]>([]);
   const [recentWorkouts, setRecentWorkouts] = useState<any[]>([]);
   const [customExercises, setCustomExercises] = useState<CustomExercise[]>([]);
+  const [templateTags, setTemplateTags] = useState<TemplateTag[]>([]);
+  const [editingTemplateTag, setEditingTemplateTag] = useState<TemplateTag | null>(null);
+  const [tagDialogOpen, setTagDialogOpen] = useState(false);
+  const [newTagDialogOpen, setNewTagDialogOpen] = useState(false);
   const [settings, setSettings] = useState<AccountSettings | null>(null);
   const [selectedMuscle, setSelectedMuscle] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -121,7 +135,39 @@ export default function AccountPage() {
   const [pageError, setPageError] = useState<string | null>(null);
   const [settingsStatus, setSettingsStatus] = useState<string | null>(null);
   const [exerciseStatus, setExerciseStatus] = useState<string | null>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const sidebarDragRef = useRef<{
+    pointerX: number;
+    scrollLeft: number;
+    moved: boolean;
+  } | null>(null);
+  const suppressSidebarClickRef = useRef(false);
   const { dismissAlertGroup, showAlert } = useSystemAlerts();
+
+  const startSidebarScroll = (event: PointerEvent<HTMLElement>) => {
+    const sidebar = sidebarRef.current;
+    if (!sidebar || sidebar.scrollWidth <= sidebar.clientWidth) return;
+    sidebarDragRef.current = {
+      pointerX: event.clientX,
+      scrollLeft: sidebar.scrollLeft,
+      moved: false,
+    };
+    sidebar.setPointerCapture(event.pointerId);
+  };
+
+  const moveSidebarScroll = (event: PointerEvent<HTMLElement>) => {
+    const sidebar = sidebarRef.current;
+    const dragState = sidebarDragRef.current;
+    if (!sidebar || !dragState) return;
+    const distance = event.clientX - dragState.pointerX;
+    if (Math.abs(distance) > 4) dragState.moved = true;
+    sidebar.scrollLeft = dragState.scrollLeft - distance;
+  };
+
+  const stopSidebarScroll = () => {
+    suppressSidebarClickRef.current = sidebarDragRef.current?.moved ?? false;
+    sidebarDragRef.current = null;
+  };
 
   useEffect(() => {
     if (pageError) showAlert(pageError, { tone: 'error' });
@@ -161,18 +207,20 @@ export default function AccountPage() {
     setLoading(true);
     setPageError(null);
 
-    const [analyticsResult, overviewResult, exercisesResult] = await Promise.all([
+    const [analyticsResult, overviewResult, exercisesResult, tagsResult] = await Promise.all([
       fetchAnalyticsWorkouts({ userId: currentUserId }),
       fetchWorkoutOverview({ userId: currentUserId, limitCompleted: 2 }),
       fetchCustomExercises({ userId: currentUserId }),
+      fetchTemplateTags(currentUserId),
     ]);
 
-    const error = analyticsResult.error ?? overviewResult.error ?? exercisesResult.error;
+    const error = analyticsResult.error ?? overviewResult.error ?? exercisesResult.error ?? tagsResult.error;
     if (error) setPageError(error);
 
     setWorkouts(analyticsResult.data ?? []);
     setRecentWorkouts(overviewResult.data?.completed ?? []);
     setCustomExercises(exercisesResult.data ?? []);
+    setTemplateTags(tagsResult.data ?? []);
     setLoading(false);
   }, []);
 
@@ -282,6 +330,44 @@ export default function AccountPage() {
     saveSettings({ ...settings, [key]: value });
   };
 
+  const closeTagDialog = () => {
+    setTagDialogOpen(false);
+    setEditingTemplateTag(null);
+  };
+
+  const handleTagRename = async (name: string) => {
+    if (!editingTemplateTag || !userId) return 'Unable to rename this tag.';
+    const result = await renameTemplateTag({ id: editingTemplateTag.id, name, userId });
+    if (result.error || !result.data) return result.error ?? 'Failed to rename template tag.';
+    setTemplateTags(current => current
+      .map(tag => tag.id === result.data!.id ? result.data! : tag)
+      .sort((a, b) => a.name.localeCompare(b.name))
+    );
+    showAlert('Template tag renamed.', { tone: 'success' });
+    closeTagDialog();
+    return null;
+  };
+
+  const handleTagCreate = async (name: string) => {
+    if (!userId) return 'Unable to create this tag.';
+    const result = await createTemplateTag({ name, userId });
+    if (result.error || !result.data) return result.error ?? 'Failed to create template tag.';
+    setTemplateTags(current => [...current, result.data!].sort((a, b) => a.name.localeCompare(b.name)));
+    showAlert('Template tag created.', { tone: 'success' });
+    setNewTagDialogOpen(false);
+    return null;
+  };
+
+  const handleTagDelete = async () => {
+    if (!editingTemplateTag || !userId) return 'Unable to delete this tag.';
+    const result = await deleteTemplateTag({ id: editingTemplateTag.id, userId });
+    if (result.error) return result.error;
+    setTemplateTags(current => current.filter(tag => tag.id !== editingTemplateTag.id));
+    showAlert('Template tag deleted.', { tone: 'success' });
+    closeTagDialog();
+    return null;
+  };
+
   const handleExerciseSave = async (event: FormEvent) => {
     event.preventDefault();
     if (!editingExercise || !userId || !settings) return;
@@ -387,14 +473,38 @@ export default function AccountPage() {
       </section>
 
       <div className="account-shell">
-        <aside className="account-sidebar color-context color-context--raised" aria-label="Account page navigation">
+        <aside
+          aria-label="Account page navigation"
+          className="account-sidebar color-context color-context--raised"
+          onClickCapture={event => {
+            if (!suppressSidebarClickRef.current) return;
+            event.preventDefault();
+            event.stopPropagation();
+            suppressSidebarClickRef.current = false;
+          }}
+          onPointerCancel={stopSidebarScroll}
+          onPointerDown={startSidebarScroll}
+          onPointerMove={moveSidebarScroll}
+          onPointerUp={stopSidebarScroll}
+          ref={sidebarRef}
+        >
           <nav>
             {SECTION_LINKS.map(link => (
               <a key={link.href} href={link.href}>{link.label}</a>
             ))}
           </nav>
           <div className="account-sidebar__actions">
-            <a className="account-sidebar__top" href="#account-top">
+            <a
+              className="account-sidebar__top"
+              href="#account-top"
+              onClick={event => {
+                event.preventDefault();
+                document.getElementById('account-top')?.scrollIntoView({
+                  behavior: 'smooth',
+                  block: 'start',
+                });
+              }}
+            >
               <ArrowUp aria-hidden="true" size={18} /> Back to top
             </a>
             <button type="button" onClick={signOut}>Sign Out</button>
@@ -502,6 +612,40 @@ export default function AccountPage() {
             )}
           </section>
 
+          <section id="template-tags" className="account-section">
+            <h2>Template Tags</h2>
+            <p className="account-section__intro">
+              Rename or delete the reusable tags shown on your templates.
+            </p>
+            <div className={`account-tag-list${templateTags.length === 0 ? ' account-tag-list--empty' : ''}`}>
+              {templateTags.map(tag => (
+                <button
+                  aria-label={`Edit ${tag.name}`}
+                  className="account-tag"
+                  data-tone="library"
+                  key={tag.id}
+                  onClick={() => {
+                    setEditingTemplateTag(tag);
+                    setTagDialogOpen(true);
+                  }}
+                  type="button"
+                >
+                  <Pencil aria-hidden="true" size={16} />
+                  <span>{tag.name}</span>
+                </button>
+              ))}
+              <div className="account-tag-add">
+                <WorkoutButton
+                  label="Add Tags"
+                  icon={<Plus size={18} />}
+                  variant="secondary"
+                  tone="library"
+                  onClick={() => setNewTagDialogOpen(true)}
+                />
+              </div>
+            </div>
+          </section>
+
           <section id="account-settings" className="account-section account-settings">
             <h2>Account Settings</h2>
             <div className="account-name-grid">
@@ -559,6 +703,15 @@ export default function AccountPage() {
               />
             </fieldset>
           </section>
+          <div className="account-page__sign-out">
+            <WorkoutButton
+              label="Sign Out"
+              icon={<LogOut size={18} />}
+              variant="destructive"
+              size="lg"
+              onClick={() => { void signOut(); }}
+            />
+          </div>
         </main>
       </div>
 
@@ -652,6 +805,25 @@ export default function AccountPage() {
           </form>
         </Drawer>
       )}
+
+      {editingTemplateTag && (
+        <TagNameDialog
+          isOpen={tagDialogOpen}
+          initialValue={editingTemplateTag.name}
+          title="Edit template tag"
+          deleteConfirmation={`Delete “${editingTemplateTag.name}”? It will be removed from every template.`}
+          onCancel={closeTagDialog}
+          onDelete={handleTagDelete}
+          onSave={handleTagRename}
+        />
+      )}
+
+      <TagNameDialog
+        isOpen={newTagDialogOpen}
+        title="Create a new tag"
+        onCancel={() => setNewTagDialogOpen(false)}
+        onSave={handleTagCreate}
+      />
     </div>
   );
 }

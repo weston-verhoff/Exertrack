@@ -81,6 +81,97 @@
   gap: 0.25rem;
   margin: auto 1rem 1rem;
 }
+
+.template-card__header-actions,
+.template-card__mobile-order-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.template-card__drag-handle,
+.template-card__mobile-order-actions button,
+.template-card__tag-edit {
+  display: inline-grid;
+  place-items: center;
+  border: 1px solid currentColor;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.template-card__drag-handle {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+  touch-action: none;
+}
+
+.template-card__mobile-order-actions { display: none; }
+
+.template-card__mobile-order-actions button {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 8px;
+}
+
+.template-card__mobile-order-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+
+.template-card__tags {
+  display: flex;
+  min-height: 58px;
+  padding: 0.7rem 0.8rem;
+  align-items: center;
+  gap: 0.65rem;
+  border-top: 1px solid var(--_card-border);
+  background: var(--_context-surface-raised);
+}
+
+.template-card__tag-edit {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex: 0 0 2.25rem;
+  border-radius: 50%;
+}
+
+.template-card__tags p {
+  margin: 0;
+  color: var(--_context-content-muted);
+  font-size: 0.85rem;
+}
+
+.template-card__tag-scroller {
+  display: flex;
+  min-width: 0;
+  padding: 0.15rem 0;
+  gap: 0.4rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-x;
+}
+
+.template-card__tag-scroller:active { cursor: grabbing; }
+.template-card__tag-scroller::-webkit-scrollbar { display: none; }
+
+.template-card__tag {
+  flex: 0 0 auto;
+  padding: 0.35rem 0.6rem;
+  border: 1px solid var(--_card-border);
+  border-radius: 6px;
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
+  font-size: 0.85rem;
+}
+
+@media (max-width: 700px) {
+  .template-card__drag-handle { display: none; }
+  .template-card__mobile-order-actions { display: inline-flex; }
+}
 .workout-btns > button:first-child {
   flex-grow: 1;
 }

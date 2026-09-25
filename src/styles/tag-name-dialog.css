@@ -1,0 +1,39 @@
+.tag-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: grid;
+  padding: 1rem;
+  place-items: center;
+  background: var(--color-overlay-backdrop);
+}
+
+.tag-dialog {
+  display: grid;
+  width: min(100%, 390px);
+  gap: 0.75rem;
+  padding: 1.5rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 12px;
+  background: var(--_context-surface);
+  color: var(--_context-content);
+  box-shadow: 0 16px 40px var(--shadow-strong);
+}
+
+.tag-dialog h2 { margin: 0; font-family: var(--font-headline); }
+
+.tag-dialog label { display: grid; gap: 0.4rem; font-weight: 700; }
+
+.tag-dialog input {
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--_context-border);
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
+  text-align: left;
+}
+
+.tag-dialog small { color: var(--_context-content-muted); text-align: right; }
+.tag-dialog__error { margin: 0; color: var(--color-on-feedback-danger); }
+.tag-dialog__actions { display: flex; justify-content: flex-end; gap: 0.75rem; }
+.tag-dialog__actions .workout-button--destructive { margin-right: auto; }

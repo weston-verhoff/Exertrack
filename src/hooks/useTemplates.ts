@@ -11,19 +11,23 @@ export function useTemplates() {
     async function fetchTemplates() {
       if (!userId) return
 
-      const fetchRows = (filterArchived: boolean) => {
+      const fetchRows = (filterArchived: boolean, orderColumn: 'sort_order' | 'created_at') => {
         let query = supabase
           .from('templates')
           .select('*')
           .eq('user_id', userId)
 
         if (filterArchived) query = query.is('archived_at', null)
-        return query.order('created_at', { ascending: false })
+        return query.order(orderColumn, { ascending: orderColumn === 'sort_order' })
       }
 
-      let { data, error } = await fetchRows(true)
+      let { data, error } = await fetchRows(true, 'sort_order')
       if (error?.code === '42703' && error.message.includes('archived_at')) {
-        const fallbackResult = await fetchRows(false)
+        const fallbackResult = await fetchRows(false, 'created_at')
+        data = fallbackResult.data
+        error = fallbackResult.error
+      } else if (error?.code === '42703' && error.message.includes('sort_order')) {
+        const fallbackResult = await fetchRows(true, 'created_at')
         data = fallbackResult.data
         error = fallbackResult.error
       }

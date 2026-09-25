@@ -3,9 +3,10 @@
     "",
     "\\src",
     "\\src\\components",
+    "\\src\\pages",
     "\\src\\styles",
     "\\src\\utils"
   ],
-  "SelectedNode": "\\build",
+  "SelectedNode": "\\src\\styles\\WorkoutCard.css",
   "PreviewInSolutionExplorer": false
 }

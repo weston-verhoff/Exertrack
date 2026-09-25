@@ -12,6 +12,26 @@
   width: 100%;
 }
 
+.templates-page__primary-controls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.template-sortable-item {
+  display: flex;
+  width: 300px;
+  max-width: 100%;
+  align-self: stretch;
+}
+
+.template-sortable-item .template-workout {
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+}
+
 .template-search-row {
   display: flex;
   align-items: center;
@@ -54,4 +74,14 @@
   background: var(--_context-surface-raised);
   color: var(--_context-content);
   text-align: center;
+}
+
+@media (max-width: 520px) {
+  .templates-page__primary-controls {
+    grid-template-columns: 1fr;
+  }
+
+  .templates-page__primary-controls > .workout-button {
+    width: 100%;
+  }
 }

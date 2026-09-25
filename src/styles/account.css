@@ -83,8 +83,7 @@
   padding: 0.75rem;
   align-items: center;
   gap: 0.5rem;
-  border: 0;
-  border-radius: 8px;
+  border-bottom: 1px solid var(--_context-border-subtle);
   background: transparent;
   color: var(--_context-content);
   font-weight: 700;
@@ -92,6 +91,7 @@
   text-decoration: none;
   cursor: pointer;
 }
+.account-sidebar button { border: 0; }
 
 .account-sidebar a:hover,
 .account-sidebar button:hover {
@@ -115,6 +115,44 @@
   margin: 0 0 1rem;
   font-family: var(--font-headline);
   font-size: 1.8rem;
+}
+
+.account-section__intro {
+  margin: -0.5rem 0 1rem;
+  color: var(--_context-content-muted);
+}
+
+.account-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.account-tag-list--empty {
+  justify-content: center;
+}
+
+.account-tag-add {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.account-tag {
+  display: inline-flex;
+  padding: 0.6rem 0.8rem;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 7px;
+  background: var(--_context-surface-sunken);
+  color: var(--_context-content);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.account-tag:hover {
+  background: var(--_context-surface-raised);
+  box-shadow: 0 6px 12px var(--shadow-soft);
 }
 
 .account-recent-grid {
@@ -448,6 +486,16 @@
   text-align: center;
 }
 
+.account-page__sign-out {
+  display: flex;
+  width: min(calc(100% - 2rem), 320px);
+  margin: -2rem auto 4rem;
+}
+
+.account-page__sign-out .workout-button {
+  width: 100%;
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -469,19 +517,47 @@
   }
 
   .account-sidebar {
-    position: static;
+    position: sticky;
+    top: var(--global-header-height);
+    z-index: 80;
+    display: flex;
+    width: 100%;
     min-height: 0;
+    max-width: 100%;
     margin-bottom: 2rem;
+    padding: 0.5rem;
+    align-items: stretch;
+    flex-direction: row;
+    gap: 0.5rem;
+    overflow-x: auto;
+    overscroll-behavior-inline: contain;
+    scrollbar-width: none;
+    cursor: grab;
+    touch-action: pan-x;
+    user-select: none;
   }
 
+  .account-sidebar:active { cursor: grabbing; }
+  .account-sidebar::-webkit-scrollbar { display: none; }
+
   .account-sidebar nav {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    flex: 0 0 auto;
+    flex-direction: row;
   }
 
   .account-sidebar__actions {
-    margin-top: 1rem;
+    flex: 0 0 auto;
+    margin-top: 0;
     flex-direction: row;
+  }
+
+  .account-sidebar a,
+  .account-sidebar button {
+    width: auto;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    border: 0;
   }
 }
 
@@ -490,15 +566,27 @@
     padding-inline: 1rem;
   }
 
-  .account-stat-grid,
   .account-recent-grid,
   .account-name-grid,
   .exercise-editor {
     grid-template-columns: 1fr;
   }
 
+  .account-stat-grid {
+    gap: 0.75rem;
+  }
+
   .account-stat-card {
     min-height: 135px;
+    padding: 1rem 0.65rem;
+  }
+
+  .account-stat-card span {
+    font-size: 0.95rem;
+  }
+
+  .account-stat-card strong {
+    font-size: clamp(2rem, 11vw, 3rem);
   }
 
   .account-shell {

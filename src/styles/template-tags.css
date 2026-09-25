@@ -1,0 +1,62 @@
+.template-tag-editor { display: grid; gap: 1rem; color: var(--_context-content); }
+.template-tag-editor header { padding-right: 2rem; }
+.template-tag-editor h2 { margin: 0; font-family: var(--font-headline); }
+.template-tag-editor header p { margin: 0.4rem 0 0; color: var(--_context-content-muted); }
+
+.template-tag-editor__search {
+  display: flex;
+  padding: 0 0.8rem;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 999px;
+  background: var(--_context-surface-sunken);
+}
+
+.template-tag-editor__search input {
+  width: 100%;
+  padding: 0.7rem 0;
+  border: 0 !important;
+  outline: 0;
+  background: transparent !important;
+  text-align: left;
+}
+
+.template-tag-editor__list { display: grid; gap: 0.55rem; }
+.template-tag-editor__list > p { margin: 0; color: var(--_context-content-muted); }
+
+.template-tag-choice {
+  display: flex;
+  padding: 0.7rem 0.85rem;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 9px;
+  background: var(--_context-surface-raised);
+  cursor: pointer;
+}
+
+.template-tag-choice input { margin: 0; }
+.template-tag-editor__error { margin: 0; color: var(--color-on-feedback-danger); }
+
+.template-tag-editor__actions {
+  display: flex;
+  width: 100%;
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.template-tag-editor__actions > .workout-button {
+  flex: 0 0 auto;
+}
+
+.template-tag-editor__save {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin: 0;
+}
+
+.template-tag-editor__save .workout-button {
+  width: 100%;
+}

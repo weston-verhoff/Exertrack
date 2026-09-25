@@ -1,5 +1,10 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import TemplatesPage from './templates';
+import {
+  fetchTemplateTags,
+  saveTemplateOrder,
+  saveTemplateTags,
+} from '../services/templateTagService';
 
 const mockShowAlert = jest.fn();
 const mockUpdates: Array<Record<string, unknown>> = [];
@@ -54,6 +59,13 @@ jest.mock('../context/SystemAlertContext', () => ({
   useSystemAlerts: () => ({ showAlert: mockShowAlert }),
 }));
 
+jest.mock('../services/templateTagService', () => ({
+  createTemplateTag: jest.fn(),
+  fetchTemplateTags: jest.fn(),
+  saveTemplateOrder: jest.fn(),
+  saveTemplateTags: jest.fn(),
+}));
+
 jest.mock('../components/Layout', () => ({
   Layout: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
@@ -74,10 +86,12 @@ jest.mock('../components/ResponsiveSegmentedControl', () => ({
   ),
 }));
 
-const row = (id: string, name: string, archived_at: string | null) => ({
+const row = (id: string, name: string, archived_at: string | null, sort_order = 0, tags: any[] = []) => ({
   id,
   name,
   archived_at,
+  sort_order,
+  template_tag_links: tags.map(tag => ({ tag })),
   template_exercises: [],
 });
 
@@ -89,6 +103,9 @@ describe('TemplatesPage', () => {
     mockArchivedColumnMissing = false;
     mockUpdates.length = 0;
     mockShowAlert.mockClear();
+    (fetchTemplateTags as jest.Mock).mockResolvedValue({ data: [], error: null });
+    (saveTemplateOrder as jest.Mock).mockResolvedValue({ data: true, error: null });
+    (saveTemplateTags as jest.Mock).mockResolvedValue({ data: true, error: null });
   });
 
   it('searches active templates and hides the segments when nothing is archived', async () => {
@@ -159,5 +176,36 @@ describe('TemplatesPage', () => {
     ).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Archive' })).not.toBeInTheDocument();
     expect(mockShowAlert).not.toHaveBeenCalled();
+  });
+
+  it('reorders active templates and persists the full active order', async () => {
+    mockTemplateRows = [
+      row('one', 'Lower body', null, 1024),
+      row('two', 'Upper body', null, 2048),
+    ];
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: 'Reorder' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Move Lower body down' }));
+
+    await waitFor(() => expect(saveTemplateOrder).toHaveBeenCalledWith(['two', 'one']));
+    expect(screen.getByRole('button', { name: 'Move Upper body up' })).toBeDisabled();
+  });
+
+  it('saves tag assignments from the template drawer', async () => {
+    const pushTag = { id: 'tag-1', name: 'Push' };
+    mockTemplateRows = [row('one', 'Push day', null, 1024, [pushTag])];
+    (fetchTemplateTags as jest.Mock).mockResolvedValue({ data: [pushTag], error: null });
+    renderPage();
+
+    expect(await screen.findByText('Push')).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Edit tags for Push day' }));
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Push' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+
+    await waitFor(() => expect(saveTemplateTags).toHaveBeenCalledWith({
+      templateId: 'one',
+      tagIds: [],
+    }));
   });
 });

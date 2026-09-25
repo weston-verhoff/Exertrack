@@ -10,6 +10,9 @@ import {
   fetchWorkoutOverview,
 } from '../services/workoutService';
 import { SystemAlertProvider } from '../context/SystemAlertContext';
+import { createTemplateTag, fetchTemplateTags } from '../services/templateTagService';
+
+const mockSignOut = jest.fn();
 
 jest.mock('chart.js', () => ({
   CategoryScale: {},
@@ -44,7 +47,7 @@ jest.mock('../context/AuthContext', () => ({
     user: { user_metadata: {} },
     userId: 'user-1',
     loading: false,
-    signOut: jest.fn(),
+    signOut: mockSignOut,
   }),
 }));
 
@@ -60,6 +63,13 @@ jest.mock('../services/accountService', () => ({
   updateCustomExercise: jest.fn(),
 }));
 
+jest.mock('../services/templateTagService', () => ({
+  createTemplateTag: jest.fn(),
+  fetchTemplateTags: jest.fn(),
+  renameTemplateTag: jest.fn(),
+  deleteTemplateTag: jest.fn(),
+}));
+
 jest.mock('../utils/workoutActions', () => ({
   confirmAndDeleteWorkout: jest.fn(),
 }));
@@ -73,6 +83,7 @@ describe('AccountPage custom exercise editor', () => {
     );
 
   beforeEach(() => {
+    mockSignOut.mockReset();
     (fetchAnalyticsWorkouts as jest.Mock).mockResolvedValue({ data: [], error: null });
     (fetchWorkoutOverview as jest.Mock).mockResolvedValue({
       data: { completed: [], completedCount: 0, scheduled: [] },
@@ -91,6 +102,11 @@ describe('AccountPage custom exercise editor', () => {
           track_laps: false,
         },
       ],
+      error: null,
+    });
+    (fetchTemplateTags as jest.Mock).mockResolvedValue({ data: [], error: null });
+    (createTemplateTag as jest.Mock).mockResolvedValue({
+      data: { id: 'tag-1', name: 'Push' },
       error: null,
     });
     (getAccountSettings as jest.Mock).mockReturnValue({
@@ -193,5 +209,48 @@ describe('AccountPage custom exercise editor', () => {
         userId: 'user-1',
       });
     });
+  });
+
+  it('creates a reusable template tag from the empty template tags section', async () => {
+    renderAccountPage();
+
+    const addTagsButton = await screen.findByRole('button', { name: 'Add Tags' });
+    expect(addTagsButton.closest('.account-tag-list')).toHaveClass('account-tag-list--empty');
+    fireEvent.click(addTagsButton);
+
+    const dialog = screen.getByRole('dialog', { name: 'Create a new tag' });
+    fireEvent.change(within(dialog).getByLabelText('Tag name'), {
+      target: { value: 'pUsH' },
+    });
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+
+    await waitFor(() => {
+      expect(createTemplateTag).toHaveBeenCalledWith({ name: 'pUsH', userId: 'user-1' });
+      expect(screen.getByRole('button', { name: 'Edit Push' })).toBeInTheDocument();
+    });
+  });
+
+  it('smooth-scrolls back to the account hero', async () => {
+    renderAccountPage();
+    const accountTop = document.getElementById('account-top') as HTMLElement;
+    accountTop.scrollIntoView = jest.fn();
+
+    fireEvent.click(await screen.findByRole('link', { name: 'Back to top' }));
+
+    expect(accountTop.scrollIntoView).toHaveBeenCalledWith({
+      behavior: 'smooth',
+      block: 'start',
+    });
+  });
+
+  it('offers a destructive sign-out action at the bottom of the page', async () => {
+    renderAccountPage();
+
+    const signOutButtons = await screen.findAllByRole('button', { name: 'Sign Out' });
+    const bottomSignOut = signOutButtons.find(button => button.closest('.account-page__sign-out'));
+    expect(bottomSignOut).toHaveClass('workout-button--destructive');
+
+    fireEvent.click(bottomSignOut as HTMLButtonElement);
+    expect(mockSignOut).toHaveBeenCalledTimes(1);
   });
 });
