@@ -1,6 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import PastWorkouts from './past';
-import { fetchWorkoutOverview } from '../services/workoutService';
+import { fetchWorkoutOverview, fetchWorkoutsInDateRange } from '../services/workoutService';
 import { fetchWorkoutExportData } from '../services/workoutExportService';
 import { downloadTextFile } from '../utils/workoutExport';
 
@@ -45,6 +45,7 @@ jest.mock('../context/SystemAlertContext', () => ({
 jest.mock('../services/workoutService', () => ({
   fetchAllCompletedWorkouts: jest.fn(),
   fetchWorkoutOverview: jest.fn(),
+  fetchWorkoutsInDateRange: jest.fn(),
 }));
 
 jest.mock('../services/workoutExportService', () => ({
@@ -67,6 +68,7 @@ describe('PastWorkouts export actions', () => {
       data: { scheduled: [], completed: [], completedCount: 0 },
       error: null,
     });
+    jest.mocked(fetchWorkoutsInDateRange).mockResolvedValue({ data: [], error: null });
   });
 
   it('renders centered link rows for future and past exports', async () => {

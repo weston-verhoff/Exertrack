@@ -4,12 +4,9 @@ import { WorkoutButton } from './WorkoutButton';
 import '../styles/WorkoutCard.css';
 import { Workout, WorkoutSet as WorkoutSetType } from '../types/workout';
 import { formatDuration } from '../utils/cardio';
-import { Drawer } from './Drawer'
-import { WorkoutDetails } from './WorkoutDetails';
-import { saveWorkout } from '../services/workoutService';
-import { useAuth } from '../context/AuthContext';
 import { ComponentTone } from '../utils/componentTone';
 import { Trash2, Zap } from 'lucide-react';
+import { WorkoutDetailsDrawer } from './WorkoutDetailsDrawer';
 
 type WorkoutCardVariant = 'future-workout' | 'past-workout' | 'highlighted';
 
@@ -71,52 +68,16 @@ export function WorkoutCard({
 }: Props) {
   const navigate = useNavigate();
   const formattedDate = formatDateCompact(workout.date);
-	const { userId } = useAuth();
-
   const variantClass = `workout-card ${variant} ${isNext ? 'highlight' : ''}`;
-	const [editedDate, setEditedDate] = useState(workout.date);
 	const [drawerOpen, setDrawerOpen] = useState(false);
-	const [localStatus, setLocalStatus] = useState(workout.status);
-	const [isSaving, setIsSaving] = useState(false);
 	const showsFullPageDetails = variant === 'highlighted';
 	const showsDetailsDrawer = !showsFullPageDetails;
-	const [editedExercises, setEditedExercises] = useState(() =>
-	  workout.workout_exercises.map(ex => ({
-	    ...ex,
-	    workout_sets: ex.workout_sets.map(set => ({ ...set })),
-	  }))
-	);
+	const [editedExercises, setEditedExercises] = useState(workout.workout_exercises);
 
 	useEffect(() => {
-			setEditedDate(workout.date);
-			setLocalStatus(workout.status);
-			setEditedExercises(
-				workout.workout_exercises.map(ex => ({
-					...ex,
-					workout_sets: ex.workout_sets.map(set => ({ ...set })),
-				}))
-			);
+			setEditedExercises(workout.workout_exercises);
 		}, [workout]);
-
-	const resetDraftState = () => {
-  setEditedDate(workout.date);
-
-  setEditedExercises(
-    workout.workout_exercises.map(ex => ({
-      ...ex,
-      workout_sets: ex.workout_sets.map(set => ({ ...set })),
-    }))
-  );
-};
-const closeDrawer = () => {
-  resetDraftState();
-  setDrawerOpen(false);
-};
-const closeDrawerAfterSave = () => {
-  setDrawerOpen(false);
-};
 const openDetailsDrawer = () => {
-  resetDraftState();
   setDrawerOpen(true);
 };
 
@@ -164,74 +125,15 @@ const openDetailsDrawer = () => {
 				onClick={() => onDelete(workout.id)}
 			/>
 		</div>
-		{showsDetailsDrawer && <Drawer
+		{showsDetailsDrawer && <WorkoutDetailsDrawer
+			workout={workout}
 			isOpen={drawerOpen}
-			onClose={closeDrawer}
-			width={520}
+			onClose={() => setDrawerOpen(false)}
 			tone={tone}
-		>
-			<WorkoutDetails
-				workoutId={workout.id}
-				date={editedDate}
-				status={localStatus}
-				exercises={editedExercises}
-				onClose={closeDrawer}
-				onDateChange={setEditedDate}   // optional: wire if you want editing here
-				onStatusChange={status => {
-					setLocalStatus(status);                // immediate UI
-					onStatusChange(workout.id, status);    // notify parent
-				}}
-				onExercisesChange={setEditedExercises}
-				onPersistedExercisesChange={persistedExercises => {
-					setEditedExercises(persistedExercises);
-					onWorkoutUpdated({
-						...workout,
-						date: editedDate,
-						status: localStatus,
-						workout_exercises: persistedExercises,
-					});
-				}}
-				isSaving={isSaving}
-				onSave={async () => {
-					setIsSaving(true);
-					try {
-						if (!userId) {
-              throw new Error('Missing user context');
-            }
-						const { error } = await saveWorkout({
-							workoutId: workout.id,
-							date: editedDate,
-							status: localStatus,
-							exercises: editedExercises,
-							userId,
-						});
-						if (error) {
-              throw new Error(error);
-            }
-						onWorkoutUpdated({
-							...workout,
-							date: editedDate,
-							status: localStatus,
-							workout_exercises: editedExercises,
-						});
-						closeDrawerAfterSave();
-						return true;
-					} catch (error) {
-						console.error('Failed to save workout:', error);
-						return false;
-					} finally {
-						setIsSaving(false);
-					}
-				}}
-				onDelete={async () => {
-					// 🔑 1. Tell parent to delete
-					onDelete(workout.id);
-
-					// 🔑 2. Close drawer locally
-					closeDrawer();
-				}}
-			/>
-		</Drawer>}
+			onDelete={onDelete}
+			onStatusChange={onStatusChange}
+			onWorkoutUpdated={onWorkoutUpdated}
+		/>}
 	</div>
 );
 }

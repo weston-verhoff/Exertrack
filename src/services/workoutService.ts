@@ -763,6 +763,39 @@ export async function fetchAllCompletedWorkouts({
   return { data: completed, error: null };
 }
 
+export async function fetchWorkoutsInDateRange({
+  userId,
+  startDate,
+  endDate,
+}: {
+  userId: string;
+  startDate: string;
+  endDate: string;
+}): Promise<ServiceResult<WorkoutWithTemplate[]>> {
+  const { data, error } = await supabase
+    .from('workouts')
+    .select(WORKOUT_SELECT_FIELDS_WITH_TEMPLATE)
+    .eq('user_id', userId)
+    .gte('date', startDate)
+    .lte('date', endDate)
+    .order('date', { ascending: true });
+
+  if (error) {
+    return {
+      data: null,
+      error: logAndReturnError('Failed to fetch calendar workouts.', error),
+    };
+  }
+
+  return {
+    data: (data ?? []).map(item => ({
+      ...normalizeWorkout(item, true),
+      status: resolveWorkoutStatus(item.status),
+    })),
+    error: null,
+  };
+}
+
 export async function fetchWorkoutById({
   workoutId,
   userId,
@@ -1178,6 +1211,7 @@ export async function duplicateWorkoutFromExercises({
 export const workoutService = {
   fetchWorkoutOverview,
   fetchAllCompletedWorkouts,
+  fetchWorkoutsInDateRange,
   fetchWorkoutById,
   fetchWorkoutDetail,
   fetchAnalyticsWorkouts,

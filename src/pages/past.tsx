@@ -22,6 +22,7 @@ import {
   WorkoutExportScope,
 } from '../utils/workoutExport'
 import { getWeekStartDateKey } from '../utils/accountMetrics'
+import { WorkoutCalendar } from '../components/WorkoutCalendar'
 
 const EXPORT_MESSAGES: Record<WorkoutExportScope, { exporting: string; exported: string }> = {
   all: {
@@ -218,6 +219,16 @@ export default function PastWorkouts() {
   return (
     <Layout>
 		<div className="past-workouts-page">
+			<WorkoutCalendar
+				initialWorkouts={workouts}
+				onDelete={deleteWorkout}
+				onStatusChange={handleStatusChange}
+				onWorkoutUpdated={updatedWorkout => {
+					setWorkouts(prev => prev.map(workout =>
+						workout.id === updatedWorkout.id ? updatedWorkout : workout
+					))
+				}}
+			/>
 			<h2 style={{textAlign:'center'}}>Future Workouts</h2>
 			<div className="workout-export-links" aria-label="Future workout exports">
 				<WorkoutButton
