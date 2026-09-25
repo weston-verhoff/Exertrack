@@ -10,6 +10,7 @@ export interface BuilderWorkoutSet extends CardioMetrics {
 
 export interface BuilderExerciseConfig {
   id: string;
+  workout_exercise_id?: string;
   exercise_id: string;
   name: string;
   target_muscle?: string;

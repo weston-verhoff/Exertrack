@@ -3,46 +3,6 @@
   "WorkspaceRootPath": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\plan.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\plan.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\metric-fields.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\metric-fields.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\drawer.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\drawer.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutCard.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\WorkoutCard.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-baseball.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\theme-baseball.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-sunset.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\theme-sunset.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\color-context.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\color-context.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\index.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\index.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-default.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\theme-default.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\page-hero.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\page-hero.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
-    },
-    {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\account.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\account.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
@@ -51,12 +11,20 @@
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\account.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutDetails.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\WorkoutDetails.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\TemplateCard.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\TemplateCard.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\utils\\workoutExport.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\utils\\workoutExport.ts||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\templates.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\pages\\templates.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\TemplateTagsEditor.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\components\\TemplateTagsEditor.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\plan.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:src\\styles\\plan.css||{A5401142-F49D-43DB-90B1-F57BA349E55C}"
     }
   ],
   "DocumentGroupContainers": [
@@ -66,7 +34,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 2,
+          "SelectedChildIndex": 4,
           "Children": [
             {
               "$type": "Bookmark",
@@ -78,7 +46,72 @@
             },
             {
               "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "TemplateCard.tsx",
+              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\TemplateCard.tsx",
+              "RelativeDocumentMoniker": "src\\components\\TemplateCard.tsx",
+              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\TemplateCard.tsx",
+              "RelativeToolTip": "src\\components\\TemplateCard.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-25T17:04:18.985Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "templates.tsx",
+              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\templates.tsx",
+              "RelativeDocumentMoniker": "src\\pages\\templates.tsx",
+              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\templates.tsx",
+              "RelativeToolTip": "src\\pages\\templates.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABMAAAA4AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-25T17:03:35.867Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
               "DocumentIndex": 0,
+              "Title": "account.tsx",
+              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\account.tsx",
+              "RelativeDocumentMoniker": "src\\pages\\account.tsx",
+              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\account.tsx",
+              "RelativeToolTip": "src\\pages\\account.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA0AAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-25T16:58:36.921Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "account.css",
+              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\account.css",
+              "RelativeDocumentMoniker": "src\\styles\\account.css",
+              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\account.css",
+              "RelativeToolTip": "src\\styles\\account.css",
+              "ViewState": "AgIAABQCAAAAAAAAAAAkwC8CAAAOAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
+              "WhenOpened": "2026-09-25T16:50:51.095Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "TemplateTagsEditor.tsx",
+              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\TemplateTagsEditor.tsx",
+              "RelativeDocumentMoniker": "src\\components\\TemplateTagsEditor.tsx",
+              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\TemplateTagsEditor.tsx",
+              "RelativeToolTip": "src\\components\\TemplateTagsEditor.tsx",
+              "ViewState": "AgIAAFQAAAAAAAAAAAAIwGUAAAAQAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
+              "WhenOpened": "2026-09-25T15:52:26.138Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
               "Title": "plan.css",
               "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\plan.css",
               "RelativeDocumentMoniker": "src\\styles\\plan.css",
@@ -88,162 +121,6 @@
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
               "WhenOpened": "2026-09-22T23:12:25.562Z",
               "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "metric-fields.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\metric-fields.css",
-              "RelativeDocumentMoniker": "src\\styles\\metric-fields.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\metric-fields.css",
-              "RelativeToolTip": "src\\styles\\metric-fields.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-22T22:24:37.902Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "WorkoutCard.tsx",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutCard.tsx",
-              "RelativeDocumentMoniker": "src\\components\\WorkoutCard.tsx",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutCard.tsx",
-              "RelativeToolTip": "src\\components\\WorkoutCard.tsx",
-              "ViewState": "AgIAAJAAAAAAAAAAAAAewJ8AAAARAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-09-22T02:19:14.65Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "drawer.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\drawer.css",
-              "RelativeDocumentMoniker": "src\\styles\\drawer.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\drawer.css",
-              "RelativeToolTip": "src\\styles\\drawer.css",
-              "ViewState": "AgIAALQAAAAAAAAAAAAAAMkAAAAJAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-21T22:53:00.789Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "theme-baseball.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-baseball.css",
-              "RelativeDocumentMoniker": "src\\styles\\theme-baseball.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-baseball.css",
-              "RelativeToolTip": "src\\styles\\theme-baseball.css",
-              "ViewState": "AgIAACkAAAAAAAAAAAAtwD0AAAAPAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-21T22:51:40.16Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "color-context.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\color-context.css",
-              "RelativeDocumentMoniker": "src\\styles\\color-context.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\color-context.css",
-              "RelativeToolTip": "src\\styles\\color-context.css",
-              "ViewState": "AgIAADgBAAAAAAAAAAAAAE0BAABAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-21T22:50:42.981Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "theme-sunset.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-sunset.css",
-              "RelativeDocumentMoniker": "src\\styles\\theme-sunset.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-sunset.css",
-              "RelativeToolTip": "src\\styles\\theme-sunset.css",
-              "ViewState": "AgIAAJkAAAAAAAAAAAAAALAAAAAuAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-21T20:23:42.451Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "theme-default.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-default.css",
-              "RelativeDocumentMoniker": "src\\styles\\theme-default.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\theme-default.css",
-              "RelativeToolTip": "src\\styles\\theme-default.css",
-              "ViewState": "AgIAAAMAAAAAAAAAAAAAADYAAAAuAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-21T03:01:59.311Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "page-hero.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\page-hero.css",
-              "RelativeDocumentMoniker": "src\\styles\\page-hero.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\page-hero.css",
-              "RelativeToolTip": "src\\styles\\page-hero.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-21T02:36:25.394Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "index.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\index.css",
-              "RelativeDocumentMoniker": "src\\index.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\index.css",
-              "RelativeToolTip": "src\\index.css",
-              "ViewState": "AgIAAGgBAAAAAAAAAAAvwHoBAAAYAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-21T01:01:07.984Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "account.tsx",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\account.tsx",
-              "RelativeDocumentMoniker": "src\\pages\\account.tsx",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\pages\\account.tsx",
-              "RelativeToolTip": "src\\pages\\account.tsx",
-              "ViewState": "AgIAADIAAAAAAAAAAAAAAFsAAAAjAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-09-20T16:43:29.458Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "WorkoutDetails.tsx",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutDetails.tsx",
-              "RelativeDocumentMoniker": "src\\components\\WorkoutDetails.tsx",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\components\\WorkoutDetails.tsx",
-              "RelativeToolTip": "src\\components\\WorkoutDetails.tsx",
-              "ViewState": "AgIAAGIBAAAAAAAAAAAewHQBAAANAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-09-19T02:42:34.201Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "account.css",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\account.css",
-              "RelativeDocumentMoniker": "src\\styles\\account.css",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\styles\\account.css",
-              "RelativeToolTip": "src\\styles\\account.css",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAArAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-18T18:26:18.238Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "workoutExport.ts",
-              "DocumentMoniker": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\utils\\workoutExport.ts",
-              "RelativeDocumentMoniker": "src\\utils\\workoutExport.ts",
-              "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\utils\\workoutExport.ts",
-              "RelativeToolTip": "src\\utils\\workoutExport.ts",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
-              "WhenOpened": "2026-06-29T21:56:48.883Z"
             }
           ]
         }

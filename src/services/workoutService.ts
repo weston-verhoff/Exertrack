@@ -1,6 +1,6 @@
 import { supabase } from '../supabase/client';
 import { DistanceUnit, Workout, WorkoutExercise, WorkoutSet } from '../types/workout';
-import { BuilderExerciseConfig } from '../types/workoutBuilder';
+import { BuilderExerciseConfig, BuilderWorkoutSet } from '../types/workoutBuilder';
 
 export type ServiceResult<T> = {
   data: T | null;
@@ -310,6 +310,88 @@ const normalizeBuilderExercises = (
               },
             ],
     }));
+
+export interface PersistedBuilderExercise {
+  id: string;
+  exercise_id: string;
+  order: number;
+  workout_sets: Array<BuilderWorkoutSet & { completed?: boolean }>;
+}
+
+const comparableBuilderSet = (
+  set: BuilderWorkoutSet,
+  exerciseType: BuilderExerciseConfig['exercise_type']
+) => ({
+  set_number: set.set_number,
+  reps: exerciseType === 'strength' ? Number(set.reps ?? 0) : null,
+  weight: exerciseType === 'strength' ? Number(set.weight ?? 0) : null,
+  duration_seconds: exerciseType === 'cardio' ? Number(set.duration_seconds ?? 0) : null,
+  distance_value:
+    exerciseType === 'cardio' && set.distance_value != null
+      ? Number(set.distance_value)
+      : null,
+  distance_unit: exerciseType === 'cardio' ? set.distance_unit ?? null : null,
+  calories:
+    exerciseType === 'cardio' && set.calories != null ? Number(set.calories) : null,
+  average_heart_rate:
+    exerciseType === 'cardio' && set.average_heart_rate != null
+      ? Number(set.average_heart_rate)
+      : null,
+  resistance:
+    exerciseType === 'cardio' && set.resistance != null ? Number(set.resistance) : null,
+  incline:
+    exerciseType === 'cardio' && set.incline != null ? Number(set.incline) : null,
+  intensity_type: set.intensity_type ?? 'normal',
+  notes: set.notes ?? null,
+});
+
+const isBuilderExerciseAdjusted = (
+  existing: PersistedBuilderExercise,
+  next: BuilderExerciseConfig
+) => {
+  if (existing.exercise_id !== next.exercise_id) return true;
+
+  const existingSets = [...existing.workout_sets]
+    .sort((a, b) => a.set_number - b.set_number)
+    .map(set => comparableBuilderSet(set, next.exercise_type));
+  const nextSets = [...next.sets]
+    .sort((a, b) => a.set_number - b.set_number)
+    .map(set => comparableBuilderSet(set, next.exercise_type));
+
+  return JSON.stringify(existingSets) !== JSON.stringify(nextSets);
+};
+
+export const getWorkoutBuilderUpdatePlan = (
+  existingExercises: PersistedBuilderExercise[],
+  nextExercises: BuilderExerciseConfig[]
+) => {
+  const existingById = new Map(existingExercises.map(exercise => [exercise.id, exercise]));
+  const preservedIds = new Set<string>();
+  const exercisesToUpdate: Array<{ id: string; exercise: BuilderExerciseConfig }> = [];
+  const exercisesToInsert: BuilderExerciseConfig[] = [];
+
+  nextExercises.forEach(exercise => {
+    const existing = exercise.workout_exercise_id
+      ? existingById.get(exercise.workout_exercise_id)
+      : undefined;
+
+    if (existing && !isBuilderExerciseAdjusted(existing, exercise)) {
+      preservedIds.add(existing.id);
+      exercisesToUpdate.push({ id: existing.id, exercise });
+      return;
+    }
+
+    exercisesToInsert.push(exercise);
+  });
+
+  return {
+    deleteIds: existingExercises
+      .filter(exercise => !preservedIds.has(exercise.id))
+      .map(exercise => exercise.id),
+    exercisesToInsert,
+    exercisesToUpdate,
+  };
+};
 
 const insertWorkoutExercisesAndSets = async (
   workoutId: string,
@@ -759,6 +841,7 @@ export async function fetchTemplateBuilderExercises(
     .from('template_exercises')
     .select(
       `
+      id,
       exercise_id,
       sets,
       reps,
@@ -823,6 +906,7 @@ export async function fetchWorkoutBuilderExercises(
     .from('workout_exercises')
     .select(
       `
+      id,
       exercise_id,
       order,
       exercise:exercise_id (
@@ -859,8 +943,9 @@ export async function fetchWorkoutBuilderExercises(
 
   const importedDate = workoutMeta?.date ?? null;
 
-  const cleaned = (data ?? []).map((item: any, i: number) => ({
+  const cleaned: BuilderExerciseConfig[] = (data ?? []).map((item: any, i: number) => ({
     id: `workout-${workoutId}-${item.exercise_id}-${i}`,
+    workout_exercise_id: item.id,
     exercise_id: item.exercise_id,
     name: item.exercise?.name ?? '',
     target_muscle: item.exercise?.target_muscle ?? '',
@@ -869,8 +954,10 @@ export async function fetchWorkoutBuilderExercises(
     order: item.order ?? i,
     sets:
       item.workout_sets?.length > 0
-        ? item.workout_sets.map((set: any, idx: number) => ({
-            set_number: idx + 1,
+        ? [...item.workout_sets]
+          .sort((a: any, b: any) => a.set_number - b.set_number)
+          .map((set: any) => ({
+            set_number: set.set_number,
             reps: set.reps ?? 0,
             weight: set.weight ?? 0,
             intensity_type: set.intensity_type ?? 'normal',
@@ -889,7 +976,7 @@ export async function fetchWorkoutBuilderExercises(
               reps: item.exercise?.exercise_type === 'cardio' ? null : 8,
               weight: item.exercise?.exercise_type === 'cardio' ? null : 0,
               duration_seconds: item.exercise?.exercise_type === 'cardio' ? 1800 : null,
-              distance_unit: item.exercise?.exercise_type === 'cardio' ? 'mi' : null,
+              distance_unit: item.exercise?.exercise_type === 'cardio' ? 'mi' as DistanceUnit : null,
               intensity_type: 'normal',
             },
           ],
@@ -945,17 +1032,42 @@ export async function updateWorkoutFromBuilder({
   try {
     const normalizedExercises = normalizeBuilderExercises(exercises);
 
-    const { error: deleteError } = await supabase
+    const { data: existingData, error: fetchError } = await supabase
       .from('workout_exercises')
-      .delete()
-      .eq('workout_id', workoutId);
+      .select(`
+        id,
+        exercise_id,
+        order,
+        workout_sets (
+          set_number,
+          reps,
+          weight,
+          duration_seconds,
+          distance_value,
+          distance_unit,
+          calories,
+          average_heart_rate,
+          resistance,
+          incline,
+          intensity_type,
+          notes,
+          completed
+        )
+      `)
+      .eq('workout_id', workoutId)
+      .order('order', { ascending: true });
 
-    if (deleteError) {
+    if (fetchError) {
       return {
         data: null,
-        error: logAndReturnError('Failed to update workout.', deleteError),
+        error: logAndReturnError('Failed to update workout.', fetchError),
       };
     }
+
+    const updatePlan = getWorkoutBuilderUpdatePlan(
+      (existingData ?? []) as PersistedBuilderExercise[],
+      normalizedExercises
+    );
 
     const { error: updateError } = await supabase
       .from('workouts')
@@ -969,7 +1081,47 @@ export async function updateWorkoutFromBuilder({
       };
     }
 
-    await insertWorkoutExercisesAndSets(workoutId, normalizedExercises);
+    const exerciseRows = buildWorkoutExerciseRows(normalizedExercises);
+    const rowByExercise = new Map(
+      normalizedExercises.map((exercise, index) => [exercise, exerciseRows[index]])
+    );
+
+    for (const { id, exercise } of updatePlan.exercisesToUpdate) {
+      const row = rowByExercise.get(exercise);
+      if (!row) continue;
+      const { workout_id: _workoutId, ...updates } = row;
+      const { error } = await supabase
+        .from('workout_exercises')
+        .update(updates)
+        .eq('id', id)
+        .eq('workout_id', workoutId);
+
+      if (error) {
+        return {
+          data: null,
+          error: logAndReturnError('Failed to update workout.', error),
+        };
+      }
+    }
+
+    if (updatePlan.deleteIds.length > 0) {
+      const { error: deleteError } = await supabase
+        .from('workout_exercises')
+        .delete()
+        .eq('workout_id', workoutId)
+        .in('id', updatePlan.deleteIds);
+
+      if (deleteError) {
+        return {
+          data: null,
+          error: logAndReturnError('Failed to update workout.', deleteError),
+        };
+      }
+    }
+
+    if (updatePlan.exercisesToInsert.length > 0) {
+      await insertWorkoutExercisesAndSets(workoutId, updatePlan.exercisesToInsert);
+    }
 
     return { data: null, error: null };
   } catch (error) {
