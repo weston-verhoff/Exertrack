@@ -203,6 +203,11 @@
     var(--ref-pink-500) 38%,
     var(--ref-yellow-400) 72%
   );
-  --image-surface-hero: none;
+  --image-surface-hero:
+    linear-gradient(
+      rgba(43, 33, 68, 0.7),
+      rgba(43, 33, 68, 0.7)
+    ),
+    url('../sunset.png');
   --image-surface-accent: none;
 }
