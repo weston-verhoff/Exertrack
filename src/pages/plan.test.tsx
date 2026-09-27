@@ -1,14 +1,31 @@
 import { DndContext } from '@dnd-kit/core';
 import { SortableContext } from '@dnd-kit/sortable';
-import { render, screen } from '@testing-library/react';
-import { BuilderRow } from './plan';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import PlanSession, { BuilderRow } from './plan';
 import { BuilderExerciseConfig } from '../types/workoutBuilder';
+import { useExercises } from '../hooks/useExercises';
+import { useTemplates } from '../hooks/useTemplates';
+import { useAuth } from '../context/AuthContext';
+import { useSystemAlerts } from '../context/SystemAlertContext';
+import { fetchTemplateBuilderExercises } from '../services/workoutService';
 
 jest.mock(
   'react-router-dom',
   () => ({ useNavigate: jest.fn(), useSearchParams: jest.fn() }),
   { virtual: true }
 );
+jest.mock('../hooks/useExercises', () => ({ useExercises: jest.fn() }));
+jest.mock('../hooks/useTemplates', () => ({ useTemplates: jest.fn() }));
+jest.mock('../context/AuthContext', () => ({ useAuth: jest.fn() }));
+jest.mock('../context/SystemAlertContext', () => ({ useSystemAlerts: jest.fn() }));
+jest.mock('../components/Layout', () => ({ Layout: ({ children }: { children: React.ReactNode }) => <>{children}</> }));
+jest.mock('../services/workoutService', () => ({
+  createWorkoutFromBuilder: jest.fn(),
+  fetchTemplateBuilderExercises: jest.fn(),
+  fetchWorkoutBuilderExercises: jest.fn(),
+  updateWorkoutFromBuilder: jest.fn(),
+}));
 
 const cardioExercise = (trackLaps: boolean): BuilderExerciseConfig => ({
   id: 'builder-row-1',
@@ -80,5 +97,43 @@ describe('planner metric fields', () => {
       expect(input).toHaveAttribute('inputmode', 'decimal');
     });
     expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+  });
+});
+
+describe('planner imports', () => {
+  it('keeps the selected date when importing a template', async () => {
+    let searchParams = new URLSearchParams();
+    (useSearchParams as jest.Mock).mockImplementation(() => [searchParams]);
+    (useNavigate as jest.Mock).mockReturnValue(jest.fn());
+    (useExercises as jest.Mock).mockReturnValue({
+      exercises: [],
+      loading: false,
+      refetch: jest.fn(),
+      addExercise: jest.fn(),
+    });
+    (useTemplates as jest.Mock).mockReturnValue({ templates: [], loading: false });
+    (useAuth as jest.Mock).mockReturnValue({
+      user: { user_metadata: {} },
+      userId: 'user-1',
+      loading: false,
+    });
+    (useSystemAlerts as jest.Mock).mockReturnValue({
+      dismissAlertGroup: jest.fn(),
+      showAlert: jest.fn(),
+    });
+    (fetchTemplateBuilderExercises as jest.Mock).mockResolvedValue({
+      data: [cardioExercise(false)],
+      error: null,
+    });
+
+    const { container, rerender } = render(<PlanSession />);
+    const dateInput = container.querySelector('input[type="date"]') as HTMLInputElement;
+    fireEvent.change(dateInput, { target: { value: '2026-11-18' } });
+
+    searchParams = new URLSearchParams('importTemplate=template-1');
+    rerender(<PlanSession />);
+
+    await waitFor(() => expect(fetchTemplateBuilderExercises).toHaveBeenCalledWith('template-1'));
+    expect(dateInput).toHaveValue('2026-11-18');
   });
 });

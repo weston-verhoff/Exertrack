@@ -16,15 +16,9 @@ export const getWeekStartDateKey = (startOfWeek: Weekday, today = new Date()) =>
   return localDateKey(weekStart);
 };
 
-export const getStrengthVolume = (exercise: WorkoutExerciseSummary) => {
+export const getStrengthSetCount = (exercise: WorkoutExerciseSummary) => {
   if (exercise.exercise.exercise_type !== 'strength') return 0;
-  if (exercise.workout_sets?.length) {
-    return exercise.workout_sets.reduce(
-      (total, set) => total + Number(set.reps ?? 0) * Number(set.weight ?? 0),
-      0
-    );
-  }
-  return exercise.sets * Number(exercise.reps ?? 0) * Number(exercise.weight ?? 0);
+  return exercise.workout_sets?.length ?? exercise.sets;
 };
 
 export const getWeeklySummary = (
@@ -38,7 +32,7 @@ export const getWeeklySummary = (
   workoutsThisWeek.forEach(workout => {
     workout.workout_exercises.forEach(exercise => {
       if (exercise.exercise.exercise_type === 'strength') {
-        strengthSets += exercise.workout_sets?.length ?? exercise.sets;
+        strengthSets += getStrengthSetCount(exercise);
         return;
       }
 

@@ -1,5 +1,5 @@
 import {
-  getStrengthVolume,
+  getStrengthSetCount,
   getWeekStartDateKey,
   getWeeklySummary,
 } from './accountMetrics';
@@ -25,8 +25,9 @@ test('finds the configured beginning of the week', () => {
   expect(getWeekStartDateKey(0, friday)).toBe('2026-09-13');
 });
 
-test('calculates volume from actual set values', () => {
-  expect(getStrengthVolume(strengthExercise)).toBe(1880);
+test('counts actual strength sets without using reps or weight', () => {
+  expect(getStrengthSetCount(strengthExercise)).toBe(2);
+  expect(getStrengthSetCount({ ...strengthExercise, reps: 1, weight: 1 })).toBe(2);
 });
 
 test('summarizes strength sets and cardio minutes for the current week', () => {

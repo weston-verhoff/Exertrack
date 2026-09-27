@@ -41,12 +41,17 @@ import {
 } from '../services/workoutService';
 import { confirmAndDeleteWorkout } from '../utils/workoutActions';
 import {
-  getStrengthVolume,
+  getStrengthSetCount,
   getWeekStartDateKey,
   getWeeklySummary,
 } from '../utils/accountMetrics';
 import { applyTheme } from '../utils/theme';
 import { getDistanceUnitOptions, normalizeDistanceUnit } from '../utils/unitPreferences';
+import {
+  aggregateChartValues,
+  ChartGranularity,
+  getRollingAverage,
+} from '../utils/chartAnalytics';
 import { DistanceUnit } from '../types/workout';
 import { useSystemAlerts } from '../context/SystemAlertContext';
 import {
@@ -108,6 +113,14 @@ const THEME_OPTIONS: Array<{
   { value: 'sunset', label: 'Sunset' },
 ];
 
+const CHART_GRANULARITY_OPTIONS: Array<{
+  value: ChartGranularity;
+  label: string;
+}> = [
+  { value: 'daily', label: 'Daily' },
+  { value: 'weekly', label: 'Weekly' },
+];
+
 const SECTION_LINKS = [
   { href: '#recent-workouts', label: 'Recent Workouts' },
   { href: '#training-analytics', label: 'Analytics' },
@@ -128,6 +141,7 @@ export default function AccountPage() {
   const [newTagDialogOpen, setNewTagDialogOpen] = useState(false);
   const [settings, setSettings] = useState<AccountSettings | null>(null);
   const [selectedMuscle, setSelectedMuscle] = useState('all');
+  const [chartGranularity, setChartGranularity] = useState<ChartGranularity>('daily');
   const [searchQuery, setSearchQuery] = useState('');
   const [editingExercise, setEditingExercise] = useState<CustomExercise | null>(null);
   const [exerciseDrawerOpen, setExerciseDrawerOpen] = useState(false);
@@ -257,43 +271,56 @@ export default function AccountPage() {
   const chartData = useMemo(() => {
     // Re-read semantic chart colors whenever the selected theme changes.
     void settings?.theme;
-    const volumeByDate = new Map<string, number>();
-    workouts.forEach(workout => {
-      const volume = workout.workout_exercises.reduce((total, exercise) => {
+    const values = workouts.map(workout => {
+      const setCount = workout.workout_exercises.reduce((total, exercise) => {
         if (
           selectedMuscle !== 'all' &&
           exercise.exercise.target_muscle !== selectedMuscle
         ) {
           return total;
         }
-        return total + getStrengthVolume(exercise);
+        return total + getStrengthSetCount(exercise);
       }, 0);
-      volumeByDate.set(workout.date, (volumeByDate.get(workout.date) ?? 0) + volume);
+      return { date: workout.date, value: setCount };
     });
 
-    const entries = Array.from(volumeByDate.entries()).sort(([a], [b]) => a.localeCompare(b));
+    const points = aggregateChartValues(
+      values,
+      chartGranularity,
+      settings?.startOfWeek ?? 1
+    );
+    const setCounts = points.map(point => point.value);
+    const rollingAverage = getRollingAverage(setCounts);
     const styles = getComputedStyle(document.documentElement);
     const lineColor = styles.getPropertyValue('--color-chart-series-1').trim();
     const fillColor = styles.getPropertyValue('--color-chart-series-1-fill').trim();
+    const trendColor = styles.getPropertyValue('--color-chart-series-3').trim() || lineColor;
 
     return {
-      labels: entries.map(([date]) =>
-        new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(
-          new Date(`${date}T00:00:00`)
-        )
-      ),
+      labels: points.map(point => point.label),
       datasets: [
         {
-          label: selectedMuscle === 'all' ? 'Total Volume' : `${selectedMuscle} Volume`,
-          data: entries.map(([, volume]) => volume),
+          label: selectedMuscle === 'all' ? 'Total Sets' : `${selectedMuscle} Sets`,
+          data: setCounts,
           borderColor: lineColor,
           backgroundColor: fillColor,
           fill: true,
           tension: 0.3,
         },
+        ...(rollingAverage ? [{
+          label: '5-point Rolling Average',
+          data: rollingAverage,
+          borderColor: trendColor,
+          backgroundColor: 'transparent',
+          borderDash: [7, 5],
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          fill: false,
+          tension: 0,
+        }] : []),
       ],
     };
-  }, [selectedMuscle, settings?.theme, workouts]);
+  }, [chartGranularity, selectedMuscle, settings?.startOfWeek, settings?.theme, workouts]);
 
   const filteredExercises = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -546,15 +573,25 @@ export default function AccountPage() {
           <section id="training-analytics" className="account-section">
             <div className="account-section__heading">
               <h2>Analytics</h2>
-              <label>
-                <span>Muscle group</span>
-                <select value={selectedMuscle} onChange={event => setSelectedMuscle(event.target.value)}>
-                  <option value="all">All muscles</option>
-                  {muscleGroups.map(muscle => <option key={muscle} value={muscle}>{muscle}</option>)}
-                </select>
-              </label>
+              <div className="account-analytics-controls">
+                <label>
+                  <span>Muscle group</span>
+                  <select value={selectedMuscle} onChange={event => setSelectedMuscle(event.target.value)}>
+                    <option value="all">All muscles</option>
+                    {muscleGroups.map(muscle => <option key={muscle} value={muscle}>{muscle}</option>)}
+                  </select>
+                </label>
+                <fieldset className="account-chart-period">
+                  <legend>Group by</legend>
+                  <ResponsiveSegmentedControl
+                    options={CHART_GRANULARITY_OPTIONS}
+                    value={chartGranularity}
+                    onChange={setChartGranularity}
+                  />
+                </fieldset>
+              </div>
             </div>
-            <div className="account-chart color-context color-context--raised" data-tone="workout" aria-label="Strength volume chart">
+            <div className="account-chart color-context color-context--raised" data-tone="workout" aria-label="Strength sets chart">
               {loading ? (
                 <ChartSkeleton />
               ) : workouts.length ? (
@@ -564,7 +601,7 @@ export default function AccountPage() {
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: { legend: { display: true } },
-                    scales: { y: { beginAtZero: true } },
+                    scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
                   }}
                 />
               ) : (

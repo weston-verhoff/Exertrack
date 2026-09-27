@@ -22,6 +22,7 @@ import {
   toStoredKilograms,
   downloadCsvFile,
 } from '../utils/weightTracking';
+import { getRollingAverage } from '../utils/chartAnalytics';
 
 type DrawerMode = 'closed' | 'add' | 'history' | 'edit';
 
@@ -119,6 +120,12 @@ export function WeightTrackingSection({
     const fillColor =
       styles.getPropertyValue('--color-chart-series-2-fill').trim() ||
       styles.getPropertyValue('--color-chart-series-1-fill').trim();
+    const trendColor =
+      styles.getPropertyValue('--color-chart-series-3').trim() || lineColor;
+    const weights = chartEntries.map((entry) =>
+      formatWeightValue(entry.weight_kg, weightSystem)
+    );
+    const rollingAverage = getRollingAverage(weights);
 
     return {
       labels: chartEntries.map((entry) =>
@@ -131,14 +138,23 @@ export function WeightTrackingSection({
       datasets: [
         {
           label: `Body Weight (${unit})`,
-          data: chartEntries.map((entry) =>
-            formatWeightValue(entry.weight_kg, weightSystem)
-          ),
+          data: weights,
           borderColor: lineColor,
           backgroundColor: fillColor,
           fill: true,
           tension: 0.3,
         },
+        ...(rollingAverage ? [{
+          label: '5-point Rolling Average',
+          data: rollingAverage,
+          borderColor: trendColor,
+          backgroundColor: 'transparent',
+          borderDash: [7, 5],
+          pointRadius: 0,
+          pointHoverRadius: 0,
+          fill: false,
+          tension: 0,
+        }] : []),
       ],
     };
   }, [chartEntries, theme, unit, weightSystem]);

@@ -158,7 +158,7 @@ describe('WorkoutCalendar', () => {
 
   it('exports explicitly selected workouts', async () => {
     const onExportSelected = jest.fn().mockResolvedValue(undefined);
-    render(
+    const { container } = render(
       <WorkoutCalendar
         initialWorkouts={[workout]}
         onDelete={jest.fn()}
@@ -170,8 +170,11 @@ describe('WorkoutCalendar', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Select' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Select Leg day on 2026-09-25' }));
+    const selectableWorkout = screen.getByRole('button', { name: 'Select Leg day on 2026-09-25' });
+    expect(selectableWorkout).toHaveClass('workout-calendar__event--selectable');
+    fireEvent.click(selectableWorkout);
     expect(screen.getByText('1 selected')).toBeInTheDocument();
+    expect(container.querySelector('.workout-calendar__selection-mark svg')).toBeInTheDocument();
     await act(async () => {
       fireEvent.click(screen.getByRole('button', { name: 'Export' }));
     });

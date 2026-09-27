@@ -9,7 +9,9 @@ const HOLD_DURATION = 3000;
 
 const prefersTypedConfirmation = () => {
   if (typeof window === 'undefined') return false;
-  if (window.localStorage.getItem(MODE_STORAGE_KEY) === 'type') return true;
+  const savedMode = window.localStorage.getItem(MODE_STORAGE_KEY);
+  if (savedMode === 'type') return true;
+  if (savedMode === 'hold') return false;
   return [
     '(prefers-reduced-motion: reduce)',
     '(forced-colors: active)',
@@ -71,6 +73,12 @@ export function BulkDeleteDialog({
     setMode('type');
   };
 
+  const useHoldMode = () => {
+    setPhrase('');
+    window.localStorage.setItem(MODE_STORAGE_KEY, 'hold');
+    setMode('hold');
+  };
+
   const handleKeyDown = (event: KeyboardEvent<HTMLButtonElement>) => {
     if (event.key === ' ' || event.key === 'Enter') {
       event.preventDefault();
@@ -111,10 +119,13 @@ export function BulkDeleteDialog({
             <button className="bulk-delete-type-link" disabled={busy} onClick={useTypedMode} type="button">Type instead</button>
           </>
         ) : (
-          <label className="bulk-delete-type">
-            <span>Type <strong>{CONFIRMATION_PHRASE}</strong> to delete.</span>
-            <input autoFocus disabled={busy} value={phrase} onChange={event => setPhrase(event.target.value)} />
-          </label>
+          <>
+            <label className="bulk-delete-type">
+              <span>Type <strong>{CONFIRMATION_PHRASE}</strong> to delete.</span>
+              <input autoFocus disabled={busy} value={phrase} onChange={event => setPhrase(event.target.value)} />
+            </label>
+            <button className="bulk-delete-type-link" disabled={busy} onClick={useHoldMode} type="button">Use press &amp; hold instead</button>
+          </>
         )}
 
         <div className="bulk-delete-actions">

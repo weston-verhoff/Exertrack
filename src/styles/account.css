@@ -215,6 +215,38 @@
   margin-left: auto;
 }
 
+.account-analytics-controls {
+  display: flex;
+  align-items: end;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+  flex-wrap: wrap;
+}
+
+.account-section__heading .account-analytics-controls label {
+  display: grid;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+.account-analytics-controls select {
+  height: 46px;
+}
+
+.account-chart-period {
+  width: 12rem;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.account-chart-period legend {
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+
 .weight-editor,
 .weight-history {
   display: grid;
@@ -552,6 +584,15 @@
 
   .account-section__heading label {
     justify-content: space-between;
+  }
+
+  .account-analytics-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .account-chart-period {
+    width: 100%;
   }
 
   .account-chart {

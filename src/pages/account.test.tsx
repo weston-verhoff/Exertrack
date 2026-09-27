@@ -27,11 +27,32 @@ jest.mock('chart.js', () => ({
 }));
 
 jest.mock('react-chartjs-2', () => ({
-  Line: () => <div data-testid="chart" />,
+  Line: ({ data }: { data: { datasets: Array<{ label: string; data: number[] }> } }) => (
+    <div
+      data-testid="chart"
+      data-label={data.datasets[0]?.label}
+      data-values={JSON.stringify(data.datasets[0]?.data)}
+      data-labels={JSON.stringify((data as any).labels)}
+      data-datasets={JSON.stringify(data.datasets.map(dataset => dataset.label))}
+    />
+  ),
 }));
 
 jest.mock('../components/ResponsiveSegmentedControl', () => ({
-  ResponsiveSegmentedControl: () => <div data-testid="segmented-control" />,
+  ResponsiveSegmentedControl: ({ options, value, onChange }: any) => (
+    <div data-testid="segmented-control">
+      {options.map((option: any) => (
+        <button
+          aria-pressed={value === option.value}
+          key={String(option.value)}
+          onClick={() => onChange(option.value)}
+          type="button"
+        >
+          {option.label}
+        </button>
+      ))}
+    </div>
+  ),
 }));
 
 jest.mock('../components/WorkoutCard', () => ({
@@ -208,6 +229,81 @@ describe('AccountPage custom exercise editor', () => {
         }),
         userId: 'user-1',
       });
+    });
+  });
+
+  it('charts strength training as set counts', async () => {
+    (fetchAnalyticsWorkouts as jest.Mock).mockResolvedValue({
+      data: [
+        {
+          id: 'workout-1',
+          date: '2026-09-20',
+          workout_exercises: [
+            {
+              sets: 2,
+              reps: 10,
+              weight: 200,
+              exercise: { name: 'Bench Press', target_muscle: 'Chest', exercise_type: 'strength' },
+              workout_sets: [
+                { set_number: 1, reps: 10, weight: 200 },
+                { set_number: 2, reps: 8, weight: 225 },
+              ],
+            },
+          ],
+        },
+      ],
+      error: null,
+    });
+
+    renderAccountPage();
+
+    const chart = await screen.findByTestId('chart');
+    expect(chart).toHaveAttribute('data-label', 'Total Sets');
+    expect(chart).toHaveAttribute('data-values', '[2]');
+    expect(chart).toHaveAttribute('data-datasets', '["Total Sets"]');
+    expect(screen.getByLabelText('Strength sets chart')).toContainElement(chart);
+  });
+
+  it('groups sets into configured weeks and adds an average after five points', async () => {
+    (getAccountSettings as jest.Mock).mockReturnValue({
+      firstName: 'Alex',
+      lastName: '',
+      startOfWeek: 6,
+      distanceSystem: 'imperial',
+      weightSystem: 'imperial',
+      theme: 'default',
+    });
+    const workout = (id: string, date: string, setCount: number) => ({
+      id,
+      date,
+      workout_exercises: [{
+        sets: setCount,
+        reps: 10,
+        weight: 200,
+        exercise: { name: 'Bench Press', target_muscle: 'Chest', exercise_type: 'strength' },
+      }],
+    });
+    (fetchAnalyticsWorkouts as jest.Mock).mockResolvedValue({
+      data: [
+        workout('1', '2026-08-01', 2),
+        workout('2', '2026-08-07', 3),
+        workout('3', '2026-08-08', 6),
+        workout('4', '2026-08-15', 7),
+        workout('5', '2026-08-22', 8),
+        workout('6', '2026-08-29', 9),
+      ],
+      error: null,
+    });
+
+    renderAccountPage();
+    await screen.findByTestId('chart');
+    fireEvent.click(screen.getByRole('button', { name: 'Weekly' }));
+
+    await waitFor(() => {
+      const chart = screen.getByTestId('chart');
+      expect(chart).toHaveAttribute('data-labels', '["8/1–8/7","8/8–8/14","8/15–8/21","8/22–8/28","8/29–9/4"]');
+      expect(chart).toHaveAttribute('data-values', '[5,6,7,8,9]');
+      expect(chart).toHaveAttribute('data-datasets', '["Total Sets","5-point Rolling Average"]');
     });
   });
 

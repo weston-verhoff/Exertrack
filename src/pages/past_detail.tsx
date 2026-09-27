@@ -35,7 +35,7 @@ export default function PastDetail() {
   const navigate = useNavigate()
   const [workout, setWorkout] = useState<Workout | null>(null)
   const [loading, setLoading] = useState(true)
-  const [volumeByMuscle, setVolumeByMuscle] = useState<Record<string, number>>({})
+  const [setsByMuscle, setSetsByMuscle] = useState<Record<string, number>>({})
   const { userId, loading: authLoading } = useAuth()
 
   useEffect(() => {
@@ -51,7 +51,7 @@ export default function PastDetail() {
         console.error(error ?? 'Error fetching workout.')
       } else {
         setWorkout(data as Workout)
-        calculateVolume(data.workout_exercises)
+        calculateSets(data.workout_exercises)
 			      }
       setLoading(false)
     }
@@ -67,15 +67,14 @@ export default function PastDetail() {
     loadWorkoutDetail()
   }, [authLoading, id, userId])
 
-  const calculateVolume = (exs: WorkoutExercise[]) => {
-    const volume: Record<string, number> = {}
+  const calculateSets = (exs: WorkoutExercise[]) => {
+    const setCounts: Record<string, number> = {}
     exs.forEach(e => {
       if (e.exercise.exercise_type !== 'strength') return
       const muscle = e.exercise.target_muscle
-      const liftVolume = e.sets * Number(e.reps ?? 0) * Number(e.weight ?? 0)
-      volume[muscle] = (volume[muscle] || 0) + liftVolume
+      setCounts[muscle] = (setCounts[muscle] || 0) + e.sets
     })
-    setVolumeByMuscle(volume)
+    setSetsByMuscle(setCounts)
   }
 
   if (loading) return <p>Loading...</p>
@@ -104,11 +103,11 @@ export default function PastDetail() {
       </section>
 
       <section style={{ marginTop: '2rem' }}>
-        <h2>Volume Summary</h2>
+        <h2>Sets by Muscle Group</h2>
         <ul>
-          {Object.entries(volumeByMuscle).map(([muscle, volume]) => (
+          {Object.entries(setsByMuscle).map(([muscle, sets]) => (
             <li key={muscle}>
-              {muscle}: {volume.toFixed(2)}
+              {muscle}: {sets} {sets === 1 ? 'set' : 'sets'}
             </li>
           ))}
         </ul>

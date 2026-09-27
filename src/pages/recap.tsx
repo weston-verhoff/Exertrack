@@ -12,7 +12,7 @@ export default function Recap() {
 
   const [exercises, setExercises] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [volumeByMuscle, setVolumeByMuscle] = useState<Record<string, number>>({})
+  const [setsByMuscle, setSetsByMuscle] = useState<Record<string, number>>({})
 
   useEffect(() => {
     async function fetchWorkoutExercises() {
@@ -27,7 +27,7 @@ export default function Recap() {
       if (error) console.error('Error fetching workout exercises:', error)
       else {
         setExercises(data || [])
-        calculateVolume(data || [])
+        calculateSets(data || [])
       }
 
       setLoading(false)
@@ -38,22 +38,21 @@ export default function Recap() {
     if (!userId) {
       setExercises([])
       setLoading(false)
-      setVolumeByMuscle({})
+      setSetsByMuscle({})
       return
     }
 
     fetchWorkoutExercises()
   }, [authLoading, userId, workoutId])
 
-  const calculateVolume = (data: any[]) => {
-    const volume: Record<string, number> = {}
+  const calculateSets = (data: any[]) => {
+    const setCounts: Record<string, number> = {}
     data.forEach(e => {
       if (e.exercise.exercise_type !== 'strength') return
       const muscle = e.exercise.target_muscle
-      const liftVolume = e.sets * e.reps * (e.weight || 0)
-      volume[muscle] = (volume[muscle] || 0) + liftVolume
+      setCounts[muscle] = (setCounts[muscle] || 0) + e.sets
     })
-    setVolumeByMuscle(volume)
+    setSetsByMuscle(setCounts)
   }
 
   if (loading) return <p>Loading recap...</p>
@@ -78,11 +77,11 @@ export default function Recap() {
       </section>
 
       <section style={{ marginTop: '2rem' }}>
-        <h2>Volume by Muscle Group</h2>
+        <h2>Sets by Muscle Group</h2>
         <ul>
-          {Object.entries(volumeByMuscle).map(([muscle, vol]) => (
+          {Object.entries(setsByMuscle).map(([muscle, sets]) => (
             <li key={muscle}>
-              {muscle}: {vol.toFixed(2)}
+              {muscle}: {sets} {sets === 1 ? 'set' : 'sets'}
             </li>
           ))}
         </ul>

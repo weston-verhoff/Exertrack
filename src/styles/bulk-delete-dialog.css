@@ -38,8 +38,12 @@
 .bulk-delete-hold__progress {
   position: absolute;
   inset: 0 auto 0 0;
+  z-index: 0;
   width: 0;
-  background: var(--color-interactive-danger-hover);
+  background: var(--color-overlay-backdrop);
+  opacity: 0.3;
+  box-shadow: inset -2px 0 var(--color-on-interactive-danger);
+  pointer-events: none;
 }
 
 .bulk-delete-hold--active .bulk-delete-hold__progress {
@@ -47,7 +51,7 @@
   transition: width 3s linear;
 }
 
-.bulk-delete-hold__label { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; }
+.bulk-delete-hold__label { position: relative; z-index: 1; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; }
 .bulk-delete-type-link { min-height: 44px; padding: 0.5rem 0.75rem; border: 0; background: transparent; color: var(--_context-content); text-decoration: underline; cursor: pointer; }
 .bulk-delete-type { display: grid; gap: 0.55rem; text-align: left; }
 .bulk-delete-type input { min-height: 44px; box-sizing: border-box; padding: 0.6rem 0.75rem; border: 1px solid var(--_context-border-strong); border-radius: 8px; background: var(--_context-surface-sunken); color: var(--_context-content); font: inherit; }

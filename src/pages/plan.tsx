@@ -301,9 +301,7 @@ export default function PlanSession() {
             );
           setSelectedExerciseIds(sorted.map(e => e.exercise_id));
           setSelectedExercisesData(sorted);
-          setSelectedDate(
-            importedDate ?? new Date().toISOString().split('T')[0]
-          );
+          if (importedDate) setSelectedDate(importedDate);
           setLastImportedKey(importKey);
         }
       } catch (err) {

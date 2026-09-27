@@ -84,6 +84,27 @@ describe('WeightTrackingSection', () => {
     expect(chart.textContent?.match(/Sep 20, 2026/g)).toHaveLength(1);
     expect(chart).toHaveTextContent('174.2');
     expect(chart).not.toHaveTextContent('175');
+    expect(chart).not.toHaveTextContent('5-point Rolling Average');
+  });
+
+  it('adds a five-point rolling average after five unique weigh-in dates', async () => {
+    (fetchWeightEntries as jest.Mock).mockResolvedValue({
+      data: [
+        { ...entries[0], id: 'trend-1', weighed_on: '2026-09-16', weight_kg: 81 },
+        { ...entries[0], id: 'trend-2', weighed_on: '2026-09-17', weight_kg: 80.5 },
+        { ...entries[0], id: 'trend-3', weighed_on: '2026-09-18', weight_kg: 80 },
+        { ...entries[0], id: 'trend-4', weighed_on: '2026-09-19', weight_kg: 79.5 },
+        { ...entries[0], id: 'trend-5', weighed_on: '2026-09-20', weight_kg: 79 },
+      ],
+      error: null,
+    });
+
+    renderSection('metric');
+
+    const chart = await screen.findByTestId('weight-chart');
+    expect(chart).toHaveTextContent('5-point Rolling Average');
+    expect(chart).toHaveTextContent('"data":[null,null,null,null,80]');
+    expect(chart).toHaveTextContent('"borderDash":[7,5]');
   });
 
   it('keeps every same-day entry in history and displays one decimal place', async () => {

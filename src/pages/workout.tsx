@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import '../styles/workout.css' // ✅ Import your CSS file
 import { Layout } from '../components/Layout';
-import { Workout, WorkoutExercise, WorkoutSet } from '../types/workout';
+import { Workout, WorkoutExercise } from '../types/workout';
 import { WorkoutDetails, WorkoutSaveOptions } from '../components/WorkoutDetails'
 import { useAuth } from '../context/AuthContext';
 import { fetchWorkoutById, saveWorkout } from '../services/workoutService';
@@ -91,18 +91,6 @@ export default function WorkoutRecap() {
 if (loading) return <p>Loading recap...</p>
 if (!workout) return <p>Workout not found.</p>
 
-const muscleSummary: Record<string, number> = {};
-
-editedExercises.forEach(we => {
-	const muscle = we.exercise?.target_muscle ?? 'Unknown';
-
-	const volume = we.workout_sets.reduce(
-		(sum: number, s: WorkoutSet) => sum + Number(s.reps ?? 0) * Number(s.weight ?? 0),
-		0
-	);
-
-	muscleSummary[muscle] = (muscleSummary[muscle] || 0) + volume;
-});
 const handleDeleteWorkout = async () => {
 	if (!workout) return;
 	if (!userId) return;

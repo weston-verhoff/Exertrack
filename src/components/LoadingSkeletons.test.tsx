@@ -28,7 +28,7 @@ describe('loading skeletons', () => {
     render(<ChartSkeleton />);
 
     expect(
-      screen.getByRole('status', { name: 'Loading strength volume chart' })
+      screen.getByRole('status', { name: 'Loading strength sets chart' })
     ).toHaveClass('chart-skeleton');
   });
 });

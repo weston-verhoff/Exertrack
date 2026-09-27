@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Check, ChevronLeft, ChevronRight } from 'lucide-react';
 import { fetchWorkoutsInDateRange, WorkoutWithTemplate } from '../services/workoutService';
 import { useAuth } from '../context/AuthContext';
 import { Workout } from '../types/workout';
@@ -247,13 +247,17 @@ export function WorkoutCalendar({
                     return (
                       <button
                         type="button"
-                        className={`workout-calendar__event workout-calendar__event--${workout.status ?? 'scheduled'}${isSelected ? ' workout-calendar__event--selected' : ''}`}
+                        className={`workout-calendar__event workout-calendar__event--${workout.status ?? 'scheduled'}${selectionMode ? ' workout-calendar__event--selectable' : ''}${isSelected ? ' workout-calendar__event--selected' : ''}`}
                         key={workout.id}
                         onClick={() => selectionMode ? toggleWorkoutSelection(workout.id) : setSelectedWorkout(workout)}
                         aria-label={selectionMode ? `${isSelected ? 'Deselect' : 'Select'} ${getWorkoutLabel(workout)} on ${dateKey}` : `View ${getWorkoutLabel(workout)} on ${dateKey}`}
                         aria-pressed={selectionMode ? isSelected : undefined}
                       >
-                        {selectionMode && <span className="workout-calendar__selection-mark" aria-hidden="true">{isSelected ? '✓' : ''}</span>}
+                        {selectionMode && (
+                          <span className="workout-calendar__selection-mark" aria-hidden="true">
+                            {isSelected ? <Check size={12} strokeWidth={3} /> : null}
+                          </span>
+                        )}
                         {exerciseNames.length > 0 ? (
                           <ul>
                             {exerciseNames.map((name, index) => (

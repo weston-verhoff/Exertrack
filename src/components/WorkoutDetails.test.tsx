@@ -110,17 +110,17 @@ describe('WorkoutDetails layout', () => {
     );
   });
 
-  it('keeps exercises and volume summaries in mobile reading order', () => {
+  it('keeps exercises and training summaries in mobile reading order', () => {
     renderDetails(strengthExercise, true);
 
     const exercises = screen.getByRole('heading', { name: 'Exercises' });
-    const muscleVolume = screen.getByRole('heading', { name: 'Muscle Volume Breakdown' });
-    const volumeSummary = screen.getByRole('heading', { name: 'Volume Summary' });
+    const muscleSets = screen.getByRole('heading', { name: 'Sets by Muscle Group' });
+    const exerciseSets = screen.getByRole('heading', { name: 'Sets by Exercise' });
 
-    expect(exercises.compareDocumentPosition(muscleVolume)).toBe(
+    expect(exercises.compareDocumentPosition(muscleSets)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING
     );
-    expect(muscleVolume.compareDocumentPosition(volumeSummary)).toBe(
+    expect(muscleSets.compareDocumentPosition(exerciseSets)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING
     );
   });
@@ -338,8 +338,8 @@ describe('WorkoutDetails set completion', () => {
   });
 });
 
-describe('WorkoutDetails volume summaries', () => {
-  it('shows only cardio volume for a cardio-only workout', () => {
+describe('WorkoutDetails training summaries', () => {
+  it('shows only the cardio summary for a cardio-only workout', () => {
     const running = cardioExercise(false);
     running.workout_sets[0].duration_seconds = 1200;
     running.exercise!.target_muscle = 'Legs';
@@ -366,29 +366,29 @@ describe('WorkoutDetails volume summaries', () => {
 
     renderDetails([running, biking]);
 
-    expect(screen.queryByRole('heading', { name: 'Muscle Volume Breakdown' })).not.toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Volume Summary' })).not.toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Cardio Volume' })).toBeInTheDocument();
-    expect(screen.getByText('Running: Legs → Volume: 20 minutes')).toBeInTheDocument();
-    expect(screen.getByText('Biking: Legs → Volume: 60 minutes')).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Sets by Muscle Group' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Sets by Exercise' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Cardio Summary' })).toBeInTheDocument();
+    expect(screen.getByText('Running: Legs → 20 minutes')).toBeInTheDocument();
+    expect(screen.getByText('Biking: Legs → 60 minutes')).toBeInTheDocument();
   });
 
   it('shows strength and cardio summaries for a mixed workout', () => {
     renderDetails([strengthExercise, cardioExercise(false)]);
 
-    expect(screen.getByRole('heading', { name: 'Muscle Volume Breakdown' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Volume Summary' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Cardio Volume' })).toBeInTheDocument();
-    expect(screen.getByText('Chest: 200')).toBeInTheDocument();
-    expect(screen.getByText('Bench Press: 1 sets → Volume: 200')).toBeInTheDocument();
-    expect(screen.getByText('Running: Full Body → Volume: 30 minutes')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Sets by Muscle Group' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Sets by Exercise' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Cardio Summary' })).toBeInTheDocument();
+    expect(screen.getByText('Chest: 1 set')).toBeInTheDocument();
+    expect(screen.getByText('Bench Press: 1 set')).toBeInTheDocument();
+    expect(screen.getByText('Running: Full Body → 30 minutes')).toBeInTheDocument();
   });
 
   it('shows only strength summaries for a strength-only workout', () => {
     renderDetails(strengthExercise);
 
-    expect(screen.getByRole('heading', { name: 'Muscle Volume Breakdown' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Volume Summary' })).toBeInTheDocument();
-    expect(screen.queryByRole('heading', { name: 'Cardio Volume' })).not.toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Sets by Muscle Group' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Sets by Exercise' })).toBeInTheDocument();
+    expect(screen.queryByRole('heading', { name: 'Cardio Summary' })).not.toBeInTheDocument();
   });
 });

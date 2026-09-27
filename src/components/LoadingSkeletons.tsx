@@ -61,7 +61,7 @@ export function ChartSkeleton() {
     <div
       className="chart-skeleton"
       role="status"
-      aria-label="Loading strength volume chart"
+      aria-label="Loading strength sets chart"
       aria-busy="true"
     >
       <div className="chart-skeleton__legend">

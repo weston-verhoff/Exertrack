@@ -160,30 +160,20 @@ export function WorkoutDetails({
     we => we.exercise?.exercise_type === 'cardio'
   );
 
-  const volumeByExercise = strengthExercises.map(we => {
-    const volume = we.workout_sets.reduce(
-      (sum: number, s: WorkoutSet) => sum + Number(s.reps ?? 0) * Number(s.weight ?? 0),
-      0
-    );
-
+  const setsByExercise = strengthExercises.map(we => {
     return {
       name: we.exercise?.name ?? 'Unknown',
       sets: we.workout_sets.length,
-      volume,
     };
   });
 
-  const muscleSummary: Record<string, number> = {};
+  const setsByMuscle: Record<string, number> = {};
   strengthExercises.forEach(we => {
     const muscle = we.exercise?.target_muscle ?? 'Unknown';
-    const volume = we.workout_sets.reduce(
-      (sum: number, s: WorkoutSet) => sum + Number(s.reps ?? 0) * Number(s.weight ?? 0),
-      0
-    );
-    muscleSummary[muscle] = (muscleSummary[muscle] || 0) + volume;
+    setsByMuscle[muscle] = (setsByMuscle[muscle] || 0) + we.workout_sets.length;
   });
 
-  const cardioVolume = cardioExercises.map(we => {
+  const cardioSummary = cardioExercises.map(we => {
     const durationSeconds = we.workout_sets.reduce(
       (sum, set) => sum + Number(set.duration_seconds ?? 0),
       0
@@ -487,12 +477,12 @@ export function WorkoutDetails({
         {strengthExercises.length > 0 && (
         <section className="workout-details__section">
 	      <h2 className="workout-details__section-title">
-          <Brain aria-hidden="true" size={24} /> Muscle Volume Breakdown
+          <Brain aria-hidden="true" size={24} /> Sets by Muscle Group
         </h2>
 	      <ul>
-	        {Object.entries(muscleSummary).map(([muscle, vol]) => (
+	        {Object.entries(setsByMuscle).map(([muscle, sets]) => (
 	          <li key={muscle}>
-	            {muscle}: {vol}
+	            {muscle}: {sets} {sets === 1 ? 'set' : 'sets'}
 	          </li>
 	        ))}
 	      </ul>
@@ -502,12 +492,12 @@ export function WorkoutDetails({
         {strengthExercises.length > 0 && (
         <section className="workout-details__section">
 	      <h2 className="workout-details__section-title">
-          <BarChart3 aria-hidden="true" size={24} /> Volume Summary
+          <BarChart3 aria-hidden="true" size={24} /> Sets by Exercise
         </h2>
 	      <ul>
-	        {volumeByExercise.map((ve, i) => (
+	        {setsByExercise.map((exercise, i) => (
 	          <li key={i}>
-	            {ve.name}: {ve.sets} sets → Volume: {ve.volume}
+	            {exercise.name}: {exercise.sets} {exercise.sets === 1 ? 'set' : 'sets'}
 	          </li>
 	        ))}
 	      </ul>
@@ -517,12 +507,12 @@ export function WorkoutDetails({
         {cardioExercises.length > 0 && (
         <section className="workout-details__section">
 	      <h2 className="workout-details__section-title">
-          <Timer aria-hidden="true" size={24} /> Cardio Volume
+          <Timer aria-hidden="true" size={24} /> Cardio Summary
         </h2>
 	      <ul>
-	        {cardioVolume.map((entry, index) => (
+	        {cardioSummary.map((entry, index) => (
 	          <li key={`${entry.name}-${index}`}>
-	            {entry.name}: {entry.muscle} → Volume: {entry.minutes}{' '}
+	            {entry.name}: {entry.muscle} → {entry.minutes}{' '}
               {entry.minutes === 1 ? 'minute' : 'minutes'}
 	          </li>
 	        ))}

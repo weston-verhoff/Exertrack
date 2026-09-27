@@ -149,7 +149,9 @@
 }
 
 .workout-calendar__event--selected { outline: 2px solid var(--_context-border-strong); outline-offset: 1px; }
-.workout-calendar__selection-mark { position: absolute; top: 0.3rem; right: 0.3rem; display: grid; width: 1rem; height: 1rem; place-items: center; border: 1px solid currentColor; border-radius: 50%; font-size: 0.7rem; }
+.workout-calendar__event--selectable { padding-right: 1.75rem; }
+.workout-calendar__selection-mark { position: absolute; top: 0.3rem; right: 0.3rem; display: grid; width: 1rem; height: 1rem; padding: 0; place-items: center; border: 1px solid currentColor; border-radius: 50%; line-height: 0; }
+.workout-calendar__selection-mark svg { display: block; }
 
 .workout-calendar__event--scheduled {
   border-color: var(--color-border-positive);
