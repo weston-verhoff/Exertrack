@@ -243,12 +243,12 @@ describe('AccountPage custom exercise editor', () => {
     });
   });
 
-  it('offers a neutral sign-out action at the bottom of the page', async () => {
+  it('offers a secondary danger sign-out action at the bottom of the page', async () => {
     renderAccountPage();
 
     const signOutButtons = await screen.findAllByRole('button', { name: 'Sign Out' });
     const bottomSignOut = signOutButtons.find(button => button.closest('.account-page__sign-out'));
-    expect(bottomSignOut).toHaveClass('workout-button--neutral');
+    expect(bottomSignOut).toHaveClass('workout-button--secondary', 'workout-button--danger');
 
     fireEvent.click(bottomSignOut as HTMLButtonElement);
     expect(mockSignOut).toHaveBeenCalledTimes(1);

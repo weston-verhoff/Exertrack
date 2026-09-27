@@ -7,6 +7,6 @@
     "\\src\\styles",
     "\\src\\utils"
   ],
-  "SelectedNode": "\\src\\styles\\theme-sunset.css",
+  "SelectedNode": "\\src\\components\\WorkoutButton.tsx",
   "PreviewInSolutionExplorer": false
 }

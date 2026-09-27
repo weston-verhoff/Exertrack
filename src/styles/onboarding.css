@@ -41,7 +41,7 @@
 .onboarding-theme-preview { display: block; height: 72px; border: 1px solid var(--_context-border-strong); border-radius: 8px; }
 .onboarding-theme-preview--default { background: linear-gradient(135deg, hsl(0 0% 100%) 55%, hsl(0 0% 87%) 55%); }
 .onboarding-theme-preview--dark { background: linear-gradient(135deg, hsl(0 0% 2%) 55%, hsl(0 0% 17%) 55%); }
-.onboarding-theme-preview--up-and-up { background: linear-gradient(135deg, hsl(225 60% 24%) 55%, hsl(33 100% 82%) 55%); }
+.onboarding-theme-preview--up-and-up { background: linear-gradient(135deg, hsl(207 76% 38%) 58%, hsl(29 91% 55%) 58%); }
 .onboarding-theme-preview--baseball { background: linear-gradient(135deg, hsl(0 0% 2%) 48%, hsl(0 0% 100%) 48% 85%, hsl(217 100% 54%) 85% 92%, hsl(348 100% 55%) 92%); }
 .onboarding-theme-preview--neon { background: linear-gradient(135deg, hsl(260 59% 15%), hsl(325 100% 62%) 55%, hsl(186 100% 50%)); }
 .onboarding-theme-preview--monokai { background: linear-gradient(135deg, hsl(75 11% 14%) 55%, hsl(337 41% 26%) 55%); }

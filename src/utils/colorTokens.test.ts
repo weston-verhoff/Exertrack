@@ -186,15 +186,19 @@ describe('token architecture', () => {
   });
 
   it('uses custom canvas artwork only for themes that provide it', () => {
-    ['theme-up-and-up.css', 'theme-sunset.css'].forEach((themeFile) => {
+    ['theme-sunset.css'].forEach((themeFile) => {
       const { declarations } = getDeclarations(readStyle(themeFile));
       expect(declarations.has('--image-surface-canvas')).toBe(true);
       expect(declarations.get('--image-surface-canvas')).not.toBe('none');
     });
 
-    ['theme-default.css', 'theme-dark.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css'].forEach((themeFile) => {
+    ['theme-default.css', 'theme-dark.css', 'theme-up-and-up.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css'].forEach((themeFile) => {
       const { declarations } = getDeclarations(readStyle(themeFile));
-      expect(declarations.has('--image-surface-canvas')).toBe(false);
+      if (themeFile === 'theme-up-and-up.css') {
+        expect(declarations.get('--image-surface-canvas')).toBe('none');
+      } else {
+        expect(declarations.has('--image-surface-canvas')).toBe(false);
+      }
     });
   });
 

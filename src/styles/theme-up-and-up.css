@@ -1,33 +1,33 @@
-/* Up & Up theme: the original branded blue and orange experience. */
+/* Up & Up theme: an uplifting sky-blue foundation with warm orange accents. */
 [data-theme='up-and-up'] {
   color-scheme: light;
 
   /* Reference palette */
   --ref-neutral-0: #ffffff;
-  --ref-neutral-50: #f1f1f1;
-  --ref-neutral-100: #d3d7dd;
-  --ref-neutral-300: #a5a5a5;
-  --ref-neutral-600: #6d6f74;
-  --ref-neutral-750: #404040;
-  --ref-neutral-850: #1f1f1f;
-  --ref-neutral-900: #141b21;
-  --ref-navy-800: #1f2c4f;
-  --ref-navy-850: #162456;
-  --ref-blue-50: #eff6ff;
-  --ref-blue-100: #e3e8ff;
-  --ref-blue-300: #bedbff;
-  --ref-blue-500: #2196f3;
-  --ref-blue-600: #1446de;
-  --ref-blue-700: #0a2554;
-  --ref-blue-750: #1e3a8a;
-  --ref-orange-50: #fff7ed;
-  --ref-orange-75: #fef3df;
-  --ref-orange-100: #f8dfc7;
-  --ref-orange-200: #f7c48c;
-  --ref-orange-300: #f7af57;
-  --ref-orange-500: #f0851d;
-  --ref-orange-700: #c94614;
-  --ref-orange-950: #441306;
+  --ref-neutral-50: #f7fbff;
+  --ref-neutral-100: #edf6ff;
+  --ref-neutral-300: #bdd4e7;
+  --ref-neutral-600: #526d82;
+  --ref-neutral-750: #334e68;
+  --ref-neutral-850: #1e3a52;
+  --ref-neutral-900: #102a43;
+  --ref-navy-800: #123b66;
+  --ref-navy-850: #0d3158;
+  --ref-blue-50: #f7fbff;
+  --ref-blue-100: #e8f3ff;
+  --ref-blue-300: #bddcff;
+  --ref-blue-500: #d4e9ff;
+  --ref-blue-600: #1769aa;
+  --ref-blue-700: #0f4f82;
+  --ref-blue-750: #123b66;
+  --ref-orange-50: #fff8ef;
+  --ref-orange-75: #fff4e6;
+  --ref-orange-100: #fff0dc;
+  --ref-orange-200: #ffd8a8;
+  --ref-orange-300: #f8b766;
+  --ref-orange-500: #e97917;
+  --ref-orange-700: #a94708;
+  --ref-orange-950: #6e2a00;
   --ref-green-100: #b9f8cf;
   --ref-green-300: #60d67a;
   --ref-green-400: #6ab57a;
@@ -38,7 +38,7 @@
   --ref-red-800: #9a1f1f;
   --ref-red-900: #741717;
   --ref-transparent: rgba(0, 0, 0, 0);
-  --ref-overlay-inverse-95: rgba(14, 23, 55, 0.95);
+  --ref-overlay-inverse-95: rgba(8, 40, 72, 0.96);
   --ref-overlay-backdrop: rgba(0, 0, 0, 0.45);
   --ref-wash-inverse-8: rgba(255, 255, 255, 0.08);
   --ref-wash-inverse-10: rgba(255, 255, 255, 0.1);
@@ -50,18 +50,18 @@
   --ref-shadow-50: rgba(0, 0, 0, 0.5);
   --ref-shadow-80: rgba(0, 0, 0, 0.8);
   --ref-shadow-100: rgba(0, 0, 0, 1);
-  --ref-chart-1: #4bc0c0;
-  --ref-chart-1-fill: rgba(75, 192, 192, 0.2);
-  --ref-chart-2: #1446de;
-  --ref-chart-2-fill: rgba(20, 70, 222, 0.2);
-  --ref-chart-3: #ff7a00;
-  --ref-chart-3-fill: rgba(255, 122, 0, 0.2);
+  --ref-chart-1: #1769aa;
+  --ref-chart-1-fill: rgba(23, 105, 170, 0.18);
+  --ref-chart-2: #d8620a;
+  --ref-chart-2-fill: rgba(216, 98, 10, 0.18);
+  --ref-chart-3: #16857a;
+  --ref-chart-3-fill: rgba(22, 133, 122, 0.18);
 
   /* Neutral foundations */
-  --color-surface-canvas: var(--ref-neutral-50);
+  --color-surface-canvas: var(--ref-neutral-100);
   --color-surface-default: var(--ref-neutral-0);
-  --color-surface-raised: var(--ref-blue-50);
-  --color-surface-sunken: var(--ref-neutral-100);
+  --color-surface-raised: var(--ref-neutral-50);
+  --color-surface-sunken: var(--ref-blue-500);
   --color-surface-inverse: var(--ref-navy-850);
   --color-surface-inverse-subtle: var(--ref-wash-inverse-8);
   --color-surface-overlay: var(--ref-overlay-inverse-95);
@@ -75,7 +75,7 @@
 
   /* Borders */
   --color-border-subtle: var(--ref-neutral-300);
-  --color-border-default: var(--ref-neutral-750);
+  --color-border-default: var(--ref-neutral-300);
   --color-border-strong: var(--ref-navy-800);
   --color-border-focus: var(--ref-blue-600);
   --color-border-on-inverse: var(--ref-blue-100);
@@ -91,20 +91,20 @@
   --color-on-accent-secondary: var(--ref-neutral-0);
   --color-accent-secondary-subtle: var(--ref-orange-100);
   --color-on-accent-secondary-subtle: var(--ref-orange-950);
-  --color-border-accent-secondary: var(--ref-blue-700);
+  --color-border-accent-secondary: var(--ref-orange-500);
   --color-hover-on-accent-secondary: var(--ref-wash-inverse-10);
 
   /* Interactive states */
-  --color-interactive-primary: var(--ref-orange-700);
+  --color-interactive-primary: var(--ref-blue-600);
   --color-on-interactive-primary: var(--ref-neutral-0);
-  --color-interactive-primary-hover: var(--ref-orange-950);
+  --color-interactive-primary-hover: var(--ref-blue-700);
   --color-interactive-secondary: var(--ref-blue-500);
-  --color-on-interactive-secondary: var(--ref-blue-700);
+  --color-on-interactive-secondary: var(--ref-blue-750);
   --color-interactive-secondary-hover: var(--ref-blue-300);
   --color-interactive-subtle: var(--ref-blue-100);
   --color-on-interactive-subtle: var(--ref-blue-750);
-  --color-interactive-subtle-hover: var(--ref-blue-50);
-  --color-interactive-selected: var(--ref-neutral-750);
+  --color-interactive-subtle-hover: var(--ref-blue-500);
+  --color-interactive-selected: var(--ref-blue-700);
   --color-on-interactive-selected: var(--ref-neutral-0);
   --color-border-selected: var(--ref-neutral-850);
   --color-interactive-positive: var(--ref-green-900);
@@ -152,9 +152,9 @@
   --shadow-button-pressed: var(--ref-shadow-80);
   --shadow-control-inset: var(--ref-shadow-100);
 
-  /* Theme artwork */
-  --image-surface-canvas: url('../full-background.png');
-  --image-surface-hero: url('../darkblue-hero-bg.png');
-  --image-surface-accent: url('../orange-bg.png');
+  /* Solid color surfaces keep this theme bright and calm. */
+  --image-surface-canvas: none;
+  --image-surface-hero: none;
+  --image-surface-accent: none;
   --image-brand-mark-alternate: url('../assets/branding/default/mark-alternate.png');
 }

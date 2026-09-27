@@ -707,6 +707,7 @@ export default function AccountPage() {
             <WorkoutButton
               label="Sign Out"
               icon={<LogOut size={18} />}
+              intent="danger"
               variant="secondary"
               size="lg"
               onClick={() => { void signOut(); }}
