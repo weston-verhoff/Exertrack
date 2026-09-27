@@ -1,5 +1,6 @@
 import {
   formatWeightDisplay,
+  formatWeightEntriesAsCsv,
   formatWeightValue,
   fromStoredKilograms,
   getLocalDateKey,
@@ -32,5 +33,14 @@ describe('weight tracking conversions', () => {
 
   it('formats local dates without UTC rollover', () => {
     expect(getLocalDateKey(new Date(2026, 8, 24, 23, 45))).toBe('2026-09-24');
+  });
+
+  it('exports every weigh-in in the preferred unit', () => {
+    const csv = formatWeightEntriesAsCsv([
+      { id: '1', user_id: 'user-1', weight_kg: 79.379, weighed_on: '2026-09-24', created_at: 'a' },
+      { id: '2', user_id: 'user-1', weight_kg: 80, weighed_on: '2026-09-24', created_at: 'b' },
+    ], 'imperial');
+
+    expect(csv).toBe('date,weight,unit\n2026-09-24,175.0,lbs\n2026-09-24,176.4,lbs');
   });
 });

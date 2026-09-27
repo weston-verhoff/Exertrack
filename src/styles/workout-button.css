@@ -1,0 +1,114 @@
+.workout-button {
+  --_button-surface: var(--color-interactive-primary);
+  --_button-surface-hover: var(--color-interactive-primary-hover);
+  --_button-surface-pressed: var(--color-interactive-primary-hover);
+  --_button-content: var(--color-on-interactive-primary);
+  --_button-border: var(--color-transparent);
+  min-height: 44px;
+  border: 1px solid var(--_button-border);
+  border-radius: 8px;
+  background-color: var(--_button-surface);
+  color: var(--_button-content);
+  box-shadow: inset -2px -2px var(--shadow-button-inset);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-weight: 700;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, box-shadow 120ms ease, opacity 120ms ease;
+}
+
+.workout-button--secondary {
+  --_button-surface: var(--_context-surface);
+  --_button-surface-hover: var(--_context-hover);
+  --_button-surface-pressed: var(--_context-hover);
+  --_button-content: var(--_context-content);
+  --_button-border: var(--_context-border-strong);
+}
+
+.workout-button--quiet {
+  --_button-surface: var(--color-transparent);
+  --_button-surface-hover: var(--_context-hover);
+  --_button-surface-pressed: var(--_context-hover);
+  --_button-content: var(--_context-content);
+  --_button-border: var(--color-transparent);
+  box-shadow: none;
+}
+
+.workout-button--primary.workout-button--positive {
+  --_button-surface: var(--color-interactive-positive);
+  --_button-surface-hover: var(--color-interactive-positive-hover);
+  --_button-surface-pressed: var(--color-interactive-positive-hover);
+  --_button-content: var(--color-on-interactive-positive);
+}
+
+.workout-button--secondary.workout-button--positive {
+  --_button-surface: var(--_context-surface);
+  --_button-surface-hover: var(--color-interactive-positive-subtle);
+  --_button-surface-pressed: var(--color-interactive-positive-subtle-hover);
+  --_button-content: var(--color-on-interactive-positive-subtle);
+  --_button-border: var(--color-border-positive);
+}
+
+.workout-button--quiet.workout-button--positive {
+  --_button-surface: var(--color-transparent);
+  --_button-surface-hover: var(--color-interactive-positive-subtle);
+  --_button-surface-pressed: var(--color-interactive-positive-subtle-hover);
+  --_button-content: var(--color-on-interactive-positive-subtle);
+}
+
+.workout-button--primary.workout-button--danger {
+  --_button-surface: var(--color-interactive-danger);
+  --_button-surface-hover: var(--color-interactive-danger-hover);
+  --_button-surface-pressed: var(--color-interactive-danger-hover);
+  --_button-content: var(--color-on-interactive-danger);
+}
+
+.workout-button--secondary.workout-button--danger {
+  --_button-surface: var(--_context-surface);
+  --_button-surface-hover: var(--color-interactive-danger-subtle);
+  --_button-surface-pressed: var(--color-interactive-danger-subtle-hover);
+  --_button-content: var(--color-on-interactive-danger-subtle);
+  --_button-border: var(--color-border-danger);
+}
+
+.workout-button--quiet.workout-button--danger {
+  --_button-surface: var(--color-transparent);
+  --_button-surface-hover: var(--color-interactive-danger-subtle);
+  --_button-surface-pressed: var(--color-interactive-danger-subtle-hover);
+  --_button-content: var(--color-on-interactive-danger-subtle);
+}
+
+.workout-button:hover:not(:disabled) {
+  background-color: var(--_button-surface-hover);
+  box-shadow: inset -2px -2px 1px var(--shadow-button-hover-inset);
+}
+
+.workout-button:active:not(:disabled) {
+  background-color: var(--_button-surface-pressed);
+  box-shadow: inset 0 0 8px var(--shadow-button-pressed);
+}
+
+.workout-button--quiet:hover:not(:disabled),
+.workout-button--quiet:active:not(:disabled) {
+  box-shadow: none;
+}
+
+.workout-button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.workout-button--sm { padding: 0.25rem 0.6rem; font-size: 0.8rem; }
+.workout-button--md { padding: 0.4rem 0.8rem; font-size: 0.9rem; }
+.workout-button--lg { padding: 0.8rem 1.1rem; font-size: 1rem; }
+.workout-button--icon-only { padding: 0.4rem; }
+.workout-button--rounded { border-radius: 999px; }
+.workout-button__icon { display: inline-flex; }
+.status-button > .workout-button { width: 100%; }
+
+@media (prefers-reduced-motion: reduce) {
+  .workout-button { transition-duration: 0.01ms; }
+}

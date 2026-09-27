@@ -24,9 +24,12 @@ const Account = lazy(() => import('./pages/account'));
 const PastDetail = lazy(() => import('./pages/past_detail'));
 const WorkoutRecap = lazy(() => import('./pages/workout'));
 const Login = lazy(() => import('./pages/login'));
+const Onboarding = lazy(() => import('./pages/onboarding'));
 
 function RouteAwareGlobalHeader() {
   const { pathname } = useLocation();
+
+  if (pathname === '/onboarding') return null;
 
   return <GlobalHeader variant={getGlobalHeaderVariant(pathname)} />;
 }
@@ -48,6 +51,14 @@ function App() {
             <Suspense fallback={<div className="page-loading">Loading...</div>}>
               <Routes>
               <Route path="/login" element={<Login />} />
+              <Route
+                path="/onboarding"
+                element={
+                  <ProtectedRoute allowIncompleteOnboarding>
+                    <Onboarding />
+                  </ProtectedRoute>
+                }
+              />
               <Route
                 path="/"
                 element={

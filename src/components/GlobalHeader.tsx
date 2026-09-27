@@ -3,6 +3,7 @@ import { useLayoutEffect, useRef, useState, type ReactNode } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
+import { WorkoutButton } from './WorkoutButton';
 
 export type GlobalHeaderVariant = 'default' | 'secondary';
 
@@ -95,9 +96,7 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
           </Link>
         ))}
 				{user ? (
-					<button className="sign-out-button" onClick={handleSignOut}>
-						Sign Out
-					</button>
+					<WorkoutButton label="Sign Out" variant="secondary" size="sm" onClick={() => void handleSignOut()} />
 				) : (
 					<></>
 				)}

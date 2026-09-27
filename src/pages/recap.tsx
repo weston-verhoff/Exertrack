@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { supabase } from '../supabase/client'
 import { useAuth } from '../context/AuthContext'
+import { WorkoutButton } from '../components/WorkoutButton'
 
 export default function Recap() {
   const [searchParams] = useSearchParams()
@@ -88,12 +89,8 @@ export default function Recap() {
       </section>
 
       <div style={{ marginTop: '2rem' }}>
-        <button onClick={() => navigate('/past')} style={{ marginRight: '1rem' }}>
-          View Past Workouts
-        </button>
-        <button onClick={() => navigate('/')}>
-          Return to Dashboard
-        </button>
+        <WorkoutButton label="View Past Workouts" variant="secondary" onClick={() => navigate('/past')} />
+        <WorkoutButton label="Return to Dashboard" onClick={() => navigate('/')} />
       </div>
     </div>
   )

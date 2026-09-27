@@ -160,10 +160,17 @@
   --color-interactive-positive: var(--ref-mint-900);
   --color-on-interactive-positive: var(--ref-mint-400);
   --color-interactive-positive-hover: var(--ref-night-700);
+  --color-interactive-positive-subtle: var(--ref-mint-900-surface);
+  --color-interactive-positive-subtle-hover: var(--ref-night-700-surface);
+  --color-on-interactive-positive-subtle: var(--ref-mint-400);
   --color-border-positive: var(--ref-mint-400);
   --color-interactive-danger: var(--ref-pink-900);
   --color-on-interactive-danger: var(--ref-pink-200);
   --color-interactive-danger-hover: var(--ref-dusk-600);
+  --color-interactive-danger-subtle: var(--ref-pink-900-surface);
+  --color-interactive-danger-subtle-hover: var(--ref-dusk-600);
+  --color-on-interactive-danger-subtle: var(--ref-pink-200);
+  --color-border-danger: var(--ref-coral-400);
 
   /* Feedback */
   --color-feedback-info-surface: var(--ref-night-700-surface);

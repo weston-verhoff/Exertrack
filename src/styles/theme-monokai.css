@@ -19,6 +19,7 @@
   --ref-pink-hover: #6d2942;
   --ref-pink-border: #a92558;
   --ref-pink-text: #ff679d;
+  --ref-pink-text-strong: #ff8bb3;
   --ref-purple-bg: #322a3f;
   --ref-purple-surface: #403250;
   --ref-purple-border: #7657a8;
@@ -103,10 +104,17 @@
   --color-interactive-positive: var(--ref-green-bg);
   --color-on-interactive-positive: var(--ref-green-text);
   --color-interactive-positive-hover: var(--ref-green-surface);
+  --color-interactive-positive-subtle: var(--ref-green-bg);
+  --color-interactive-positive-subtle-hover: var(--ref-green-surface);
+  --color-on-interactive-positive-subtle: var(--ref-green-text);
   --color-border-positive: var(--ref-green-border);
   --color-interactive-danger: var(--ref-pink-surface);
   --color-on-interactive-danger: var(--ref-text-primary);
   --color-interactive-danger-hover: var(--ref-pink-hover);
+  --color-interactive-danger-subtle: var(--ref-pink-bg);
+  --color-interactive-danger-subtle-hover: var(--ref-pink-surface);
+  --color-on-interactive-danger-subtle: var(--ref-pink-text-strong);
+  --color-border-danger: var(--ref-pink-border);
 
   /* Feedback */
   --color-feedback-info-surface: var(--ref-blue-bg);

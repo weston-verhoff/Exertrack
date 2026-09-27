@@ -763,6 +763,30 @@ export async function fetchAllCompletedWorkouts({
   return { data: completed, error: null };
 }
 
+export async function deleteWorkouts(
+  workoutIds: string[],
+  userId: string
+): Promise<ServiceResult<string[]>> {
+  const uniqueIds = Array.from(new Set(workoutIds));
+  if (uniqueIds.length === 0) return { data: [], error: null };
+
+  const { data, error } = await supabase
+    .from('workouts')
+    .delete()
+    .eq('user_id', userId)
+    .in('id', uniqueIds)
+    .select('id');
+
+  if (error) {
+    return {
+      data: null,
+      error: logAndReturnError('Failed to delete workouts.', error),
+    };
+  }
+
+  return { data: (data ?? []).map(item => item.id as string), error: null };
+}
+
 export async function fetchWorkoutsInDateRange({
   userId,
   startDate,

@@ -1,0 +1,58 @@
+.bulk-delete-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: var(--color-overlay-backdrop);
+}
+
+.bulk-delete-dialog {
+  width: min(100%, 460px);
+  box-sizing: border-box;
+  padding: 1.5rem;
+  border: 1px solid var(--_context-border);
+  border-radius: 16px;
+  background: var(--_context-surface-raised);
+  color: var(--_context-content);
+  box-shadow: 0 16px 48px var(--shadow-strong);
+  text-align: center;
+}
+
+.bulk-delete-dialog h2 { margin: 0; }
+.bulk-delete-dialog > p { margin: 0.5rem 0 1.25rem; color: var(--_context-content-muted); }
+
+.bulk-delete-hold {
+  position: relative;
+  width: 100%;
+  min-height: 48px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 9px;
+  background: var(--color-interactive-danger);
+  color: var(--color-on-interactive-danger);
+  cursor: pointer;
+}
+
+.bulk-delete-hold__progress {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: var(--color-interactive-danger-hover);
+}
+
+.bulk-delete-hold--active .bulk-delete-hold__progress {
+  width: 100%;
+  transition: width 3s linear;
+}
+
+.bulk-delete-hold__label { position: relative; display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 700; }
+.bulk-delete-type-link { min-height: 44px; padding: 0.5rem 0.75rem; border: 0; background: transparent; color: var(--_context-content); text-decoration: underline; cursor: pointer; }
+.bulk-delete-type { display: grid; gap: 0.55rem; text-align: left; }
+.bulk-delete-type input { min-height: 44px; box-sizing: border-box; padding: 0.6rem 0.75rem; border: 1px solid var(--_context-border-strong); border-radius: 8px; background: var(--_context-surface-sunken); color: var(--_context-content); font: inherit; }
+.bulk-delete-actions { display: flex; justify-content: flex-end; gap: 0.65rem; margin-top: 1rem; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bulk-delete-hold__progress { transition: none; }
+}

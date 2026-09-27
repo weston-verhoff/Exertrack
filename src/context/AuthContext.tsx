@@ -90,6 +90,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 	        data: {
 	          // Provide basic metadata to avoid downstream NOT NULL triggers in profile tables.
 	          email_lower: trimmedEmail.toLowerCase(),
+	          onboarding_completed: false,
 	        },
 	      },
 			});

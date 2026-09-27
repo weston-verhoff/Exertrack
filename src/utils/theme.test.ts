@@ -43,6 +43,19 @@ describe('theme utilities', () => {
     expect(window.localStorage.getItem('iwyn-theme')).toBe('up-and-up');
   });
 
+  it('adds a temporary fallback transition when an animated theme change is requested', () => {
+    jest.useFakeTimers();
+    document.documentElement.dataset.theme = 'default';
+
+    applyTheme('dark', { animate: true });
+
+    expect(document.documentElement.dataset.theme).toBe('dark');
+    expect(document.documentElement).toHaveClass('theme-transitioning');
+    jest.advanceTimersByTime(420);
+    expect(document.documentElement).not.toHaveClass('theme-transitioning');
+    jest.useRealTimers();
+  });
+
   it('restores a saved Monokai preference', () => {
     window.localStorage.setItem('iwyn-theme', 'monokai');
 

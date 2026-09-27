@@ -26,6 +26,7 @@
   --ref-green-500: #547a5e;
   --ref-green-800: #304635;
   --ref-green-850: #26382c;
+  --ref-red-850: #3b2222;
   --ref-red-100: #f0b8b8;
   --ref-red-400: #a65757;
   --ref-red-700: #923838;
@@ -102,13 +103,20 @@
   --color-interactive-selected: var(--ref-neutral-150);
   --color-on-interactive-selected: var(--ref-neutral-900);
   --color-border-selected: var(--ref-neutral-50);
-  --color-interactive-positive: var(--ref-green-850);
-  --color-on-interactive-positive: var(--ref-green-200);
+  --color-interactive-positive: var(--ref-green-500);
+  --color-on-interactive-positive: var(--ref-neutral-0);
   --color-interactive-positive-hover: var(--ref-green-800);
+  --color-interactive-positive-subtle: var(--ref-green-850);
+  --color-interactive-positive-subtle-hover: var(--ref-green-800);
+  --color-on-interactive-positive-subtle: var(--ref-green-200);
   --color-border-positive: var(--ref-green-500);
   --color-interactive-danger: var(--ref-red-800);
   --color-on-interactive-danger: var(--ref-neutral-0);
   --color-interactive-danger-hover: var(--ref-red-700);
+  --color-interactive-danger-subtle: var(--ref-red-850);
+  --color-interactive-danger-subtle-hover: var(--ref-red-800);
+  --color-on-interactive-danger-subtle: var(--ref-red-100);
+  --color-border-danger: var(--ref-red-400);
 
   /* Feedback */
   --color-feedback-info-surface: var(--ref-blue-gray-850);

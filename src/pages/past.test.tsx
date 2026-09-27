@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import PastWorkouts from './past';
 import { fetchWorkoutOverview, fetchWorkoutsInDateRange } from '../services/workoutService';
 import { fetchWorkoutExportData } from '../services/workoutExportService';
@@ -44,6 +44,7 @@ jest.mock('../context/SystemAlertContext', () => ({
 
 jest.mock('../services/workoutService', () => ({
   fetchAllCompletedWorkouts: jest.fn(),
+  deleteWorkouts: jest.fn(),
   fetchWorkoutOverview: jest.fn(),
   fetchWorkoutsInDateRange: jest.fn(),
 }));
@@ -71,15 +72,17 @@ describe('PastWorkouts export actions', () => {
     jest.mocked(fetchWorkoutsInDateRange).mockResolvedValue({ data: [], error: null });
   });
 
-  it('renders centered link rows for future and past exports', async () => {
-    const { container } = render(<PastWorkouts />);
+  it('opens one export drawer with every supported range', async () => {
+    render(<PastWorkouts />);
 
-    expect(screen.getByRole('button', { name: 'Export All' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Export Planned Workouts' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Export All Past Workouts' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Export This Week' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Export 2 weeks' })).toBeInTheDocument();
-    expect(container.querySelectorAll('.workout-export-links > span')).toHaveLength(3);
+    expect(screen.getByRole('button', { name: 'Plan a Workout' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: 'Export' }));
+
+    const drawer = screen.getByText('Export workouts').closest('aside');
+    expect(drawer).not.toBeNull();
+    const drawerQueries = within(drawer!);
+    ['This week', 'Last 2 weeks', 'All workouts', 'Future workouts', 'Past workouts', 'Custom date range']
+      .forEach(label => expect(drawerQueries.getByRole('radio', { name: label })).toBeInTheDocument());
 
     await waitFor(() => expect(fetchWorkoutOverview).toHaveBeenCalledWith({
       userId: 'user-1',
@@ -87,7 +90,7 @@ describe('PastWorkouts export actions', () => {
     }));
   });
 
-  it('keeps the button label and replaces export progress with a success alert', async () => {
+  it('shows drawer progress and replaces export progress with a success alert', async () => {
     let finishExport!: (value: any) => void;
     jest.mocked(fetchWorkoutExportData).mockReturnValue(
       new Promise(resolve => {
@@ -96,24 +99,28 @@ describe('PastWorkouts export actions', () => {
     );
     render(<PastWorkouts />);
 
-    const plannedButton = screen.getByRole('button', { name: 'Export Planned Workouts' });
-    fireEvent.click(plannedButton);
+    fireEvent.click(screen.getByRole('button', { name: 'Export' }));
+    const drawer = screen.getByText('Export workouts').closest('aside')!;
+    const drawerQueries = within(drawer);
+    fireEvent.click(drawerQueries.getByRole('radio', { name: 'Future workouts' }));
+    fireEvent.click(drawerQueries.getByRole('button', { name: 'Export' }));
 
-    expect(plannedButton).toHaveTextContent('Export Planned Workouts');
-    expect(screen.queryByRole('button', { name: 'Exporting...' })).not.toBeInTheDocument();
+    expect(drawerQueries.getByRole('button', { name: 'Exporting...' })).toBeDisabled();
     expect(mockShowAlert).toHaveBeenCalledWith('Exporting planned workouts...', {
       replaceKey: 'workout-export',
       duration: 300000,
     });
 
-    finishExport({
-      data: [{
-        id: 'planned-1',
-        date: '2099-01-01',
-        status: 'scheduled',
-        workout_exercises: [],
-      }],
-      error: null,
+    await act(async () => {
+      finishExport({
+        data: [{
+          id: 'planned-1',
+          date: '2099-01-01',
+          status: 'scheduled',
+          workout_exercises: [],
+        }],
+        error: null,
+      });
     });
 
     await waitFor(() => expect(downloadTextFile).toHaveBeenCalled());

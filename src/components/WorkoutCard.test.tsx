@@ -17,8 +17,8 @@ jest.mock('./Drawer', () => ({
 }));
 
 jest.mock('./WorkoutButton', () => ({
-  WorkoutButton: ({ label, onClick, iconOnly }: any) => (
-    <button type="button" onClick={onClick} aria-label={iconOnly ? label : undefined}>
+  WorkoutButton: ({ label, onClick, iconOnly, variant, intent }: any) => (
+    <button type="button" onClick={onClick} aria-label={iconOnly ? label : undefined} data-variant={variant} data-intent={intent}>
       {iconOnly ? null : label}
     </button>
   ),
@@ -138,10 +138,13 @@ describe('WorkoutCard actions', () => {
 
     const detailsButton = screen.getByRole('button', { name: 'Details' });
     expect(detailsButton.closest('.workout-btns')).not.toBeNull();
+    expect(detailsButton).toHaveAttribute('data-variant', 'secondary');
     fireEvent.click(detailsButton);
     expect(screen.getByRole('button', { name: 'Persist completion' })).toBeInTheDocument();
 
     const deleteButton = screen.getByRole('button', { name: 'Delete' });
     expect(deleteButton).toBeEmptyDOMElement();
+    expect(deleteButton).toHaveAttribute('data-variant', 'secondary');
+    expect(deleteButton).toHaveAttribute('data-intent', 'danger');
   });
 });

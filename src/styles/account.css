@@ -76,8 +76,7 @@
   gap: 0.5rem;
 }
 
-.account-sidebar a,
-.account-sidebar button {
+.account-sidebar a {
   display: flex;
   width: 100%;
   padding: 0.75rem;
@@ -91,16 +90,11 @@
   text-decoration: none;
   cursor: pointer;
 }
-.account-sidebar button { border: 0; }
-
-.account-sidebar a:hover,
-.account-sidebar button:hover {
+.account-sidebar a:hover {
   background: var(--color-interactive-subtle);
 }
 
-.account-sidebar__actions button {
-  color: var(--color-on-feedback-danger);
-}
+.account-sidebar__actions .workout-button { width: 100%; justify-content: flex-start; }
 
 .account-content {
   min-width: 0;
@@ -217,35 +211,8 @@
   flex-wrap: wrap;
 }
 
-.weight-tracking__actions button,
-.weight-editor__actions button,
-.weight-editor__date-row button {
-  padding: 0.7rem 1rem;
-  border: 1px solid var(--_context-border);
-  border-radius: 8px;
-  background: var(--_context-strong);
-  color: var(--_context-on-strong);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.weight-tracking__actions .secondary,
-.weight-editor__actions .secondary,
-.weight-editor__date-row button {
-  background: var(--_context-surface-raised);
-  color: var(--_context-content);
-}
-
-.weight-editor__actions .danger {
+.weight-editor__actions .workout-button--danger {
   margin-left: auto;
-  border-color: var(--color-feedback-danger-border);
-  background: var(--color-interactive-danger);
-  color: var(--color-on-interactive-danger);
-}
-
-.weight-editor__actions button:disabled {
-  cursor: wait;
-  opacity: 0.65;
 }
 
 .weight-editor,
@@ -395,21 +362,6 @@
 .exercise-editor__actions {
   display: flex;
   gap: 0.75rem;
-}
-
-.exercise-editor__actions button {
-  padding: 0.7rem 1rem;
-  border: 1px solid var(--_context-border);
-  border-radius: 8px;
-  background: var(--_context-strong);
-  color: var(--_context-on-strong);
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.exercise-editor__actions .secondary {
-  background: var(--_context-surface-raised);
-  color: var(--_context-content);
 }
 
 .exercise-editor--drawer {
@@ -618,7 +570,7 @@
     flex: 1 1 auto;
   }
 
-  .weight-editor__actions .danger {
+  .weight-editor__actions .workout-button--danger {
     margin-left: 0;
   }
 

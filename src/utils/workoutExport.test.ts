@@ -114,6 +114,25 @@ describe('filterWorkoutsForExport', () => {
       'future',
     ]);
   });
+
+  it('supports inclusive custom ranges and selected workout ids', () => {
+    const custom = filterWorkoutsForExport({
+      workouts,
+      scope: 'custom-range',
+      startDate: '2026-09-21',
+      endDate: '2026-09-22',
+      today: exportDate,
+    });
+    const selected = filterWorkoutsForExport({
+      workouts,
+      scope: 'selected',
+      selectedIds: ['older', 'future'],
+      today: exportDate,
+    });
+
+    expect(custom.map(item => item.id)).toEqual(['week-start', 'today-completed', 'today-scheduled']);
+    expect(selected.map(item => item.id)).toEqual(['older', 'future']);
+  });
 });
 
 describe('workout export dates and filenames', () => {
@@ -133,5 +152,9 @@ describe('workout export dates and filenames', () => {
     expect(buildWorkoutExportFilename('2-weeks', exportDate)).toBe(
       'iwynfitness-workouts-2-weeks-2026-09-22.txt'
     );
+    expect(buildWorkoutExportFilename('custom-range', exportDate, {
+      startDate: '2026-09-01',
+      endDate: '2026-09-22',
+    })).toBe('iwynfitness-workouts-2026-09-01-to-2026-09-22-2026-09-22.txt');
   });
 });

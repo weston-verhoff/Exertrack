@@ -240,27 +240,6 @@
   --_context-on-strong: var(--color-on-accent-secondary);
 }
 
-.workout-button--secondary {
-  --_context-surface-raised: var(--color-interactive-secondary);
-  --_context-content: var(--color-on-interactive-secondary);
-}
-
-.workout-button--blackText {
-  --_context-on-strong: var(--color-on-surface);
-}
-
-.workout-button--whiteText {
-  --_context-content: var(--color-on-inverse);
-}
-
-.workout-button--completedSectionLink {
-  --_context-content: var(--color-on-canvas);
-}
-
-.status-button {
-  --_context-hover: var(--color-border-subtle);
-}
-
 .exercise-chip {
   --_context-surface: var(--color-surface-sunken);
   --_context-surface-raised: var(--color-surface-raised);
@@ -280,14 +259,6 @@
   --_context-surface-sunken: var(--color-surface-default);
   --_context-border: var(--color-border-focus);
   --_context-border-subtle: var(--color-border-default);
-}
-
-[data-theme]:not([data-theme='sunset']) .start-btn,
-[data-theme]:not([data-theme='sunset']) .save-button {
-  --_context-strong: var(--color-interactive-positive);
-  --_context-strong-hover: var(--color-interactive-positive-hover);
-  --_context-on-strong: var(--color-on-interactive-positive);
-  --_context-border: var(--color-border-positive);
 }
 
 [data-theme]:not([data-theme='sunset']) .template-pill {

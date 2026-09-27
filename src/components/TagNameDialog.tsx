@@ -94,7 +94,8 @@ export function TagNameDialog({
           {onDelete && (
             <WorkoutButton
               label="Delete"
-              variant="destructive"
+              variant="primary"
+              intent="danger"
               onClick={() => { void handleDelete(); }}
               disabled={saving}
             />

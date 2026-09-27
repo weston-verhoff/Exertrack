@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { WorkoutCalendar, getCalendarDays } from './WorkoutCalendar';
 import { fetchWorkoutsInDateRange } from '../services/workoutService';
 import { WorkoutWithTemplate } from '../services/workoutService';
@@ -56,6 +56,8 @@ describe('WorkoutCalendar', () => {
         onDelete={jest.fn()}
         onStatusChange={jest.fn()}
         onWorkoutUpdated={jest.fn()}
+        onExportSelected={jest.fn().mockResolvedValue(undefined)}
+        onDeleteSelected={jest.fn().mockResolvedValue([])}
       />
     );
 
@@ -77,6 +79,8 @@ describe('WorkoutCalendar', () => {
         onDelete={jest.fn()}
         onStatusChange={jest.fn()}
         onWorkoutUpdated={jest.fn()}
+        onExportSelected={jest.fn().mockResolvedValue(undefined)}
+        onDeleteSelected={jest.fn().mockResolvedValue([])}
       />
     );
 
@@ -116,6 +120,8 @@ describe('WorkoutCalendar', () => {
         onDelete={jest.fn()}
         onStatusChange={jest.fn()}
         onWorkoutUpdated={jest.fn()}
+        onExportSelected={jest.fn().mockResolvedValue(undefined)}
+        onDeleteSelected={jest.fn().mockResolvedValue([])}
       />
     );
 
@@ -133,6 +139,8 @@ describe('WorkoutCalendar', () => {
         onDelete={jest.fn()}
         onStatusChange={jest.fn()}
         onWorkoutUpdated={jest.fn()}
+        onExportSelected={jest.fn().mockResolvedValue(undefined)}
+        onDeleteSelected={jest.fn().mockResolvedValue([])}
       />
     );
 
@@ -146,5 +154,29 @@ describe('WorkoutCalendar', () => {
     fireEvent.click(within(agenda as HTMLElement).getByRole('button', { name: 'View' }));
     expect(screen.getByText('Drawer for workout-1')).toBeInTheDocument();
     await waitFor(() => expect(screen.queryByRole('status')).not.toBeInTheDocument());
+  });
+
+  it('exports explicitly selected workouts', async () => {
+    const onExportSelected = jest.fn().mockResolvedValue(undefined);
+    render(
+      <WorkoutCalendar
+        initialWorkouts={[workout]}
+        onDelete={jest.fn()}
+        onStatusChange={jest.fn()}
+        onWorkoutUpdated={jest.fn()}
+        onExportSelected={onExportSelected}
+        onDeleteSelected={jest.fn().mockResolvedValue([])}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Select' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Select Leg day on 2026-09-25' }));
+    expect(screen.getByText('1 selected')).toBeInTheDocument();
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Export' }));
+    });
+
+    await waitFor(() => expect(onExportSelected).toHaveBeenCalledWith(['workout-1']));
+    expect(screen.getByRole('button', { name: 'Export' })).not.toBeDisabled();
   });
 });

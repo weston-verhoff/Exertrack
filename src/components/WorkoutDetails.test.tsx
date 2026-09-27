@@ -29,8 +29,8 @@ jest.mock('../services/workoutService', () => ({
 }));
 
 jest.mock('./WorkoutButton', () => ({
-  WorkoutButton: ({ label, onClick, disabled }: any) => (
-    <button type="button" onClick={onClick} disabled={disabled}>{label}</button>
+  WorkoutButton: ({ label, onClick, disabled, intent }: any) => (
+    <button type="button" onClick={onClick} disabled={disabled} data-intent={intent}>{label}</button>
   ),
 }));
 
@@ -180,7 +180,9 @@ describe('WorkoutDetails completion', () => {
       />
     );
 
-    fireEvent.click(screen.getByRole('button', { name: 'Mark Completed' }));
+    const completeButton = screen.getByRole('button', { name: 'Mark Completed' });
+    expect(completeButton).toHaveAttribute('data-intent', 'positive');
+    fireEvent.click(completeButton);
 
     await waitFor(() => expect(onStatusChange).toHaveBeenCalledWith('completed'));
     expect(onSave).toHaveBeenCalledWith({ announceSuccess: false });

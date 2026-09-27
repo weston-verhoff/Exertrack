@@ -45,6 +45,7 @@ const getDeclarations = (css: string) => {
 };
 
 const getRuleDeclarations = (css: string, selector: string) => {
+  css = css.replace(/\r\n/g, '\n');
   const marker = `${selector} {`;
   const start = css.indexOf(marker);
   if (start < 0) throw new Error(`Missing selector: ${selector}`);

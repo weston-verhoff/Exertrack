@@ -217,7 +217,7 @@ export default function Dashboard() {
 						<WorkoutButton
 		          label="See All"
 		          icon=""
-		          variant="blackText"
+		          variant="quiet"
 		          onClick={() => navigate('/past')}
 		        />
 					</div>
@@ -257,7 +257,7 @@ export default function Dashboard() {
 						<WorkoutButton
 		          label="See All"
 		          icon=""
-		          variant="completedSectionLink"
+		          variant="quiet"
 		          onClick={() => navigate('/past')}
 		        />
 						</div>

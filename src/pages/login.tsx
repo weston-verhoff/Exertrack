@@ -1,6 +1,7 @@
 import { FormEvent, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { WorkoutButton } from '../components/WorkoutButton';
 
 type LocationState = {
   from?: {
@@ -90,17 +91,21 @@ export default function Login() {
 
         {error && <p className="auth-error">{error}</p>}
 				<div className="auth-actions">
-          <button type="submit" disabled={submitting || loading}>
-            {activeAction === 'signin' ? 'Signing in...' : 'Sign In'}
-          </button>
-          <button
-            type="button"
-            className="secondary"
+          <WorkoutButton
+            label="Sign In"
+            type="submit"
+            loading={activeAction === 'signin'}
+            loadingLabel="Signing in..."
+            disabled={(submitting && activeAction !== 'signin') || loading}
+          />
+          <WorkoutButton
+            label="Create Account"
+            variant="secondary"
             onClick={handleCreateAccount}
-            disabled={submitting || loading}
-          >
-            {activeAction === 'signup' ? 'Creating...' : 'Create Account'}
-          </button>
+            loading={activeAction === 'signup'}
+            loadingLabel="Creating..."
+            disabled={(submitting && activeAction !== 'signup') || loading}
+          />
         </div>
       </form>
 

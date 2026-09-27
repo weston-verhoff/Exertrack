@@ -103,25 +103,21 @@ const openDetailsDrawer = () => {
 
       <div className="workout-btns">
         {showsFullPageDetails && (
-          <button
-					className="start-btn btn"
-					onClick={() => navigate(`/workout/${workout.id}`)}
-				>
-					Details
-				</button>
+			<WorkoutButton
+				label="Details"
+				variant="secondary"
+				onClick={() => navigate(`/workout/${workout.id}`)}
+			/>
 			)}
 			{showsDetailsDrawer && (
-				<button
-					className="start-btn btn"
-					onClick={openDetailsDrawer}
-				>
-					Details
-				</button>
+				<WorkoutButton label="Details" variant="secondary" onClick={openDetailsDrawer} />
 			)}
 			<WorkoutButton
 				label="Delete"
 				icon={<Trash2 size={18} />}
-				variant="destructive"
+				iconOnly
+				variant="secondary"
+				intent="danger"
 				onClick={() => onDelete(workout.id)}
 			/>
 		</div>

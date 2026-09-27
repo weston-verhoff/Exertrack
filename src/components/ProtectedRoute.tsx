@@ -4,9 +4,10 @@ import { useAuth } from '../context/AuthContext';
 
 type ProtectedRouteProps = {
   children: ReactNode;
+  allowIncompleteOnboarding?: boolean;
 };
 
-export function ProtectedRoute({ children }: ProtectedRouteProps) {
+export function ProtectedRoute({ children, allowIncompleteOnboarding = false }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const location = useLocation();
 
@@ -22,6 +23,10 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
         replace
       />
     );
+  }
+
+  if (!allowIncompleteOnboarding && user.user_metadata?.onboarding_completed !== true) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return <>{children}</>;

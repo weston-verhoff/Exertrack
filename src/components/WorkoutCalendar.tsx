@@ -4,6 +4,8 @@ import { fetchWorkoutsInDateRange, WorkoutWithTemplate } from '../services/worko
 import { useAuth } from '../context/AuthContext';
 import { Workout } from '../types/workout';
 import { WorkoutDetailsDrawer } from './WorkoutDetailsDrawer';
+import { BulkDeleteDialog } from './BulkDeleteDialog';
+import { WorkoutButton } from './WorkoutButton';
 import '../styles/workout-calendar.css';
 
 interface Props {
@@ -11,6 +13,8 @@ interface Props {
   onDelete: (id: string) => void;
   onStatusChange: (id: string, status: string) => void;
   onWorkoutUpdated: (workout: Workout) => void;
+  onExportSelected: (ids: string[]) => Promise<void>;
+  onDeleteSelected: (ids: string[]) => Promise<string[]>;
 }
 
 const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
@@ -57,6 +61,8 @@ export function WorkoutCalendar({
   onDelete,
   onStatusChange,
   onWorkoutUpdated,
+  onExportSelected,
+  onDeleteSelected,
 }: Props) {
   const { userId } = useAuth();
   const [month, setMonth] = useState(() => {
@@ -68,6 +74,10 @@ export function WorkoutCalendar({
   const [selectedDate, setSelectedDate] = useState(() => toDateKey(new Date()));
   const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState(false);
+  const [selectionMode, setSelectionMode] = useState(false);
+  const [selectedWorkoutIds, setSelectedWorkoutIds] = useState<Set<string>>(new Set());
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [selectionBusy, setSelectionBusy] = useState(false);
 
   useEffect(() => {
     if (!userId) return;
@@ -111,6 +121,41 @@ export function WorkoutCalendar({
     onWorkoutUpdated(updatedWorkout);
   };
 
+  const toggleWorkoutSelection = (id: string) => {
+    setSelectedWorkoutIds(current => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+
+  const cancelSelection = () => {
+    setSelectionMode(false);
+    setSelectedWorkoutIds(new Set());
+  };
+
+  const exportSelection = async () => {
+    if (selectionBusy || selectedWorkoutIds.size === 0) return;
+    setSelectionBusy(true);
+    await onExportSelected(Array.from(selectedWorkoutIds));
+    setSelectionBusy(false);
+  };
+
+  const deleteSelection = async () => {
+    if (selectionBusy || selectedWorkoutIds.size === 0) return false;
+    setSelectionBusy(true);
+    const deletedIds = await onDeleteSelected(Array.from(selectedWorkoutIds));
+    setSelectionBusy(false);
+    if (deletedIds.length === 0) return false;
+    const deletedSet = new Set(deletedIds);
+    setWorkouts(current => current.filter(workout => !deletedSet.has(workout.id)));
+    setSelectedWorkoutIds(current => new Set(Array.from(current).filter(id => !deletedSet.has(id))));
+    setShowDeleteDialog(false);
+    if (deletedIds.length === selectedWorkoutIds.size) cancelSelection();
+    return true;
+  };
+
   const changeMonth = (offset: number) => {
     setMonth(current => {
       const nextMonth = new Date(current.getFullYear(), current.getMonth() + offset, 1);
@@ -150,6 +195,16 @@ export function WorkoutCalendar({
           >
             Today
           </button>
+          {!selectionMode ? (
+            <button type="button" className="workout-calendar__select" onClick={() => setSelectionMode(true)}>Select</button>
+          ) : (
+            <div className="workout-calendar__selection-actions" aria-label="Selected workout actions">
+              <span>{selectedWorkoutIds.size} selected</span>
+              <WorkoutButton label="Export" loading={selectionBusy} loadingLabel="Working…" disabled={selectedWorkoutIds.size === 0} size="sm" onClick={() => void exportSelection()} />
+              <WorkoutButton label="Cancel" variant="quiet" size="sm" onClick={cancelSelection} />
+              <WorkoutButton label="Delete" variant="secondary" intent="danger" disabled={selectedWorkoutIds.size === 0 || selectionBusy} size="sm" onClick={() => setShowDeleteDialog(true)} />
+            </div>
+          )}
         </div>
         <button type="button" onClick={() => changeMonth(1)} aria-label="Next month">
           <ChevronRight aria-hidden="true" size={22} />
@@ -188,14 +243,17 @@ export function WorkoutCalendar({
                 <div className="workout-calendar__events">
                   {dayWorkouts.map(workout => {
                     const exerciseNames = getWorkoutExerciseNames(workout);
+                    const isSelected = selectedWorkoutIds.has(workout.id);
                     return (
                       <button
                         type="button"
-                        className={`workout-calendar__event workout-calendar__event--${workout.status ?? 'scheduled'}`}
+                        className={`workout-calendar__event workout-calendar__event--${workout.status ?? 'scheduled'}${isSelected ? ' workout-calendar__event--selected' : ''}`}
                         key={workout.id}
-                        onClick={() => setSelectedWorkout(workout)}
-                        aria-label={`View ${getWorkoutLabel(workout)} on ${dateKey}`}
+                        onClick={() => selectionMode ? toggleWorkoutSelection(workout.id) : setSelectedWorkout(workout)}
+                        aria-label={selectionMode ? `${isSelected ? 'Deselect' : 'Select'} ${getWorkoutLabel(workout)} on ${dateKey}` : `View ${getWorkoutLabel(workout)} on ${dateKey}`}
+                        aria-pressed={selectionMode ? isSelected : undefined}
                       >
+                        {selectionMode && <span className="workout-calendar__selection-mark" aria-hidden="true">{isSelected ? '✓' : ''}</span>}
                         {exerciseNames.length > 0 ? (
                           <ul>
                             {exerciseNames.map((name, index) => (
@@ -205,7 +263,7 @@ export function WorkoutCalendar({
                         ) : (
                           <span>{getWorkoutLabel(workout)}</span>
                         )}
-                        <strong>View</strong>
+                        {!selectionMode && <strong>View</strong>}
                       </button>
                     );
                   })}
@@ -224,8 +282,9 @@ export function WorkoutCalendar({
           <div className="workout-calendar__agenda-list">
             {selectedDateWorkouts.map(workout => {
               const exerciseNames = getWorkoutExerciseNames(workout);
+              const isSelected = selectedWorkoutIds.has(workout.id);
               return (
-                <article className="workout-calendar__agenda-item" key={workout.id}>
+                <article className={`workout-calendar__agenda-item${isSelected ? ' workout-calendar__agenda-item--selected' : ''}`} key={workout.id}>
                   <div>
                     <span className="workout-calendar__agenda-status">
                       {workout.status === 'completed' ? 'Completed' : 'Scheduled'}
@@ -240,8 +299,8 @@ export function WorkoutCalendar({
                       <p>{getWorkoutLabel(workout)}</p>
                     )}
                   </div>
-                  <button type="button" onClick={() => setSelectedWorkout(workout)}>
-                    View
+                  <button type="button" aria-pressed={selectionMode ? isSelected : undefined} onClick={() => selectionMode ? toggleWorkoutSelection(workout.id) : setSelectedWorkout(workout)}>
+                    {selectionMode ? (isSelected ? 'Selected' : 'Select') : 'View'}
                   </button>
                 </article>
               );
@@ -270,6 +329,13 @@ export function WorkoutCalendar({
             onStatusChange(id, status);
           }}
           onWorkoutUpdated={updateWorkout}
+        />
+      )}
+      {showDeleteDialog && (
+        <BulkDeleteDialog
+          count={selectedWorkoutIds.size}
+          onCancel={() => setShowDeleteDialog(false)}
+          onConfirm={deleteSelection}
         />
       )}
     </section>

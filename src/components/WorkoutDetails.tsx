@@ -232,7 +232,7 @@ export function WorkoutDetails({
 					<WorkoutButton
 					  label={addingSetId === we.id ? 'Adding...' : isCardio ? 'Add Segment' : 'Add Set'}
 					  icon=""
-					  variant="unsetText"
+					  variant="quiet"
 					  onClick={async () => {
 					    if (authLoading || !userId) return;
 					    const nextSetNumber = getNextSetNumber(we.workout_sets);
@@ -538,6 +538,7 @@ export function WorkoutDetails({
 						  label={isCompleting ? 'Completing...' : 'Mark Completed'}
 						  icon={<CheckCircle2 size={18} />}
 						  variant="secondary"
+						  intent="positive"
 						  onClick={async () => {
 								if (authLoading || !userId || isCompleting) return;
                 setIsCompleting(true);
@@ -700,7 +701,8 @@ export function WorkoutDetails({
         <WorkoutButton
           label="Delete Workout"
           icon={<Trash2 size={18} />}
-          variant="destructive"
+          variant="primary"
+          intent="danger"
           onClick={async () => {
             onDelete();
           }}

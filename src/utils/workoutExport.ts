@@ -2,7 +2,7 @@ import { ExportWorkout } from '../services/workoutExportService';
 import { WorkoutSet } from '../types/workout';
 import { formatDuration, paceSecondsPerUnit, speedPerHour } from './cardio';
 
-export type WorkoutExportScope = 'all' | 'past' | 'this-week' | '2-weeks' | 'planned';
+export type WorkoutExportScope = 'all' | 'past' | 'this-week' | '2-weeks' | 'planned' | 'custom-range' | 'selected';
 
 const formatWorkoutDate = (dateString: string) => {
   const [yearValue, monthValue, dayValue] = dateString.split('-').map(Number);
@@ -107,11 +107,17 @@ export const filterWorkoutsForExport = ({
   scope,
   today = new Date(),
   weekStart,
+  startDate,
+  endDate,
+  selectedIds,
 }: {
   workouts: ExportWorkout[];
   scope: WorkoutExportScope;
   today?: Date;
   weekStart?: string;
+  startDate?: string;
+  endDate?: string;
+  selectedIds?: Iterable<string>;
 }) => {
   const todayKey = getLocalDateKey(today);
   const pastWorkouts = workouts.filter(workout => isPastWorkout(workout, todayKey));
@@ -128,6 +134,13 @@ export const filterWorkoutsForExport = ({
       return pastWorkouts.filter(workout => workout.date >= weekStart);
     case '2-weeks':
       return pastWorkouts.filter(workout => workout.date >= subtractCalendarDays(today, 14));
+    case 'custom-range':
+      if (!startDate || !endDate) return [];
+      return workouts.filter(workout => workout.date >= startDate && workout.date <= endDate);
+    case 'selected': {
+      const ids = new Set(selectedIds ?? []);
+      return workouts.filter(workout => ids.has(workout.id));
+    }
   }
 };
 
@@ -137,13 +150,19 @@ const EXPORT_SCOPE_FILENAMES: Record<WorkoutExportScope, string> = {
   'this-week': 'this-week',
   '2-weeks': '2-weeks',
   planned: 'planned',
+  'custom-range': 'custom-range',
+  selected: 'selected',
 };
 
 export const buildWorkoutExportFilename = (
   scope: WorkoutExportScope = 'all',
-  today = new Date()
+  today = new Date(),
+  range?: { startDate: string; endDate: string }
 ) => {
   const date = getLocalDateKey(today);
 
-  return `iwynfitness-workouts-${EXPORT_SCOPE_FILENAMES[scope]}-${date}.txt`;
+  const scopeLabel = scope === 'custom-range' && range
+    ? `${range.startDate}-to-${range.endDate}`
+    : EXPORT_SCOPE_FILENAMES[scope];
+  return `iwynfitness-workouts-${scopeLabel}-${date}.txt`;
 };

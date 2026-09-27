@@ -1,6 +1,8 @@
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
+import { Download } from 'lucide-react';
 import { Drawer } from './Drawer';
+import { WorkoutButton } from './WorkoutButton';
 import { ChartSkeleton } from './LoadingSkeletons';
 import { useSystemAlerts } from '../context/SystemAlertContext';
 import { WeightSystem } from '../services/accountService';
@@ -13,10 +15,12 @@ import {
 } from '../services/weightService';
 import {
   formatWeightDisplay,
+  formatWeightEntriesAsCsv,
   formatWeightValue,
   getLocalDateKey,
   getWeightUnit,
   toStoredKilograms,
+  downloadCsvFile,
 } from '../utils/weightTracking';
 
 type DrawerMode = 'closed' | 'add' | 'history' | 'edit';
@@ -236,6 +240,18 @@ export function WeightTrackingSection({
     showAlert('Weigh-in deleted.', { tone: 'success' });
   };
 
+  const exportWeightData = () => {
+    if (entries.length === 0) {
+      showAlert('No weight entries are available to export.', { tone: 'error' });
+      return;
+    }
+    downloadCsvFile(
+      formatWeightEntriesAsCsv(entries, weightSystem),
+      `iwynfitness-weight-${getLocalDateKey()}.csv`
+    );
+    showAlert('Exported weight data.', { tone: 'success' });
+  };
+
   return (
     <section id="weight-tracking" className="account-section weight-tracking">
       <div className="account-section__heading">
@@ -275,16 +291,9 @@ export function WeightTrackingSection({
         )}
       </div>
       <div className="weight-tracking__actions">
-        <button type="button" onClick={openAdd}>
-          Add Weigh-in
-        </button>
-        <button
-          type="button"
-          className="secondary"
-          onClick={() => setDrawerMode('history')}
-        >
-          Edit Weigh-ins
-        </button>
+        <WorkoutButton label="Add Weigh-in" onClick={openAdd} />
+        <WorkoutButton label="Edit Weigh-ins" variant="secondary" onClick={() => setDrawerMode('history')} />
+        <WorkoutButton label="Export Weight Data" icon={<Download size={18} />} variant="secondary" onClick={exportWeightData} />
       </div>
 
       <Drawer
@@ -354,34 +363,32 @@ export function WeightTrackingSection({
                   value={weighedOn}
                   onChange={(event) => setWeighedOn(event.target.value)}
                 />
-                <button type="button" onClick={() => setWeighedOn(today)}>
-                  Today
-                </button>
+                <WorkoutButton label="Today" variant="secondary" onClick={() => setWeighedOn(today)} />
               </div>
             </label>
             <div className="weight-editor__actions">
-              <button type="submit" disabled={saving}>
-                {saving ? 'Saving...' : 'Save'}
-              </button>
-              <button
-                type="button"
-                className="secondary"
+              <WorkoutButton
+                label="Save"
+                type="submit"
+                loading={saving}
+                loadingLabel="Saving..."
+              />
+              <WorkoutButton
+                label="Cancel"
+                variant="secondary"
                 disabled={saving}
                 onClick={() =>
                   editingEntry ? setDrawerMode('history') : closeDrawer()
                 }
-              >
-                Cancel
-              </button>
+              />
               {editingEntry && (
-                <button
-                  type="button"
-                  className="danger"
+                <WorkoutButton
+                  label="Delete"
+                  variant="secondary"
+                  intent="danger"
                   disabled={saving}
                   onClick={removeEntry}
-                >
-                  Delete
-                </button>
+                />
               )}
             </div>
           </form>

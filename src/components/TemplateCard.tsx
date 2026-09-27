@@ -117,7 +117,7 @@ export function TemplateCard({
             <WorkoutButton
               label="Rename"
               icon=""
-              variant="blackText"
+              variant="quiet"
               onClick={() => onRename(template.id)}
             />
           ) : null}
@@ -152,7 +152,8 @@ export function TemplateCard({
             <WorkoutButton
               label="Delete"
               icon=""
-              variant="destructive"
+              variant="secondary"
+              intent="danger"
               onClick={() => onDelete(template.id)}
             />
           </>
@@ -174,7 +175,8 @@ export function TemplateCard({
               <WorkoutButton
                 label="Archive"
                 icon=""
-                variant="destructive"
+                variant="secondary"
+                intent="danger"
                 onClick={() => onArchive(template.id)}
               />
             )}

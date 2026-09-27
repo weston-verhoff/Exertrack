@@ -7,6 +7,35 @@
   box-sizing: border-box;
 }
 
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 420ms;
+  animation-timing-function: ease-in-out;
+}
+
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *::before,
+.theme-transitioning *::after {
+  transition-property: background-color, border-color, color, fill, outline-color, stroke, box-shadow;
+  transition-duration: 420ms;
+  transition-timing-function: ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01ms;
+  }
+
+  .theme-transitioning,
+  .theme-transitioning *,
+  .theme-transitioning *::before,
+  .theme-transitioning *::after {
+    transition-duration: 0.01ms;
+  }
+}
+
 body {
   margin: 0;
   color: var(--color-on-canvas);
@@ -99,18 +128,8 @@ select{
 	display: flex;
 	gap: 0.75rem;
 }
-.auth-actions button {
+.auth-actions .workout-button {
 	flex: 1;
-	padding: 0.75rem 1rem;
-	border-radius: 8px;
-	border: none;
-	font-weight: 600;
-	cursor: pointer;
-}
-.auth-actions .secondary {
-	background: var(--color-transparent);
-	border: 1px solid var(--_context-border);
-	color: var(--_context-content-muted);
 }
 .auth-error {
 	color: var(--color-on-inverse-danger);
@@ -174,16 +193,6 @@ select{
   font-weight: bold;
 }
 
-/* === BUTTONS === */
-.button {
-  background-color: var(--color-interactive-primary);
-  color: var(--color-on-interactive-primary);
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  border: none;
-  border-radius: 4px;
-}
-
 .button-group {
   display: flex;
   gap: 0.5rem;
@@ -240,17 +249,11 @@ select{
 	align-items:center;
 	gap:8px;
 }
-.global-header .nav-links .sign-out-button {
-	background: var(--color-transparent);
-	border: 1px solid var(--_header-border);
-	color: var(--_header-content);
-	border-radius: 6px;
-	padding: 0.4rem 0.8rem;
-	cursor: pointer;
-	font-size: 0.9rem;
-}
-.global-header .nav-links .sign-out-button:hover {
-	background-color: var(--_header-hover);
+.global-header .nav-links .workout-button {
+	--_context-surface: var(--color-transparent);
+	--_context-content: var(--_header-content);
+	--_context-border-strong: var(--_header-border);
+	--_context-hover: var(--_header-hover);
 }
 
 .global-header .hamburger {
@@ -413,6 +416,12 @@ input.exerciseSearch{
 	min-width: 0;
 	flex-direction: column;
 }
+.past-workouts-page__actions {
+	display: flex;
+	justify-content: flex-end;
+	gap: 0.65rem;
+	margin: 0 0 1rem;
+}
 .workout-export-links {
 	display: flex;
 	align-items: center;
@@ -476,12 +485,13 @@ input.exerciseSearch{
 		display: flex;
 		transition: background 0.2s ease;
 	}
-	.global-header .nav-links .sign-out-button {
-		border: 1px solid var(--_header-mobile-border);
-		color: var(--_header-mobile-content);
+	.global-header .nav-links .workout-button {
+		--_context-content: var(--_header-mobile-content);
+		--_context-border-strong: var(--_header-mobile-border);
+		--_context-hover: var(--_header-mobile-hover);
 		padding: 0.75rem 1rem;
 		width: 100%;
-		text-align: left;
+		justify-content: flex-start;
 	}
 	.global-header .nav-links a:hover {
 		background-color: var(--_header-mobile-hover);

@@ -175,27 +175,6 @@
 .workout-btns > button:first-child {
   flex-grow: 1;
 }
-.btn{
-  padding: 8px;
-  border-radius: 8px;
-  border: none;
-  font-weight: bold;
-  box-shadow: inset -2px -2px var(--shadow-button-inset);
-}
-.btn:hover{
-  box-shadow:inset -2px -2px 1px var(--shadow-button-hover-inset);
-}
-.btn:active{filter: brightness(95%);}
-.start-btn{
-  background-color: var(--_context-strong);
-  color: var(--_context-on-strong);
-}
-
-.delete-btn{
-	background-color: var(--color-interactive-danger);
-  color: var(--color-on-interactive-danger);
-	font-weight:bold;
-}
 .lifts{
 	color: var(--_card-content);
   margin: 1rem;

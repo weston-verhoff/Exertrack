@@ -15,6 +15,7 @@ export interface AccountSettings {
   distanceSystem: DistanceSystem;
   weightSystem: WeightSystem;
   theme: AppTheme;
+  onboardingCompleted: boolean;
 }
 
 export interface CustomExercise {
@@ -44,6 +45,7 @@ export const getAccountSettings = (user: User): AccountSettings => {
     distanceSystem: metadata.distance_system === 'metric' ? 'metric' : 'imperial',
     weightSystem: metadata.weight_system === 'metric' ? 'metric' : 'imperial',
     theme: normalizeAppTheme(metadata.theme) ?? 'default',
+    onboardingCompleted: metadata.onboarding_completed === true,
   };
 };
 
@@ -63,6 +65,7 @@ export async function updateAccountSettings({
       distance_system: settings.distanceSystem,
       weight_system: settings.weightSystem,
       theme: settings.theme,
+      onboarding_completed: settings.onboardingCompleted,
     },
   });
 

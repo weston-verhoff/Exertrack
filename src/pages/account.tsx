@@ -317,7 +317,7 @@ export default function AccountPage() {
       setSettingsStatus(error);
       return;
     }
-    applyTheme(nextSettings.theme);
+    applyTheme(nextSettings.theme, { animate: true });
     setSettings({ ...nextSettings });
     setSettingsStatus('Settings saved.');
   };
@@ -507,7 +507,7 @@ export default function AccountPage() {
             >
               <ArrowUp aria-hidden="true" size={18} /> Back to top
             </a>
-            <button type="button" onClick={signOut}>Sign Out</button>
+            <WorkoutButton label="Sign Out" variant="secondary" onClick={() => void signOut()} />
           </div>
         </aside>
 
@@ -707,7 +707,7 @@ export default function AccountPage() {
             <WorkoutButton
               label="Sign Out"
               icon={<LogOut size={18} />}
-              variant="destructive"
+              variant="secondary"
               size="lg"
               onClick={() => { void signOut(); }}
             />
@@ -799,8 +799,8 @@ export default function AccountPage() {
               </>
             )}
             <div className="exercise-editor__actions">
-              <button type="submit">Save Exercise</button>
-              <button type="button" className="secondary" onClick={closeExerciseDrawer}>Cancel</button>
+              <WorkoutButton label="Save Exercise" type="submit" />
+              <WorkoutButton label="Cancel" variant="secondary" onClick={closeExerciseDrawer} />
             </div>
           </form>
         </Drawer>

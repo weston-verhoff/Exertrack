@@ -694,13 +694,15 @@ export default function PlanSession() {
                 </DndContext>
               </div>
 
-              <button
-                className="save-button"
-                onClick={handlePrimarySave}
-                disabled={saving}
-              >
-                {saving ? 'Saving...' : primaryButtonLabel}
-              </button>
+              <div className="plan-primary-action">
+                <WorkoutButton
+                  label={primaryButtonLabel}
+                  size="lg"
+                  loading={saving}
+                  loadingLabel="Saving..."
+                  onClick={handlePrimarySave}
+                />
+              </div>
 
             </div>
 
@@ -820,8 +822,8 @@ export default function PlanSession() {
             onChange={e => setCustomMuscle(e.target.value)}
           />
           <div className="custom-actions">
-            <button onClick={addCustomExercise}>Add</button>
-            <button onClick={closeCustomDrawer}>Cancel</button>
+            <WorkoutButton label="Add" onClick={() => void addCustomExercise()} />
+            <WorkoutButton label="Cancel" variant="secondary" onClick={closeCustomDrawer} />
           </div>
         </div>
         </div>

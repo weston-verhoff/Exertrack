@@ -1,4 +1,5 @@
 import { WeightSystem } from '../services/accountService';
+import type { WeightEntry } from '../services/weightService';
 
 const KILOGRAMS_PER_POUND = 0.45359237;
 
@@ -36,4 +37,27 @@ export const getLocalDateKey = (date = new Date()) => {
   const month = String(date.getMonth() + 1).padStart(2, '0');
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
+};
+
+export const formatWeightEntriesAsCsv = (
+  entries: WeightEntry[],
+  system: WeightSystem
+) => {
+  const unit = getWeightUnit(system);
+  return [
+    'date,weight,unit',
+    ...entries.map(entry => `${entry.weighed_on},${formatWeightDisplay(entry.weight_kg, system)},${unit}`),
+  ].join('\n');
+};
+
+export const downloadCsvFile = (content: string, filename: string) => {
+  const blob = new Blob([content], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
 };

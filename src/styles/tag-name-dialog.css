@@ -36,4 +36,4 @@
 .tag-dialog small { color: var(--_context-content-muted); text-align: right; }
 .tag-dialog__error { margin: 0; color: var(--color-on-feedback-danger); }
 .tag-dialog__actions { display: flex; justify-content: flex-end; gap: 0.75rem; }
-.tag-dialog__actions .workout-button--destructive { margin-right: auto; }
+.tag-dialog__actions .workout-button--danger { margin-right: auto; }
