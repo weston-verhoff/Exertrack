@@ -206,7 +206,7 @@ export function WorkoutDetails({
       </div>
       </header>
 
-      <section className="workout-details__section">
+      <section className="workout-details__section workout-details__section--exercises">
       <h2 className="workout-details__section-title">
         <Dumbbell aria-hidden="true" size={24} /> Exercises
       </h2>

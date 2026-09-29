@@ -51,6 +51,7 @@
 .onboarding-actions { display: flex; justify-content: flex-end; gap: 0.65rem; margin-top: 2rem; }
 .onboarding-actions--three { justify-content: space-between; flex-wrap: wrap; }
 .onboarding-error { margin: 1rem 0 0; color: var(--color-on-feedback-danger); text-align: center; }
+.onboarding-sign-in { display: flex; justify-content: center; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--_context-border); }
 
 @media (max-width: 420px) {
   .onboarding-name-grid { grid-template-columns: 1fr; }

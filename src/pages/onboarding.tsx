@@ -35,13 +35,14 @@ const WEEKDAYS: Array<{ value: Weekday; label: string }> = [
 ];
 
 export default function Onboarding() {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const [step, setStep] = useState<1 | 2>(1);
   const [settings, setSettings] = useState<AccountSettings | null>(() =>
     user ? getAccountSettings(user) : null
   );
   const [saving, setSaving] = useState(false);
+  const [signingOut, setSigningOut] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -79,6 +80,21 @@ export default function Onboarding() {
 
     await supabase.auth.refreshSession();
     navigate('/', { replace: true });
+  };
+
+  const returnToSignIn = async () => {
+    if (signingOut) return;
+    setSigningOut(true);
+    setError(null);
+
+    try {
+      await signOut();
+      navigate('/login', { replace: true, state: null });
+    } catch (signOutError) {
+      console.error('Error returning to sign in', signOutError);
+      setError('Unable to sign out. Please try again.');
+      setSigningOut(false);
+    }
   };
 
   return (
@@ -166,6 +182,17 @@ export default function Onboarding() {
           </>
         )}
         {error && <p className="onboarding-error" role="alert">{error}</p>}
+        <div className="onboarding-sign-in">
+          <WorkoutButton
+            label="Back to Sign In"
+            icon={<ArrowLeft size={18} />}
+            variant="quiet"
+            loading={signingOut}
+            loadingLabel="Signing Out..."
+            onClick={() => void returnToSignIn()}
+            disabled={saving}
+          />
+        </div>
       </section>
     </div>
   );
