@@ -67,8 +67,8 @@ describe('WorkoutCalendar', () => {
 
     await waitFor(() => expect(fetchWorkoutsInDateRange).toHaveBeenCalledWith({
       userId: 'user-1',
-      startDate: '2026-09-01',
-      endDate: '2026-09-30',
+      startDate: '2026-08-30',
+      endDate: '2026-10-03',
     }));
   });
 
@@ -88,8 +88,47 @@ describe('WorkoutCalendar', () => {
     expect(screen.getByRole('heading', { name: 'October 2026' })).toBeInTheDocument();
     await waitFor(() => expect(fetchWorkoutsInDateRange).toHaveBeenLastCalledWith({
       userId: 'user-1',
-      startDate: '2026-10-01',
+      startDate: '2026-09-27',
       endDate: '2026-10-31',
+    }));
+  });
+
+  it('keeps adjacent-month workouts visible and opens their month when selected', async () => {
+    const previousMonthWorkout: WorkoutWithTemplate = {
+      ...workout,
+      id: 'workout-previous-month',
+      date: '2026-08-31',
+      status: 'completed',
+      template: { name: 'August workout' },
+    };
+    jest.mocked(fetchWorkoutsInDateRange).mockResolvedValue({
+      data: [workout, previousMonthWorkout],
+      error: null,
+    });
+
+    render(
+      <WorkoutCalendar
+        initialWorkouts={[workout, previousMonthWorkout]}
+        onDelete={jest.fn()}
+        onStatusChange={jest.fn()}
+        onWorkoutUpdated={jest.fn()}
+        onExportSelected={jest.fn().mockResolvedValue(undefined)}
+        onDeleteSelected={jest.fn().mockResolvedValue([])}
+      />
+    );
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'View August workout on 2026-08-31' })).toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Show workouts for 2026-08-31' }));
+
+    expect(screen.getByRole('heading', { name: 'August 2026' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Monday, August 31' })).toBeInTheDocument();
+    await waitFor(() => expect(fetchWorkoutsInDateRange).toHaveBeenLastCalledWith({
+      userId: 'user-1',
+      startDate: '2026-07-26',
+      endDate: '2026-09-05',
     }));
   });
 

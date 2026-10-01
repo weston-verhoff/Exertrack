@@ -37,10 +37,13 @@ export const getCalendarDays = (month: Date) => {
   return days;
 };
 
-const getMonthRange = (month: Date) => ({
-  startDate: toDateKey(new Date(month.getFullYear(), month.getMonth(), 1)),
-  endDate: toDateKey(new Date(month.getFullYear(), month.getMonth() + 1, 0)),
-});
+const getCalendarRange = (month: Date) => {
+  const days = getCalendarDays(month);
+  return {
+    startDate: toDateKey(days[0]),
+    endDate: toDateKey(days[days.length - 1]),
+  };
+};
 
 const getWorkoutExerciseNames = (workout: WorkoutWithTemplate) =>
   workout.workout_exercises
@@ -82,7 +85,7 @@ export function WorkoutCalendar({
   useEffect(() => {
     if (!userId) return;
     let active = true;
-    const { startDate, endDate } = getMonthRange(month);
+    const { startDate, endDate } = getCalendarRange(month);
 
     setLoading(true);
     setLoadError(false);
@@ -228,8 +231,12 @@ export function WorkoutCalendar({
                 <button
                   type="button"
                   className="workout-calendar__date-trigger"
-                  onClick={() => setSelectedDate(dateKey)}
-                  disabled={isOutsideMonth}
+                  onClick={() => {
+                    setSelectedDate(dateKey);
+                    if (isOutsideMonth) {
+                      setMonth(new Date(day.getFullYear(), day.getMonth(), 1));
+                    }
+                  }}
                   aria-label={`Show workouts for ${dateKey}`}
                   aria-pressed={dateKey === selectedDate}
                 >
