@@ -345,7 +345,6 @@
   --_context-content-muted: var(--sunset-tone-workout-content-muted);
   --_context-on-strong: var(--sunset-tone-workout-on-strong);
   --_context-shadow: var(--sunset-tone-workout-shadow);
-  color: var(--_context-content);
 }
 
 [data-theme='sunset'] [data-tone='library'] {
@@ -361,7 +360,6 @@
   --_context-content-muted: var(--sunset-tone-library-content-muted);
   --_context-on-strong: var(--sunset-tone-library-on-strong);
   --_context-shadow: var(--sunset-tone-library-shadow);
-  color: var(--_context-content);
 }
 
 [data-theme='sunset'] [data-tone='selection'] {
@@ -377,6 +375,13 @@
   --_context-content-muted: var(--sunset-tone-selection-content-muted);
   --_context-on-strong: var(--sunset-tone-selection-on-strong);
   --_context-shadow: var(--sunset-tone-selection-shadow);
+}
+
+:where(
+  [data-theme='sunset'] [data-tone='workout'],
+  [data-theme='sunset'] [data-tone='library'],
+  [data-theme='sunset'] [data-tone='selection']
+) {
   color: var(--_context-content);
 }
 

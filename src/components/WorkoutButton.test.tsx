@@ -46,6 +46,16 @@ describe('WorkoutButton hierarchy', () => {
     expect(danger).toContain('--color-interactive-danger-subtle');
   });
 
+  it('maps neutral primary colors through the active semantic context', () => {
+    const css = fs.readFileSync(path.resolve(__dirname, '../styles/workout-button.css'), 'utf8');
+    const base = css.match(/\.workout-button\s*\{([\s\S]*?)\}/)?.[1] ?? '';
+
+    expect(base).toContain('--_button-surface: var(--_context-strong)');
+    expect(base).toContain('--_button-surface-hover: var(--_context-strong-hover)');
+    expect(base).toContain('--_button-surface-pressed: var(--_context-strong-hover)');
+    expect(base).toContain('--_button-content: var(--_context-on-strong)');
+  });
+
   it('defines interaction, disabled, and reduced-motion states in shared CSS', () => {
     const css = fs.readFileSync(path.resolve(__dirname, '../styles/workout-button.css'), 'utf8');
     expect(css).toContain('.workout-button:hover:not(:disabled)');

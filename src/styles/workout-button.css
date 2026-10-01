@@ -1,8 +1,8 @@
 .workout-button {
-  --_button-surface: var(--color-interactive-primary);
-  --_button-surface-hover: var(--color-interactive-primary-hover);
-  --_button-surface-pressed: var(--color-interactive-primary-hover);
-  --_button-content: var(--color-on-interactive-primary);
+  --_button-surface: var(--_context-strong);
+  --_button-surface-hover: var(--_context-strong-hover);
+  --_button-surface-pressed: var(--_context-strong-hover);
+  --_button-content: var(--_context-on-strong);
   --_button-border: var(--color-transparent);
   min-height: 44px;
   border: 1px solid var(--_button-border);

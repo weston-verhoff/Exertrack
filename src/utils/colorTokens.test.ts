@@ -432,6 +432,18 @@ describe('Sunset functional tone recipes', () => {
     });
   });
 
+  it('keeps tone inheritance at zero specificity so components control their foregrounds', () => {
+    ['workout', 'library', 'selection'].forEach((tone) => {
+      const declarations = getRuleDeclarations(
+        recipeCss,
+        `[data-theme='sunset'] [data-tone='${tone}']`
+      );
+      expect(declarations.has('color')).toBe(false);
+    });
+    expect(recipeCss).toContain(':where(');
+    expect(recipeCss).toContain('color: var(--_context-content);');
+  });
+
   it('keeps the canvas opaque while making semantic surfaces translucent', () => {
     const opacityToken = themeDeclarations.get('--sunset-surface-opacity') ?? '';
     const configuredOpacity = opacityToken.endsWith('%')
