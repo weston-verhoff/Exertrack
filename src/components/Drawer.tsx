@@ -27,7 +27,8 @@ export function Drawer({
   }, [isOpen]);
 
   // Unmount AFTER close animation
-  const handleAnimationEnd = () => {
+  const handleAnimationEnd = (event: React.AnimationEvent<HTMLElement>) => {
+    if (event.target !== event.currentTarget) return;
     if (!isOpen) setShouldRender(false);
   };
 
@@ -64,7 +65,7 @@ export function Drawer({
     <>
       <div
         className="drawer-backdrop"
-        onClick={onClose}
+        onPointerDown={onClose}
         style={{ opacity: isOpen ? 1 : 0 }}
       />
 
@@ -73,7 +74,6 @@ export function Drawer({
         className={`drawer-panel color-context ${isOpen ? 'open' : 'closed'}`}
         style={{ width }}
         onAnimationEnd={handleAnimationEnd}
-        onClick={e => e.stopPropagation()}
       >
         <button className="drawer-close" onClick={onClose} aria-label="Close drawer">
           <X aria-hidden="true" size={22} />

@@ -321,7 +321,7 @@ export function WorkoutDetails({
 				</label>
 				<label className="metric-field">
 				  <NumericInput value={set.distance_value ?? 0} onChange={value => onExercisesChange(exercises.map(ex => ex.id !== we.id ? ex : ({ ...ex, workout_sets: ex.workout_sets.map(s => s.set_number === set.set_number ? { ...s, distance_value: Math.max(0, value) } : s) })))} style={{ width: 70 }} />
-				  <span className="metric-field__label" aria-label="Distance unit">
+				  <span className="metric-field__label">
 				    DIST ({(set.distance_unit ?? we.exercise?.default_distance_unit ?? fallbackDistanceUnit).toUpperCase()})
 				  </span>
 				</label>

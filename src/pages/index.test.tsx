@@ -8,15 +8,6 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockNavigate,
 }), { virtual: true });
 
-jest.mock('framer-motion', () => ({
-  motion: {
-    div: ({ children, ...props }: any) => {
-      const { drag, dragConstraints, dragElastic, ...domProps } = props;
-      return <div {...domProps}>{children}</div>;
-    },
-  },
-}));
-
 jest.mock('../components/WorkoutButton', () => ({
   WorkoutButton: ({ label, onClick }: any) => (
     <button onClick={onClick} type="button">{label}</button>
@@ -25,7 +16,10 @@ jest.mock('../components/WorkoutButton', () => ({
 
 jest.mock('../components/WorkoutCard', () => ({
   WorkoutCard: ({ workout }: any) => (
-    <article data-testid="workout-card">{workout.name ?? workout.date}</article>
+    <article data-testid="workout-card">
+      {workout.name ?? workout.date}
+      <button type="button">Details</button>
+    </article>
   ),
 }));
 
@@ -84,6 +78,35 @@ describe('Dashboard future workouts', () => {
 
     expect(await screen.findByRole('heading', { name: 'Future Workouts' })).toBeInTheDocument();
     expect(screen.getAllByTestId('workout-card')).toHaveLength(2);
+    expect(screen.getByRole('heading', { name: 'Future Workouts' }).closest('section')).toHaveAttribute(
+      'aria-labelledby',
+      'future-workouts-title'
+    );
+    expect(document.querySelector('.drag-future-workouts')).toHaveAttribute('tabindex', '0');
+  });
+
+  it('does not capture pointer input that begins on a workout action', async () => {
+    (fetchWorkoutOverview as jest.Mock).mockResolvedValue({
+      data: {
+        scheduled: [{ id: 'workout-1', name: 'Tomorrow', date: '2026-09-21', status: 'scheduled' }],
+        completed: [],
+        completedCount: 0,
+      },
+      error: null,
+    });
+
+    renderDashboard();
+    await screen.findByRole('heading', { name: 'Future Workouts' });
+    const scroller = document.querySelector('.drag-future-workouts') as HTMLDivElement & {
+      setPointerCapture: jest.Mock;
+    };
+    scroller.setPointerCapture = jest.fn();
+    const detailsButton = scroller.querySelector('button') as HTMLButtonElement;
+
+    fireEvent.pointerDown(detailsButton, { pointerType: 'mouse', button: 0, pointerId: 1 });
+    fireEvent.click(detailsButton);
+
+    expect(scroller.setPointerCapture).not.toHaveBeenCalled();
   });
 
   it('opens the next workout in the full-page details view', async () => {

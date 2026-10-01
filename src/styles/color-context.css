@@ -283,13 +283,13 @@
 }
 
 [data-theme='default'] .page-hero-surface {
-  --_page-hero-wordmark: url('../assets/branding/default/wordmark-alternate.png');
+  --_page-hero-wordmark: url('../assets/branding/default/wordmark-alternate.webp');
 }
 
 [data-theme='default'] .global-header {
   --_header-surface: var(--_context-surface);
   --_header-hover: var(--color-interactive-subtle);
-  --_header-logo-image: url('../assets/branding/default/mark-alternate.png');
+  --_header-logo-image: url('../assets/branding/default/mark-alternate.webp');
   --_header-secondary-border-width: 1px;
 }
 

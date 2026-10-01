@@ -13,7 +13,9 @@ jest.mock('../context/AuthContext', () => ({
 }));
 
 jest.mock('./Drawer', () => ({
-  Drawer: ({ children, isOpen }: any) => isOpen ? <div>{children}</div> : null,
+  Drawer: ({ children, isOpen }: any) => (
+    <div data-testid="drawer" data-open={String(isOpen)}>{isOpen ? children : null}</div>
+  ),
 }));
 
 jest.mock('./WorkoutButton', () => ({
@@ -25,18 +27,21 @@ jest.mock('./WorkoutButton', () => ({
 }));
 
 jest.mock('./WorkoutDetails', () => ({
-  WorkoutDetails: ({ exercises, onPersistedExercisesChange }: any) => (
-    <button
-      type="button"
-      onClick={() => onPersistedExercisesChange([
-        {
-          ...exercises[0],
-          workout_sets: [{ ...exercises[0].workout_sets[0], completed: true }],
-        },
-      ])}
-    >
-      Persist completion
-    </button>
+  WorkoutDetails: ({ exercises, onClose, onPersistedExercisesChange }: any) => (
+    <>
+      <button
+        type="button"
+        onClick={() => onPersistedExercisesChange([
+          {
+            ...exercises[0],
+            workout_sets: [{ ...exercises[0].workout_sets[0], completed: true }],
+          },
+        ])}
+      >
+        Persist completion
+      </button>
+      <button type="button" onClick={onClose}>Close details</button>
+    </>
   ),
 }));
 
@@ -61,7 +66,7 @@ const workout: Workout = {
 };
 
 describe('WorkoutCard persisted set changes', () => {
-  it('promotes a persisted completion change to the parent workout', () => {
+  it('promotes a persisted completion change to the parent workout', async () => {
     const onWorkoutUpdated = jest.fn();
     render(
       <WorkoutCard
@@ -74,7 +79,7 @@ describe('WorkoutCard persisted set changes', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Details' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Persist completion' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Persist completion' }));
 
     expect(onWorkoutUpdated).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -93,7 +98,7 @@ describe('WorkoutCard actions', () => {
     mockNavigate.mockClear();
   });
 
-  it('opens scheduled future workouts in the details drawer', () => {
+  it('opens scheduled future workouts in the details drawer', async () => {
     render(
       <WorkoutCard
         workout={workout}
@@ -106,7 +111,24 @@ describe('WorkoutCard actions', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Details' }));
     expect(mockNavigate).not.toHaveBeenCalled();
-    expect(screen.getByRole('button', { name: 'Persist completion' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Persist completion' })).toBeInTheDocument();
+  });
+
+  it('keeps the lazy drawer mounted while its close animation runs', async () => {
+    render(
+      <WorkoutCard
+        workout={workout}
+        variant="future-workout"
+        onDelete={jest.fn()}
+        onStatusChange={jest.fn()}
+        onWorkoutUpdated={jest.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole('button', { name: 'Details' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Close details' }));
+
+    expect(screen.getByTestId('drawer')).toHaveAttribute('data-open', 'false');
   });
 
   it('uses the full-page details action for the highlighted next workout', () => {
@@ -125,7 +147,7 @@ describe('WorkoutCard actions', () => {
     expect(screen.queryByRole('button', { name: 'Persist completion' })).not.toBeInTheDocument();
   });
 
-  it('retains the drawer details action for completed workouts', () => {
+  it('retains the drawer details action for completed workouts', async () => {
     render(
       <WorkoutCard
         workout={{ ...workout, status: 'completed' }}
@@ -140,7 +162,7 @@ describe('WorkoutCard actions', () => {
     expect(detailsButton.closest('.workout-btns')).not.toBeNull();
     expect(detailsButton).toHaveAttribute('data-variant', 'secondary');
     fireEvent.click(detailsButton);
-    expect(screen.getByRole('button', { name: 'Persist completion' })).toBeInTheDocument();
+    expect(await screen.findByRole('button', { name: 'Persist completion' })).toBeInTheDocument();
 
     const deleteButton = screen.getByRole('button', { name: 'Delete' });
     expect(deleteButton).toBeEmptyDOMElement();

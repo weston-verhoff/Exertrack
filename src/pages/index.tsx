@@ -6,7 +6,6 @@ import {
   WorkoutCardSkeleton,
   WorkoutCardSkeletonGrid,
 } from '../components/LoadingSkeletons';
-import { motion } from 'framer-motion'; // ✅ Import motion
 import { Workout } from '../types/workout';
 import { useAuth } from '../context/AuthContext';
 import {
@@ -22,11 +21,12 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 	const [loadingAllPast, setLoadingAllPast] = useState(false);
   const navigate = useNavigate();
-	const futureContainerRef = useRef<HTMLDivElement>(null);
   const futureRef = useRef<HTMLDivElement>(null);
+  const futureDragRef = useRef<{ pointerX: number; scrollLeft: number; moved: boolean } | null>(null);
+  const suppressFutureClickRef = useRef(false);
   const { userId, loading: authLoading } = useAuth();
   const { showAlert } = useSystemAlerts();
-	const [isOverflowing] = useState(false);
+	const [isOverflowing, setIsOverflowing] = useState(false);
   const [showAllPast, setShowAllPast] = useState(false);
   const [completedTotalCount, setCompletedTotalCount] = useState<number>(0);
 
@@ -69,6 +69,41 @@ export default function Dashboard() {
     fetchInitialWorkouts(userId);
   }, [authLoading, userId, fetchInitialWorkouts ]);
 
+  const startFutureDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    if (event.pointerType !== 'mouse' || event.button !== 0) return;
+    const target = event.target as HTMLElement;
+    if (target.closest('button, a, input, select, textarea, [role="button"]')) return;
+    const scroller = event.currentTarget;
+    futureDragRef.current = { pointerX: event.clientX, scrollLeft: scroller.scrollLeft, moved: false };
+    scroller.setPointerCapture?.(event.pointerId);
+  };
+
+  const moveFutureDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = futureDragRef.current;
+    if (!drag) return;
+    const distance = event.clientX - drag.pointerX;
+    if (Math.abs(distance) > 4) drag.moved = true;
+    event.currentTarget.scrollLeft = drag.scrollLeft - distance;
+  };
+
+  const endFutureDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    const drag = futureDragRef.current;
+    if (!drag) return;
+    suppressFutureClickRef.current = drag.moved;
+    futureDragRef.current = null;
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  const cancelFutureDrag = (event: React.PointerEvent<HTMLDivElement>) => {
+    futureDragRef.current = null;
+    suppressFutureClickRef.current = false;
+    if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+      event.currentTarget.releasePointerCapture(event.pointerId);
+    }
+  };
+
 
   const deleteWorkout = async (id: string) => {
     if (!userId) return;
@@ -97,6 +132,21 @@ export default function Dashboard() {
   const completedWorkouts = workouts
     .filter((w) => w.status === 'completed')
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()); // descending
+
+  useEffect(() => {
+    const scroller = futureRef.current;
+    if (!scroller) return;
+
+    const updateOverflow = () => setIsOverflowing(scroller.scrollWidth > scroller.clientWidth);
+    updateOverflow();
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateOverflow);
+    observer?.observe(scroller);
+    window.addEventListener('resize', updateOverflow);
+    return () => {
+      observer?.disconnect();
+      window.removeEventListener('resize', updateOverflow);
+    };
+  }, [scheduledWorkouts.length]);
 
   const nextWorkoutId = scheduledWorkouts[0]?.id;
 	const nextWorkout = scheduledWorkouts[0];
@@ -211,9 +261,9 @@ export default function Dashboard() {
         <>
           {/* FUTURE WORKOUTS with drag scrolling */}
 					{hasScheduledWorkouts && (
-					<div className="future-workouts" ref={futureContainerRef}>
+					<section className="future-workouts" aria-labelledby="future-workouts-title">
 					<div className="workouts-header">
-						<h2 className="headline font-black">Future Workouts</h2>
+						<h2 className="headline font-black" id="future-workouts-title">Future Workouts</h2>
 						<WorkoutButton
 		          label="See All"
 		          icon=""
@@ -221,12 +271,20 @@ export default function Dashboard() {
 		          onClick={() => navigate('/past')}
 		        />
 					</div>
-					<motion.div
+					<div
 					  ref={futureRef}
 					  className={`drag-future-workouts${isOverflowing ? ' is-overflowing' : ' is-centered'}`}
-					  drag="x"
-					  dragConstraints={futureContainerRef}
-					  dragElastic={0.05}
+					  tabIndex={0}
+					  onPointerDown={startFutureDrag}
+					  onPointerMove={moveFutureDrag}
+					  onPointerUp={endFutureDrag}
+					  onPointerCancel={cancelFutureDrag}
+					  onClickCapture={(event) => {
+					    if (!suppressFutureClickRef.current) return;
+					    event.preventDefault();
+					    event.stopPropagation();
+					    suppressFutureClickRef.current = false;
+					  }}
 					>
 
 					{scheduledWorkouts.map((w) => (
@@ -247,8 +305,8 @@ export default function Dashboard() {
 							/>
 						))}
 
-          </motion.div>
-					</div>
+          </div>
+					</section>
 					)}
           {/* COMPLETED WORKOUTS */}
           <section className="past-workout-container">

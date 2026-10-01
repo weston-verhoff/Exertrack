@@ -307,6 +307,7 @@ export function WeightTrackingSection({
         className="account-chart color-context color-context--raised"
         data-tone="workout"
         aria-label="Body weight chart"
+        role="group"
       >
         {loading ? (
           <ChartSkeleton />

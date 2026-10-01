@@ -190,7 +190,7 @@ export function SystemAlertProvider({ children }: { children: React.ReactNode })
   return (
     <SystemAlertContext.Provider value={value}>
       {children}
-      <div className="system-alert-region" aria-label="System notifications">
+      <div className="system-alert-region">
         {alerts.map(alert => (
           <AlertBanner
             key={alert.id}

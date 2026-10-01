@@ -1,12 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { WorkoutButton } from './WorkoutButton';
 import '../styles/WorkoutCard.css';
 import { Workout, WorkoutSet as WorkoutSetType } from '../types/workout';
 import { formatDuration } from '../utils/cardio';
 import { ComponentTone } from '../utils/componentTone';
 import { Trash2, Zap } from 'lucide-react';
-import { WorkoutDetailsDrawer } from './WorkoutDetailsDrawer';
+
+const WorkoutDetailsDrawer = lazy(() =>
+  import('./WorkoutDetailsDrawer').then(({ WorkoutDetailsDrawer }) => ({ default: WorkoutDetailsDrawer }))
+);
 
 type WorkoutCardVariant = 'future-workout' | 'past-workout' | 'highlighted';
 
@@ -48,7 +51,8 @@ function summarizeSets(sets: WorkoutSetType[], isCardio: boolean) {
     <>
       {summary}
       {hasIntensity && (
-        <span aria-label="Includes intensity techniques" title="Includes intensity techniques">
+        <span title="Includes intensity techniques">
+          <span className="sr-only">Includes intensity techniques</span>
           {' '}<Zap aria-hidden="true" size={14} style={{ display: 'inline', verticalAlign: '-0.125em' }} />
         </span>
       )}
@@ -70,6 +74,7 @@ export function WorkoutCard({
   const formattedDate = formatDateCompact(workout.date);
   const variantClass = `workout-card ${variant} ${isNext ? 'highlight' : ''}`;
 	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [drawerMounted, setDrawerMounted] = useState(false);
 	const showsFullPageDetails = variant === 'highlighted';
 	const showsDetailsDrawer = !showsFullPageDetails;
 	const [editedExercises, setEditedExercises] = useState(workout.workout_exercises);
@@ -78,6 +83,7 @@ export function WorkoutCard({
 			setEditedExercises(workout.workout_exercises);
 		}, [workout]);
 const openDetailsDrawer = () => {
+  setDrawerMounted(true);
   setDrawerOpen(true);
 };
 
@@ -121,15 +127,19 @@ const openDetailsDrawer = () => {
 				onClick={() => onDelete(workout.id)}
 			/>
 		</div>
-		{showsDetailsDrawer && <WorkoutDetailsDrawer
-			workout={workout}
-			isOpen={drawerOpen}
-			onClose={() => setDrawerOpen(false)}
-			tone={tone}
-			onDelete={onDelete}
-			onStatusChange={onStatusChange}
-			onWorkoutUpdated={onWorkoutUpdated}
-		/>}
+		{showsDetailsDrawer && drawerMounted && (
+      <Suspense fallback={null}>
+        <WorkoutDetailsDrawer
+          workout={workout}
+          isOpen={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          tone={tone}
+          onDelete={onDelete}
+          onStatusChange={onStatusChange}
+          onWorkoutUpdated={onWorkoutUpdated}
+        />
+      </Suspense>
+    )}
 	</div>
 );
 }

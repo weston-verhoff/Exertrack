@@ -239,7 +239,7 @@ describe('token architecture', () => {
     const neonTokens = getDeclarations(readStyle('theme-neon.css')).declarations;
 
     expect(upAndUpTokens.get('--image-brand-mark-alternate')).toContain(
-      'branding/default/mark-alternate.png'
+      'branding/default/mark-alternate.webp'
     );
     BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
       expect(neonTokens.has(token)).toBe(true);

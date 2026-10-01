@@ -201,7 +201,7 @@ export function WorkoutCalendar({
           {!selectionMode ? (
             <button type="button" className="workout-calendar__select" onClick={() => setSelectionMode(true)}>Select</button>
           ) : (
-            <div className="workout-calendar__selection-actions" aria-label="Selected workout actions">
+            <div className="workout-calendar__selection-actions" aria-label="Selected workout actions" role="group">
               <span>{selectedWorkoutIds.size} selected</span>
               <WorkoutButton label="Export" loading={selectionBusy} loadingLabel="Working…" disabled={selectedWorkoutIds.size === 0} size="sm" onClick={() => void exportSelection()} />
               <WorkoutButton label="Cancel" variant="quiet" size="sm" onClick={cancelSelection} />
@@ -215,7 +215,7 @@ export function WorkoutCalendar({
       </div>
 
       <div className="workout-calendar__scroll">
-        <div className="workout-calendar__grid" aria-label={`${monthLabel} workout calendar`}>
+        <div className="workout-calendar__grid" aria-label={`${monthLabel} workout calendar`} role="group">
           {WEEKDAYS.map(day => (
             <div className="workout-calendar__weekday" key={day}>{day}</div>
           ))}

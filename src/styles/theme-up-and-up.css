@@ -156,5 +156,5 @@
   --image-surface-canvas: none;
   --image-surface-hero: none;
   --image-surface-accent: none;
-  --image-brand-mark-alternate: url('../assets/branding/default/mark-alternate.png');
+  --image-brand-mark-alternate: url('../assets/branding/default/mark-alternate.webp');
 }

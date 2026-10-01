@@ -256,7 +256,7 @@ describe('WorkoutDetails cardio controls', () => {
     expect(screen.queryByRole('combobox')).not.toBeInTheDocument();
     expect(screen.queryByRole('button', { name: 'Add Segment' })).not.toBeInTheDocument();
     expect(screen.queryByText(/Segment 1:/)).not.toBeInTheDocument();
-    expect(screen.getByLabelText('Distance unit')).toHaveTextContent('DIST (KM)');
+    expect(screen.getByText(/DIST \(KM\)/)).toBeInTheDocument();
   });
 
   it('shows segment controls when laps are enabled', () => {

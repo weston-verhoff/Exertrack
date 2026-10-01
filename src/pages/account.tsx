@@ -481,7 +481,7 @@ export default function AccountPage() {
         aria-labelledby="account-greeting"
       >
         <h1 id="account-greeting">{firstName ? `Hello, ${firstName}!` : 'Hello!'}</h1>
-        <div className="account-stat-grid" aria-label="Workout summary">
+        <div className="account-stat-grid" aria-label="Workout summary" role="group">
           <article className="account-stat-card" data-tone="workout">
             <span>Lifetime Workouts</span>
             <strong>{workouts.length}</strong>
@@ -593,7 +593,7 @@ export default function AccountPage() {
                 </fieldset>
               </div>
             </div>
-            <div className="account-chart color-context color-context--raised" data-tone="workout" aria-label="Strength sets chart">
+            <div className="account-chart color-context color-context--raised" data-tone="workout" aria-label="Strength sets chart" role="group">
               {loading ? (
                 <ChartSkeleton />
               ) : workouts.length ? (
