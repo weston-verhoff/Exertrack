@@ -22,7 +22,7 @@ import {
   toStoredKilograms,
   downloadCsvFile,
 } from '../utils/weightTracking';
-import { getRollingAverage } from '../utils/chartAnalytics';
+import { getTimeAwareEma } from '../utils/chartAnalytics';
 
 type DrawerMode = 'closed' | 'add' | 'history' | 'edit';
 
@@ -141,7 +141,12 @@ export function WeightTrackingSection({
     const weights = chartEntries.map((entry) =>
       formatWeightValue(entry.weight_kg, weightSystem)
     );
-    const rollingAverage = getRollingAverage(weights);
+    const exponentialAverage = getTimeAwareEma(
+      chartEntries.map((entry, index) => ({
+        date: entry.weighed_on,
+        value: weights[index],
+      }))
+    );
     const chartDays = chartEntries.map((entry) =>
       dateKeyToChartDay(entry.weighed_on)
     );
@@ -158,20 +163,22 @@ export function WeightTrackingSection({
           backgroundColor: fillColor,
           fill: true,
           tension: 0.3,
+          order: 2,
         },
-        ...(rollingAverage ? [{
-          label: '5-point Rolling Average',
-          data: rollingAverage.map((average, index) => ({
+        ...(exponentialAverage ? [{
+          label: '14-day EMA',
+          data: exponentialAverage.map((average, index) => ({
             x: chartDays[index],
             y: average,
           })),
           borderColor: trendColor,
           backgroundColor: 'transparent',
-          borderDash: [7, 5],
           pointRadius: 0,
           pointHoverRadius: 0,
           fill: false,
-          tension: 0,
+          cubicInterpolationMode: 'monotone' as const,
+          tension: 0.35,
+          order: 1,
         }] : []),
       ],
     };

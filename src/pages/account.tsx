@@ -50,7 +50,7 @@ import { getDistanceUnitOptions, normalizeDistanceUnit } from '../utils/unitPref
 import {
   aggregateChartValues,
   ChartGranularity,
-  getRollingAverage,
+  getTimeAwareEma,
 } from '../utils/chartAnalytics';
 import { DistanceUnit } from '../types/workout';
 import { useSystemAlerts } from '../context/SystemAlertContext';
@@ -290,7 +290,7 @@ export default function AccountPage() {
       settings?.startOfWeek ?? 1
     );
     const setCounts = points.map(point => point.value);
-    const rollingAverage = getRollingAverage(setCounts);
+    const exponentialAverage = getTimeAwareEma(points);
     const styles = getComputedStyle(document.documentElement);
     const lineColor = styles.getPropertyValue('--color-chart-series-1').trim();
     const fillColor = styles.getPropertyValue('--color-chart-series-1-fill').trim();
@@ -306,17 +306,19 @@ export default function AccountPage() {
           backgroundColor: fillColor,
           fill: true,
           tension: 0.3,
+          order: 2,
         },
-        ...(rollingAverage ? [{
-          label: '5-point Rolling Average',
-          data: rollingAverage,
+        ...(exponentialAverage ? [{
+          label: '14-day EMA',
+          data: exponentialAverage,
           borderColor: trendColor,
           backgroundColor: 'transparent',
-          borderDash: [7, 5],
           pointRadius: 0,
           pointHoverRadius: 0,
           fill: false,
-          tension: 0,
+          cubicInterpolationMode: 'monotone' as const,
+          tension: 0.35,
+          order: 1,
         }] : []),
       ],
     };

@@ -1,19 +1,36 @@
 import {
   aggregateChartValues,
   formatWeekRangeLabel,
-  getRollingAverage,
+  getTimeAwareEma,
   getWeekRange,
 } from './chartAnalytics';
 
 describe('chart analytics', () => {
-  it('builds a five-point trailing rolling average', () => {
-    expect(getRollingAverage([10, 20, 30, 40])).toBeNull();
-    expect(getRollingAverage([10, 20, 30, 40, 50])).toEqual([
-      null, null, null, null, 30,
-    ]);
-    expect(getRollingAverage([10, 20, 30, 40, 50, 70])).toEqual([
-      null, null, null, null, 30, 42,
-    ]);
+  it('builds a 14-day time-aware exponential moving average', () => {
+    expect(getTimeAwareEma([
+      { date: '2026-09-01', value: 180 },
+      { date: '2026-09-15', value: 186 },
+      { date: '2026-09-29', value: 186 },
+    ])).toEqual([180, 183, 184.5]);
+  });
+
+  it('weights observations according to elapsed calendar days', () => {
+    expect(getTimeAwareEma([
+      { date: '2026-09-01', value: 100 },
+      { date: '2026-09-02', value: 114 },
+      { date: '2026-09-16', value: 114 },
+    ])).toEqual([100, 100.676, 107.338]);
+  });
+
+  it('rejects invalid, unordered, and non-finite EMA inputs', () => {
+    expect(getTimeAwareEma([])).toBeNull();
+    expect(getTimeAwareEma([{ date: 'not-a-date', value: 10 }])).toBeNull();
+    expect(getTimeAwareEma([
+      { date: '2026-09-02', value: 10 },
+      { date: '2026-09-01', value: 20 },
+    ])).toBeNull();
+    expect(getTimeAwareEma([{ date: '2026-09-01', value: Number.NaN }])).toBeNull();
+    expect(getTimeAwareEma([{ date: '2026-09-01', value: 10 }], 0)).toBeNull();
   });
 
   it('groups dated values into weeks using the configured week start', () => {

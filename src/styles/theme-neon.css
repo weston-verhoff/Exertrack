@@ -36,9 +36,12 @@
   --ref-shadow-hover: rgba(255, 44, 168, 0.34);
   --ref-shadow-pressed: rgba(5, 3, 10, 0.8);
   --ref-shadow-control: rgba(5, 3, 10, 0.92);
-  --ref-chart-pink-fill: rgba(255, 44, 168, 0.2);
-  --ref-chart-cyan-fill: rgba(32, 227, 240, 0.2);
-  --ref-chart-yellow-fill: rgba(255, 228, 92, 0.2);
+  --ref-chart-1: #d0d0ca;
+  --ref-chart-1-fill: rgba(208, 208, 202, 0.14);
+  --ref-chart-2: #9d9d97;
+  --ref-chart-2-fill: rgba(157, 157, 151, 0.14);
+  --ref-chart-3: #73736e;
+  --ref-chart-3-fill: rgba(115, 115, 110, 0.14);
 
   /* Neutral foundations */
   --color-surface-canvas: var(--ref-night-900);
@@ -120,12 +123,12 @@
   --color-transparent: var(--ref-transparent);
   --color-overlay-backdrop: var(--ref-backdrop);
   --color-hover-on-inverse: var(--ref-wash-cyan);
-  --color-chart-series-1: var(--ref-pink-400);
-  --color-chart-series-2: var(--ref-cyan-400);
-  --color-chart-series-3: var(--ref-yellow-400);
-  --color-chart-series-1-fill: var(--ref-chart-pink-fill);
-  --color-chart-series-2-fill: var(--ref-chart-cyan-fill);
-  --color-chart-series-3-fill: var(--ref-chart-yellow-fill);
+  --color-chart-series-1: var(--ref-chart-1);
+  --color-chart-series-2: var(--ref-chart-2);
+  --color-chart-series-3: var(--ref-chart-3);
+  --color-chart-series-1-fill: var(--ref-chart-1-fill);
+  --color-chart-series-2-fill: var(--ref-chart-2-fill);
+  --color-chart-series-3-fill: var(--ref-chart-3-fill);
   --shadow-subtle: var(--ref-shadow-subtle);
   --shadow-soft: var(--ref-shadow-soft);
   --shadow-medium: var(--ref-shadow-medium);

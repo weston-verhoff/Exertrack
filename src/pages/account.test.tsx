@@ -27,13 +27,15 @@ jest.mock('chart.js', () => ({
 }));
 
 jest.mock('react-chartjs-2', () => ({
-  Line: ({ data }: { data: { datasets: Array<{ label: string; data: number[] }> } }) => (
+  Line: ({ data }: { data: { datasets: Array<Record<string, any>> } }) => (
     <div
       data-testid="chart"
       data-label={data.datasets[0]?.label}
       data-values={JSON.stringify(data.datasets[0]?.data)}
       data-labels={JSON.stringify((data as any).labels)}
       data-datasets={JSON.stringify(data.datasets.map(dataset => dataset.label))}
+      data-trend={JSON.stringify(data.datasets[1])}
+      data-raw-order={data.datasets[0]?.order}
     />
   ),
 }));
@@ -260,11 +262,11 @@ describe('AccountPage custom exercise editor', () => {
     const chart = await screen.findByTestId('chart');
     expect(chart).toHaveAttribute('data-label', 'Total Sets');
     expect(chart).toHaveAttribute('data-values', '[2]');
-    expect(chart).toHaveAttribute('data-datasets', '["Total Sets"]');
+    expect(chart).toHaveAttribute('data-datasets', '["Total Sets","14-day EMA"]');
     expect(screen.getByLabelText('Strength sets chart')).toContainElement(chart);
   });
 
-  it('groups sets into configured weeks and adds an average after five points', async () => {
+  it('groups sets into configured weeks and adds a smooth time-aware EMA', async () => {
     (getAccountSettings as jest.Mock).mockReturnValue({
       firstName: 'Alex',
       lastName: '',
@@ -303,7 +305,18 @@ describe('AccountPage custom exercise editor', () => {
       const chart = screen.getByTestId('chart');
       expect(chart).toHaveAttribute('data-labels', '["8/1–8/7","8/8–8/14","8/15–8/21","8/22–8/28","8/29–9/4"]');
       expect(chart).toHaveAttribute('data-values', '[5,6,7,8,9]');
-      expect(chart).toHaveAttribute('data-datasets', '["Total Sets","5-point Rolling Average"]');
+      expect(chart).toHaveAttribute('data-datasets', '["Total Sets","14-day EMA"]');
+      expect(chart).toHaveAttribute('data-raw-order', '2');
+      const trend = JSON.parse(chart.getAttribute('data-trend') ?? '{}');
+      expect(trend.data).toEqual([5, 5.293, 5.793, 6.439, 7.189]);
+      expect(trend).toEqual(expect.objectContaining({
+        pointRadius: 0,
+        pointHoverRadius: 0,
+        cubicInterpolationMode: 'monotone',
+        tension: 0.35,
+        order: 1,
+      }));
+      expect(trend).not.toHaveProperty('borderDash');
     });
   });
 

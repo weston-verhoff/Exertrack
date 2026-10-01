@@ -44,12 +44,12 @@
   --ref-shadow-20: rgba(28, 28, 27, 0.2);
   --ref-shadow-40: rgba(28, 28, 27, 0.4);
   --ref-shadow-55: rgba(28, 28, 27, 0.55);
-  --ref-chart-1: #4f5b66;
-  --ref-chart-1-fill: rgba(79, 91, 102, 0.16);
-  --ref-chart-2: #76716b;
-  --ref-chart-2-fill: rgba(118, 113, 107, 0.16);
-  --ref-chart-3: #91918b;
-  --ref-chart-3-fill: rgba(145, 145, 139, 0.16);
+  --ref-chart-1: var(--ref-blue-gray-800);
+  --ref-chart-1-fill: rgba(38, 55, 70, 0.18);
+  --ref-chart-2: var(--ref-red-700);
+  --ref-chart-2-fill: rgba(159, 49, 49, 0.18);
+  --ref-chart-3: var(--ref-green-800);
+  --ref-chart-3-fill: rgba(31, 77, 45, 0.18);
 
   /* Neutral foundations */
   --color-surface-canvas: var(--ref-neutral-50);

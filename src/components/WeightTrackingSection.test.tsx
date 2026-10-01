@@ -98,10 +98,10 @@ describe('WeightTrackingSection', () => {
     expect(chart).toHaveAttribute('data-tooltip-date', 'Sep 20, 2026');
     expect(chart).toHaveTextContent('174.2');
     expect(chart).not.toHaveTextContent('175');
-    expect(chart).not.toHaveTextContent('5-point Rolling Average');
+    expect(chart).toHaveTextContent('14-day EMA');
   });
 
-  it('adds a five-point rolling average after five unique weigh-in dates', async () => {
+  it('adds a smooth time-aware EMA aligned with the weigh-in dates', async () => {
     (fetchWeightEntries as jest.Mock).mockResolvedValue({
       data: [
         { ...entries[0], id: 'trend-1', weighed_on: '2026-09-16', weight_kg: 81 },
@@ -116,11 +116,26 @@ describe('WeightTrackingSection', () => {
     renderSection('metric');
 
     const chart = await screen.findByTestId('weight-chart');
-    expect(chart).toHaveTextContent('5-point Rolling Average');
-    expect(chart).toHaveTextContent(
-      '"y":null},{"x":20716,"y":80}]'
-    );
-    expect(chart).toHaveTextContent('"borderDash":[7,5]');
+    const data = JSON.parse(chart.textContent ?? '{}');
+    const trend = data.datasets[1];
+
+    expect(trend.label).toBe('14-day EMA');
+    expect(trend.data).toEqual([
+      { x: 20712, y: 81 },
+      { x: 20713, y: 80.976 },
+      { x: 20714, y: 80.929 },
+      { x: 20715, y: 80.86 },
+      { x: 20716, y: 80.77 },
+    ]);
+    expect(trend).toEqual(expect.objectContaining({
+      pointRadius: 0,
+      pointHoverRadius: 0,
+      cubicInterpolationMode: 'monotone',
+      tension: 0.35,
+      order: 1,
+    }));
+    expect(data.datasets[0].order).toBe(2);
+    expect(trend).not.toHaveProperty('borderDash');
   });
 
   it('spaces chart points by the number of elapsed calendar days', async () => {

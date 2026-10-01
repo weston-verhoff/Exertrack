@@ -167,6 +167,29 @@ describe.each(themeFiles)('%s token contract', (themeFile) => {
 });
 
 describe('token architecture', () => {
+  it('gives Light stronger chart contrast and reuses Dark chart colors in Neon', () => {
+    const light = getDeclarations(readStyle('theme-default.css')).declarations;
+    const dark = getDeclarations(readStyle('theme-dark.css')).declarations;
+    const neon = getDeclarations(readStyle('theme-neon.css')).declarations;
+    const chartTokens = [
+      '--color-chart-series-1',
+      '--color-chart-series-2',
+      '--color-chart-series-3',
+      '--color-chart-series-1-fill',
+      '--color-chart-series-2-fill',
+      '--color-chart-series-3-fill',
+    ];
+
+    expect(chartTokens.map(token => resolveValue(token, neon))).toEqual(
+      chartTokens.map(token => resolveValue(token, dark))
+    );
+    expect(chartTokens.slice(0, 3).map(token => resolveValue(token, light))).toEqual([
+      resolveValue('--ref-blue-gray-800', light),
+      resolveValue('--ref-red-700', light),
+      resolveValue('--ref-green-800', light),
+    ]);
+  });
+
   it('defines one global fallback for every brand image token', () => {
     const { declarations, counts } = getDeclarations(readStyle('variables.css'));
 

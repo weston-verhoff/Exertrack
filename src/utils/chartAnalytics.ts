@@ -69,23 +69,55 @@ export const aggregateChartValues = (
     }));
 };
 
-export const getRollingAverage = (
-  values: number[],
-  windowSize = 5
-): Array<number | null> | null => {
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+
+const parseUtcDay = (dateKey: string) => {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey);
+  if (!match) return null;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const timestamp = Date.UTC(year, month - 1, day);
+  const date = new Date(timestamp);
   if (
-    windowSize < 1 ||
-    values.length < windowSize ||
-    values.some(value => !Number.isFinite(value))
+    date.getUTCFullYear() !== year ||
+    date.getUTCMonth() !== month - 1 ||
+    date.getUTCDate() !== day
   ) {
     return null;
   }
 
-  return values.map((_, index) => {
-    if (index < windowSize - 1) return null;
-    const window = values.slice(index - windowSize + 1, index + 1);
-    return Number(
-      (window.reduce((sum, value) => sum + value, 0) / windowSize).toFixed(3)
-    );
-  });
+  return timestamp / MILLISECONDS_PER_DAY;
+};
+
+export const getTimeAwareEma = (
+  values: DatedChartValue[],
+  halfLifeDays = 14
+): number[] | null => {
+  if (
+    values.length === 0 ||
+    !Number.isFinite(halfLifeDays) ||
+    halfLifeDays <= 0 ||
+    values.some(point => !Number.isFinite(point.value))
+  ) {
+    return null;
+  }
+
+  const days = values.map(point => parseUtcDay(point.date));
+  if (days.some(day => day === null)) return null;
+
+  const result = [Number(values[0].value.toFixed(3))];
+  let smoothed = values[0].value;
+
+  for (let index = 1; index < values.length; index += 1) {
+    const elapsedDays = (days[index] as number) - (days[index - 1] as number);
+    if (elapsedDays <= 0) return null;
+
+    const alpha = 1 - Math.pow(0.5, elapsedDays / halfLifeDays);
+    smoothed += alpha * (values[index].value - smoothed);
+    result.push(Number(smoothed.toFixed(3)));
+  }
+
+  return result;
 };
