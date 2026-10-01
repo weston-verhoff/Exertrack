@@ -9,9 +9,21 @@ import {
 import { WeightTrackingSection } from './WeightTrackingSection';
 
 jest.mock('react-chartjs-2', () => ({
-  Line: ({ data }: { data: unknown }) => (
-    <div data-testid="weight-chart">{JSON.stringify(data)}</div>
-  ),
+  Line: ({ data, options }: { data: any; options: any }) => {
+    const firstX = data.datasets[0]?.data[0]?.x;
+    return (
+      <div
+        data-testid="weight-chart"
+        data-x-scale={options.scales.x.type}
+        data-first-date={options.scales.x.ticks.callback(firstX)}
+        data-tooltip-date={options.plugins.tooltip.callbacks.title([
+          { parsed: { x: firstX } },
+        ])}
+      >
+        {JSON.stringify(data)}
+      </div>
+    );
+  },
 }));
 
 jest.mock('../services/weightService', () => ({
@@ -81,7 +93,9 @@ describe('WeightTrackingSection', () => {
 
     const chart = await screen.findByTestId('weight-chart');
     expect(chart).toHaveTextContent('Body Weight (lbs)');
-    expect(chart.textContent?.match(/Sep 20, 2026/g)).toHaveLength(1);
+    expect(chart).toHaveAttribute('data-x-scale', 'linear');
+    expect(chart).toHaveAttribute('data-first-date', 'Sep 20, 2026');
+    expect(chart).toHaveAttribute('data-tooltip-date', 'Sep 20, 2026');
     expect(chart).toHaveTextContent('174.2');
     expect(chart).not.toHaveTextContent('175');
     expect(chart).not.toHaveTextContent('5-point Rolling Average');
@@ -103,8 +117,33 @@ describe('WeightTrackingSection', () => {
 
     const chart = await screen.findByTestId('weight-chart');
     expect(chart).toHaveTextContent('5-point Rolling Average');
-    expect(chart).toHaveTextContent('"data":[null,null,null,null,80]');
+    expect(chart).toHaveTextContent(
+      '"y":null},{"x":20716,"y":80}]'
+    );
     expect(chart).toHaveTextContent('"borderDash":[7,5]');
+  });
+
+  it('spaces chart points by the number of elapsed calendar days', async () => {
+    (fetchWeightEntries as jest.Mock).mockResolvedValue({
+      data: [
+        { ...entries[0], id: 'dated-1', weighed_on: '2026-09-24' },
+        { ...entries[0], id: 'dated-2', weighed_on: '2026-09-25' },
+        { ...entries[0], id: 'dated-3', weighed_on: '2026-09-28' },
+      ],
+      error: null,
+    });
+
+    renderSection('metric');
+
+    const chart = await screen.findByTestId('weight-chart');
+    const data = JSON.parse(chart.textContent ?? '{}');
+    const points = data.datasets[0].data;
+
+    expect(points.map((point: { x: number }) => point.x)).toEqual([
+      20720, 20721, 20724,
+    ]);
+    expect(points[1].x - points[0].x).toBe(1);
+    expect(points[2].x - points[1].x).toBe(3);
   });
 
   it('keeps every same-day entry in history and displays one decimal place', async () => {

@@ -26,6 +26,22 @@ import { getRollingAverage } from '../utils/chartAnalytics';
 
 type DrawerMode = 'closed' | 'add' | 'history' | 'edit';
 
+const MILLISECONDS_PER_DAY = 24 * 60 * 60 * 1000;
+const chartDateFormatter = new Intl.DateTimeFormat('en-US', {
+  month: 'short',
+  day: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+
+const dateKeyToChartDay = (dateKey: string) => {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return Date.UTC(year, month - 1, day) / MILLISECONDS_PER_DAY;
+};
+
+const formatChartDay = (value: number) =>
+  chartDateFormatter.format(new Date(value * MILLISECONDS_PER_DAY));
+
 const timelineSort = (a: WeightEntry, b: WeightEntry) =>
   a.weighed_on.localeCompare(b.weighed_on) ||
   a.created_at.localeCompare(b.created_at) ||
@@ -126,19 +142,18 @@ export function WeightTrackingSection({
       formatWeightValue(entry.weight_kg, weightSystem)
     );
     const rollingAverage = getRollingAverage(weights);
+    const chartDays = chartEntries.map((entry) =>
+      dateKeyToChartDay(entry.weighed_on)
+    );
 
     return {
-      labels: chartEntries.map((entry) =>
-        new Intl.DateTimeFormat('en-US', {
-          month: 'short',
-          day: 'numeric',
-          year: 'numeric',
-        }).format(new Date(`${entry.weighed_on}T00:00:00`))
-      ),
       datasets: [
         {
           label: `Body Weight (${unit})`,
-          data: weights,
+          data: weights.map((weight, index) => ({
+            x: chartDays[index],
+            y: weight,
+          })),
           borderColor: lineColor,
           backgroundColor: fillColor,
           fill: true,
@@ -146,7 +161,10 @@ export function WeightTrackingSection({
         },
         ...(rollingAverage ? [{
           label: '5-point Rolling Average',
-          data: rollingAverage,
+          data: rollingAverage.map((average, index) => ({
+            x: chartDays[index],
+            y: average,
+          })),
           borderColor: trendColor,
           backgroundColor: 'transparent',
           borderDash: [7, 5],
@@ -293,8 +311,25 @@ export function WeightTrackingSection({
             options={{
               responsive: true,
               maintainAspectRatio: false,
-              plugins: { legend: { display: true } },
+              plugins: {
+                legend: { display: true },
+                tooltip: {
+                  callbacks: {
+                    title: (items) => {
+                      const day = items[0]?.parsed.x;
+                      return typeof day === 'number' ? formatChartDay(day) : '';
+                    },
+                  },
+                },
+              },
               scales: {
+                x: {
+                  type: 'linear',
+                  ticks: {
+                    precision: 0,
+                    callback: (value) => formatChartDay(Number(value)),
+                  },
+                },
                 y: {
                   beginAtZero: false,
                   title: { display: true, text: unit },
