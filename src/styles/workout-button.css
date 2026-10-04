@@ -8,6 +8,7 @@
   border: 1px solid var(--_button-border);
   border-radius: 8px;
   background-color: var(--_button-surface);
+  background-image: var(--_button-image, none);
   color: var(--_button-content);
   box-shadow: inset -2px -2px var(--shadow-button-inset);
   display: inline-flex;
@@ -111,4 +112,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .workout-button { transition-duration: 0.01ms; }
+}
+
+.workout-button--primary:not(.workout-button--positive):not(.workout-button--danger) {
+  --_button-image: var(--_context-strong-image, none);
 }

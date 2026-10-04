@@ -1,0 +1,166 @@
+/* Fall: dark forest surfaces and adjacent autumn colors. */
+[data-theme='fall'] {
+  color-scheme: dark;
+
+  /* Reference palette */
+  --ref-neutral-canvas: #141d16;
+  --ref-neutral-default: #243025;
+  --ref-neutral-raised: #303e2c;
+  --ref-neutral-sunken: #1a241b;
+  --ref-neutral-inverse: #101811;
+  --ref-border-subtle: #56634a;
+  --ref-border-default: #85916c;
+  --ref-border-strong: #b5bd94;
+  --ref-text-primary: #fff3d6;
+  --ref-text-secondary: #e0d5b4;
+  --ref-text-muted: #c0ba9d;
+  --ref-red-bg: #481c22;
+  --ref-red-surface: #702b32;
+  --ref-red-hover: #80343a;
+  --ref-red-border: #f25b45;
+  --ref-red-text: #ffb4a3;
+  --ref-red-text-strong: #ffc6b2;
+  --ref-amber-bg: #35291c;
+  --ref-amber-surface: #51371f;
+  --ref-amber-border: #c77a30;
+  --ref-amber-text: #ffd4a1;
+  --ref-gold-bg: #443c14;
+  --ref-gold-surface: #4b3c20;
+  --ref-gold-border: #f4cf32;
+  --ref-gold-text: #ffe2a0;
+  --ref-green-bg: #203423;
+  --ref-green-surface: #2b472e;
+  --ref-green-border: #6fa52a;
+  --ref-green-text: #c4e29b;
+  --ref-yellow-bg: #493014;
+  --ref-yellow-surface: #52391e;
+  --ref-yellow-border: #f4cf32;
+  --ref-yellow-text: #ffe2a0;
+  --ref-orange: #ffad38;
+  --ref-transparent: rgba(0, 0, 0, 0);
+  --ref-overlay-inverse-95: rgba(20, 29, 22, 0.98);
+  --ref-overlay-backdrop: rgba(0, 0, 0, 0.55);
+  --ref-wash-inverse-8: rgba(248, 248, 242, 0.08);
+  --ref-wash-inverse-10: rgba(212, 173, 72, 0.1);
+  --ref-shadow-8: rgba(0, 0, 0, 0.08);
+  --ref-shadow-14: rgba(0, 0, 0, 0.14);
+  --ref-shadow-18: rgba(0, 0, 0, 0.18);
+  --ref-shadow-25: rgba(0, 0, 0, 0.25);
+  --ref-shadow-40: rgba(0, 0, 0, 0.4);
+  --ref-shadow-50: rgba(0, 0, 0, 0.5);
+  --ref-shadow-80: rgba(0, 0, 0, 0.8);
+  --ref-shadow-100: rgba(0, 0, 0, 1);
+
+  /* Neutral foundations */
+  --color-surface-canvas: var(--ref-canopy-gold);
+  --color-surface-default: var(--ref-neutral-default);
+  --color-surface-raised: var(--ref-neutral-raised);
+  --color-surface-sunken: var(--ref-neutral-sunken);
+  --color-surface-inverse: var(--ref-neutral-inverse);
+  --color-surface-inverse-subtle: var(--ref-wash-inverse-8);
+  --color-surface-overlay: var(--ref-overlay-inverse-95);
+  --color-on-canvas: var(--ref-neutral-inverse);
+  --color-on-surface: var(--ref-text-primary);
+  --color-content-secondary: var(--ref-text-secondary);
+  --color-content-muted: var(--ref-text-muted);
+  --color-on-inverse: var(--ref-text-primary);
+  --color-on-inverse-muted: var(--ref-text-secondary);
+  --color-on-inverse-danger: var(--ref-red-text);
+
+  /* Borders */
+  --color-border-subtle: var(--ref-border-subtle);
+  --color-border-default: var(--ref-border-default);
+  --color-border-strong: var(--ref-border-strong);
+  --color-border-focus: var(--ref-gold-border);
+  --color-border-on-inverse: var(--ref-border-strong);
+
+  /* Accent families */
+  --color-accent-primary: var(--ref-red-surface);
+  --color-on-accent-primary: var(--ref-text-primary);
+  --color-accent-primary-subtle: var(--ref-red-bg);
+  --color-on-accent-primary-subtle: var(--ref-red-text);
+  --color-border-accent-primary: var(--ref-red-border);
+  --color-hover-on-accent-primary: var(--ref-wash-inverse-10);
+  --color-accent-secondary: var(--ref-yellow-surface);
+  --color-on-accent-secondary: var(--ref-text-primary);
+  --color-accent-secondary-subtle: var(--ref-yellow-bg);
+  --color-on-accent-secondary-subtle: var(--ref-yellow-text);
+  --color-border-accent-secondary: var(--ref-yellow-border);
+  --color-hover-on-accent-secondary: var(--ref-wash-inverse-10);
+
+  /* Interactive states */
+  --color-interactive-primary: var(--ref-red-surface);
+  --color-on-interactive-primary: var(--ref-text-primary);
+  --color-interactive-primary-hover: var(--ref-red-hover);
+  --color-interactive-secondary: var(--ref-gold-surface);
+  --color-on-interactive-secondary: var(--ref-gold-text);
+  --color-interactive-secondary-hover: var(--ref-gold-bg);
+  --color-interactive-subtle: var(--ref-gold-bg);
+  --color-on-interactive-subtle: var(--ref-gold-text);
+  --color-interactive-subtle-hover: var(--ref-gold-surface);
+  --color-interactive-selected: var(--ref-text-secondary);
+  --color-on-interactive-selected: var(--ref-neutral-canvas);
+  --color-border-selected: var(--ref-text-primary);
+  --color-interactive-positive: var(--ref-green-bg);
+  --color-on-interactive-positive: var(--ref-green-text);
+  --color-interactive-positive-hover: var(--ref-green-surface);
+  --color-interactive-positive-subtle: var(--ref-green-bg);
+  --color-interactive-positive-subtle-hover: var(--ref-green-surface);
+  --color-on-interactive-positive-subtle: var(--ref-green-text);
+  --color-border-positive: var(--ref-green-border);
+  --color-interactive-danger: var(--ref-red-surface);
+  --color-on-interactive-danger: var(--ref-text-primary);
+  --color-interactive-danger-hover: var(--ref-red-hover);
+  --color-interactive-danger-subtle: var(--ref-red-bg);
+  --color-interactive-danger-subtle-hover: var(--ref-red-surface);
+  --color-on-interactive-danger-subtle: var(--ref-red-text-strong);
+  --color-border-danger: var(--ref-red-border);
+
+  /* Feedback */
+  --color-feedback-info-surface: var(--ref-gold-bg);
+  --color-on-feedback-info: var(--ref-gold-text);
+  --color-feedback-info-border: var(--ref-gold-border);
+  --color-feedback-success-surface: var(--ref-green-bg);
+  --color-on-feedback-success: var(--ref-green-text);
+  --color-feedback-success-border: var(--ref-green-border);
+  --color-feedback-danger-surface: var(--ref-red-bg);
+  --color-on-feedback-danger: var(--ref-red-text);
+  --color-feedback-danger-border: var(--ref-red-border);
+
+  /* Effects and data visualization */
+  --color-transparent: var(--ref-transparent);
+  --color-overlay-backdrop: var(--ref-overlay-backdrop);
+  --color-hover-on-inverse: var(--ref-wash-inverse-10);
+  --color-chart-series-1: var(--ref-green-text);
+  --color-chart-series-2: var(--ref-gold-text);
+  --color-chart-series-3: var(--ref-orange);
+  --color-chart-series-1-fill: rgba(196, 226, 155, 0.2);
+  --color-chart-series-2-fill: rgba(212, 173, 72, 0.2);
+  --color-chart-series-3-fill: rgba(238, 170, 100, 0.2);
+  --shadow-subtle: var(--ref-shadow-8);
+  --shadow-soft: var(--ref-shadow-14);
+  --shadow-medium: var(--ref-shadow-18);
+  --shadow-strong: var(--ref-shadow-50);
+  --shadow-button-inset: var(--ref-shadow-25);
+  --shadow-button-hover-inset: var(--ref-shadow-40);
+  --shadow-button-pressed: var(--ref-shadow-80);
+  --shadow-control-inset: var(--ref-shadow-100);
+
+  /* Theme artwork */
+  --ref-canopy-red: #f25b45;
+  --ref-canopy-orange: #ff9518;
+  --ref-canopy-gold: #f4cf32;
+  --ref-canopy-green: #6fa52a;
+  --ref-orange-dark: #71401f;
+  --ref-gold-dark: #665020;
+  --fall-gradient-workout: linear-gradient(135deg, var(--ref-canopy-orange), var(--ref-canopy-gold));
+  --fall-gradient-library: linear-gradient(135deg, var(--ref-canopy-red), var(--ref-canopy-orange));
+  --fall-gradient-selection: linear-gradient(135deg, var(--ref-canopy-gold), var(--ref-canopy-green));
+  --fall-gradient-workout-body: linear-gradient(135deg, var(--ref-yellow-bg), var(--ref-gold-bg));
+  --fall-gradient-library-body: linear-gradient(135deg, var(--ref-red-bg), var(--ref-yellow-bg));
+  --image-surface-canvas: linear-gradient(135deg, var(--ref-canopy-red), var(--ref-canopy-orange) 33%, var(--ref-canopy-gold) 66%, var(--ref-canopy-green));
+  --ref-hero-red: #841f16;
+  --ref-hero-orange: #91400f;
+  --image-surface-hero: linear-gradient(135deg, var(--ref-hero-red), var(--ref-hero-orange));
+  --image-surface-accent: none;
+}

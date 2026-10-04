@@ -38,6 +38,7 @@
 
 .segmented-control button[aria-pressed='true'] {
   background: var(--_context-strong);
+  background-image: var(--_context-strong-image, none);
   color: var(--_context-on-strong);
   font-weight: 800;
 }

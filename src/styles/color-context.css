@@ -409,3 +409,39 @@
   --_context-surface: var(--sunset-tone-selection-surface-opaque);
   --_context-surface-raised: var(--sunset-tone-selection-surface-raised-opaque);
 }
+
+/* Optional images keep gradients out of color-only tokens. */
+[data-theme] { --_context-strong-image: none; --_context-surface-image: none; }
+[data-theme='fall'] {
+  --_context-strong-image: var(--fall-gradient-workout);
+  --_context-on-strong: var(--color-on-canvas);
+}
+[data-theme='fall'] :is([data-tone='workout'], .workout-card) {
+  --_context-strong-image: var(--fall-gradient-workout);
+  --_context-surface-image: var(--fall-gradient-workout-body);
+  --_context-on-strong: var(--color-on-canvas);
+}
+[data-theme='fall'] :is([data-tone='library'], .template-workout) {
+  --_context-strong-image: var(--fall-gradient-library);
+  --_context-surface-image: var(--fall-gradient-library-body);
+  --_context-on-strong: var(--color-on-canvas);
+}
+[data-theme='fall'] :is([data-tone='selection'], .color-context--selected) {
+  --_context-strong-image: var(--fall-gradient-selection);
+  --_context-on-strong: var(--color-on-canvas);
+}
+[data-theme='fall'] .color-context--selected {
+  background-image: var(--fall-gradient-selection);
+  --_context-content: var(--color-on-canvas);
+  --_context-content-muted: var(--color-on-canvas);
+}
+[data-theme='fall'] :is(.drawer-panel, .color-context--opaque) { --_context-surface-image: none; }
+
+[data-theme='fall'] .page-hero-surface {
+  --_context-content: var(--color-on-surface);
+  --_context-content-muted: var(--color-content-secondary);
+}
+
+[data-theme='fall'] :is(.color-context, .global-header, .drawer-panel, .plan-workout-card, .page-hero-surface) {
+  --_context-on-strong: var(--color-on-canvas);
+}

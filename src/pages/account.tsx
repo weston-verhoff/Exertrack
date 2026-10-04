@@ -111,6 +111,7 @@ const THEME_OPTIONS: Array<{
   { value: 'neon', label: 'Neon' },
   { value: 'monokai', label: 'Monokai' },
   { value: 'sunset', label: 'Sunset' },
+  { value: 'fall', label: 'Fall' },
 ];
 
 const CHART_GRANULARITY_OPTIONS: Array<{

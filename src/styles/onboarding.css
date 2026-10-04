@@ -59,3 +59,5 @@
   .onboarding-theme-preview { height: 58px; }
   .onboarding-actions--three .workout-button:last-child { flex: 1 1 100%; }
 }
+
+.onboarding-theme-preview--fall { background: linear-gradient(135deg, hsl(8 87% 61%), hsl(33 100% 55%) 33%, hsl(48 90% 58%) 66%, hsl(86 59% 41%)); }

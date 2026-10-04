@@ -10,6 +10,7 @@ import './styles/theme-baseball.css';
 import './styles/theme-neon.css';
 import './styles/theme-monokai.css';
 import './styles/theme-sunset.css';
+import './styles/theme-fall.css';
 import './styles/color-context.css';
 import './styles/page-hero.css';
 import { bootstrapTheme } from './utils/theme';

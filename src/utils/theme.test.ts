@@ -73,3 +73,14 @@ describe('theme utilities', () => {
     expect(window.localStorage.getItem('iwyn-theme')).toBe('baseball');
   });
 });
+
+describe('Fall theme', () => {
+  it('recognizes, persists, and restores Fall', () => {
+    expect(isAppTheme('fall')).toBe(true);
+    applyTheme('fall');
+    expect(window.localStorage.getItem('iwyn-theme')).toBe('fall');
+    delete document.documentElement.dataset.theme;
+    bootstrapTheme();
+    expect(document.documentElement.dataset.theme).toBe('fall');
+  });
+});

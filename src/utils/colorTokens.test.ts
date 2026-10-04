@@ -18,6 +18,7 @@ const themeFiles = [
   'theme-neon.css',
   'theme-monokai.css',
   'theme-sunset.css',
+  'theme-fall.css',
 ];
 
 const readStyle = (filename: string) =>
@@ -520,5 +521,34 @@ describe('Sunset functional tone recipes', () => {
   it('does not define functional recipes in other themes', () => {
     ['theme-default.css', 'theme-dark.css', 'theme-up-and-up.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css']
       .forEach((themeFile) => expect(readStyle(themeFile)).not.toContain('[data-tone='));
+  });
+});
+
+describe('Fall foliage gradients', () => {
+  const declarations = getDeclarations(readStyle('theme-fall.css')).declarations;
+  const gradientTokens = ['--fall-gradient-workout', '--fall-gradient-library', '--fall-gradient-selection', '--fall-gradient-workout-body', '--fall-gradient-library-body', '--image-surface-canvas', '--image-surface-hero'];
+  it.each(gradientTokens)('keeps its intended text readable throughout %s', token => {
+    const value = resolveValue(token, declarations);
+    expect(value).toContain('linear-gradient(135deg,');
+    const colors = value.match(/#[0-9a-f]{6}/gi) ?? [];
+    expect(colors.length).toBeGreaterThanOrEqual(2);
+    const textToken = (token.endsWith('-body') || token === '--image-surface-hero') ?  '--color-on-surface' : '--color-on-canvas';
+    const foreground = parseColor(resolveValue(textToken, declarations), [0, 0, 0]);
+    for (let i = 0; i < colors.length - 1; i++) {
+      const first = parseColor(colors[i], [0, 0, 0]);
+      const second = parseColor(colors[i + 1], [0, 0, 0]);
+      for (let step = 0; step <= 20; step++) {
+        const rgb = first.map((channel, index) => channel + (second[index] - channel) * step / 20) as RgbColor;
+        const light = Math.max(luminance(foreground), luminance(rgb));
+        const dark = Math.min(luminance(foreground), luminance(rgb));
+        expect((light + 0.05) / (dark + 0.05)).toBeGreaterThanOrEqual(4.5);
+      }
+    }
+  });
+  it('uses two adjacent colors for accents and all four for the canopy', () => {
+    gradientTokens.slice(0, 5).forEach(token => {
+      expect(resolveValue(token, declarations).match(/#[0-9a-f]{6}/gi)).toHaveLength(2);
+    });
+    expect(resolveValue('--image-surface-canvas', declarations).match(/#[0-9a-f]{6}/gi)).toHaveLength(4);
   });
 });

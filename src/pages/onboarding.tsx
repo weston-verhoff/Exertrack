@@ -22,6 +22,7 @@ const THEMES: Array<{ value: AppTheme; label: string }> = [
   { value: 'neon', label: 'Neon' },
   { value: 'monokai', label: 'Monokai' },
   { value: 'sunset', label: 'Sunset' },
+  { value: 'fall', label: 'Fall' },
 ];
 
 const WEEKDAYS: Array<{ value: Weekday; label: string }> = [
