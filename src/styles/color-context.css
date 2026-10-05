@@ -240,6 +240,12 @@
   --_context-on-strong: var(--color-on-accent-secondary);
 }
 
+[data-theme='neon'] .plan-primary-action {
+  --_context-strong: var(--color-interactive-secondary);
+  --_context-strong-hover: var(--color-interactive-secondary-hover);
+  --_context-on-strong: var(--color-on-interactive-secondary);
+}
+
 .exercise-chip {
   --_context-surface: var(--color-surface-sunken);
   --_context-surface-raised: var(--color-surface-raised);
