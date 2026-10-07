@@ -22,6 +22,7 @@ interface Props {
 	onStatusChange: (id: string, status: string) => void;
   onWorkoutUpdated: (workout: Workout) => void;
   tone?: ComponentTone;
+  onDetails?: () => void;
 }
 
 function summarizeSets(sets: WorkoutSetType[], isCardio: boolean) {
@@ -69,6 +70,7 @@ export function WorkoutCard({
 	onStatusChange,
 	onWorkoutUpdated,
   tone,
+  onDetails,
 }: Props) {
   const navigate = useNavigate();
   const formattedDate = formatDateCompact(workout.date);
@@ -112,11 +114,11 @@ const openDetailsDrawer = () => {
 			<WorkoutButton
 				label="Details"
 				variant="secondary"
-				onClick={() => navigate(`/workout/${workout.id}`)}
+				onClick={onDetails ?? (() => navigate(`/workout/${workout.id}`))}
 			/>
 			)}
 			{showsDetailsDrawer && (
-				<WorkoutButton label="Details" variant="secondary" onClick={openDetailsDrawer} />
+				<WorkoutButton label="Details" variant="secondary" onClick={onDetails ?? openDetailsDrawer} />
 			)}
 			<WorkoutButton
 				label="Delete"

@@ -1,14 +1,13 @@
 .workout-button {
   --_button-surface: var(--_context-strong);
   --_button-surface-hover: var(--_context-strong-hover);
-  --_button-surface-pressed: var(--_context-strong-hover);
+  --_button-surface-pressed: var(--_context-strong-pressed);
   --_button-content: var(--_context-on-strong);
   --_button-border: var(--color-transparent);
   min-height: 44px;
   border: 1px solid var(--_button-border);
   border-radius: 8px;
   background-color: var(--_button-surface);
-  background-image: var(--_button-image, none);
   color: var(--_button-content);
   box-shadow: inset -2px -2px var(--shadow-button-inset);
   display: inline-flex;
@@ -41,7 +40,7 @@
 .workout-button--primary.workout-button--positive {
   --_button-surface: var(--color-interactive-positive);
   --_button-surface-hover: var(--color-interactive-positive-hover);
-  --_button-surface-pressed: var(--color-interactive-positive-hover);
+  --_button-surface-pressed: var(--color-interactive-positive-pressed);
   --_button-content: var(--color-on-interactive-positive);
 }
 
@@ -63,7 +62,7 @@
 .workout-button--primary.workout-button--danger {
   --_button-surface: var(--color-interactive-danger);
   --_button-surface-hover: var(--color-interactive-danger-hover);
-  --_button-surface-pressed: var(--color-interactive-danger-hover);
+  --_button-surface-pressed: var(--color-interactive-danger-pressed);
   --_button-content: var(--color-on-interactive-danger);
 }
 
@@ -114,6 +113,5 @@
   .workout-button { transition-duration: 0.01ms; }
 }
 
-.workout-button--primary:not(.workout-button--positive):not(.workout-button--danger) {
-  --_button-image: var(--_context-strong-image, none);
-}
+
+.workout-button:focus-visible { outline: 3px solid var(--color-border-focus); outline-offset: 3px; }

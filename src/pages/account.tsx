@@ -1,3 +1,5 @@
+import { themeChartPlugin } from '../utils/themeChartPlugin';
+import { THEME_OPTIONS as GENERATED_THEME_OPTIONS } from '../themes/registry.generated';
 import React, { FormEvent, PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   CategoryScale,
@@ -100,19 +102,7 @@ const WEIGHT_OPTIONS: Array<{
   { value: 'metric', label: 'Kilograms (kg) & Grams (g)' },
 ];
 
-const THEME_OPTIONS: Array<{
-  value: AccountSettings['theme'];
-  label: string;
-}> = [
-  { value: 'default', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'up-and-up', label: 'Up & Up' },
-  { value: 'baseball', label: 'Baseball' },
-  { value: 'neon', label: 'Neon' },
-  { value: 'monokai', label: 'Monokai' },
-  { value: 'sunset', label: 'Sunset' },
-  { value: 'fall', label: 'Fall' },
-];
+const THEME_OPTIONS = GENERATED_THEME_OPTIONS;
 
 const CHART_GRANULARITY_OPTIONS: Array<{
   value: ChartGranularity;
@@ -305,7 +295,7 @@ export default function AccountPage() {
           data: setCounts,
           borderColor: lineColor,
           backgroundColor: fillColor,
-          fill: true,
+          fill: false,
           tension: 0.3,
           order: 2,
         },
@@ -598,7 +588,7 @@ export default function AccountPage() {
               {loading ? (
                 <ChartSkeleton />
               ) : workouts.length ? (
-                <Line
+                <Line plugins={[themeChartPlugin]}
                   data={chartData}
                   options={{
                     responsive: true,

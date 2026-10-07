@@ -1,6 +1,6 @@
-export const APP_THEMES = ['default', 'dark', 'up-and-up', 'baseball', 'neon', 'monokai', 'sunset', 'fall'] as const;
-
-export type AppTheme = (typeof APP_THEMES)[number];
+import { APP_THEMES, AppTheme } from '../themes/registry.generated';
+export { APP_THEMES, THEME_OPTIONS } from '../themes/registry.generated';
+export type { AppTheme } from '../themes/registry.generated';
 
 const THEME_STORAGE_KEY = 'iwyn-theme';
 const THEME_TRANSITION_DURATION = 420;

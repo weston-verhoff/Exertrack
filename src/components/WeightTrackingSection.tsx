@@ -1,3 +1,4 @@
+import { themeChartPlugin } from '../utils/themeChartPlugin';
 import { FormEvent, useEffect, useMemo, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { Download } from 'lucide-react';
@@ -161,7 +162,7 @@ export function WeightTrackingSection({
           })),
           borderColor: lineColor,
           backgroundColor: fillColor,
-          fill: true,
+          fill: false,
           tension: 0.3,
           order: 2,
         },
@@ -314,7 +315,7 @@ export function WeightTrackingSection({
         ) : loadError ? (
           <p>{loadError}</p>
         ) : entries.length ? (
-          <Line
+          <Line plugins={[themeChartPlugin]}
             data={chartData}
             options={{
               responsive: true,

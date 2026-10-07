@@ -52,7 +52,7 @@ describe('WorkoutButton hierarchy', () => {
 
     expect(base).toContain('--_button-surface: var(--_context-strong)');
     expect(base).toContain('--_button-surface-hover: var(--_context-strong-hover)');
-    expect(base).toContain('--_button-surface-pressed: var(--_context-strong-hover)');
+    expect(base).toContain('--_button-surface-pressed: var(--_context-strong-pressed)');
     expect(base).toContain('--_button-content: var(--_context-on-strong)');
   });
 

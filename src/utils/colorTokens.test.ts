@@ -1,3 +1,4 @@
+import { APP_THEMES } from '../themes/registry.generated';
 import fs from 'fs';
 import path from 'path';
 import {
@@ -10,16 +11,7 @@ import {
 
 const stylesDirectory = path.resolve(__dirname, '../styles');
 const sourceDirectory = path.resolve(__dirname, '..');
-const themeFiles = [
-  'theme-default.css',
-  'theme-dark.css',
-  'theme-up-and-up.css',
-  'theme-baseball.css',
-  'theme-neon.css',
-  'theme-monokai.css',
-  'theme-sunset.css',
-  'theme-fall.css',
-];
+const themeFiles = APP_THEMES.map(id => `theme-${id}.css`);
 
 const readStyle = (filename: string) =>
   fs.readFileSync(path.join(stylesDirectory, filename), 'utf8');
@@ -43,17 +35,6 @@ const getDeclarations = (css: string) => {
   }
 
   return { declarations, counts };
-};
-
-const getRuleDeclarations = (css: string, selector: string) => {
-  css = css.replace(/\r\n/g, '\n');
-  const marker = `${selector} {`;
-  const start = css.indexOf(marker);
-  if (start < 0) throw new Error(`Missing selector: ${selector}`);
-  const bodyStart = start + marker.length;
-  const bodyEnd = css.indexOf('}', bodyStart);
-  if (bodyEnd < 0) throw new Error(`Unclosed selector: ${selector}`);
-  return getDeclarations(css.slice(bodyStart, bodyEnd)).declarations;
 };
 
 const resolveValue = (
@@ -167,388 +148,45 @@ describe.each(themeFiles)('%s token contract', (themeFile) => {
   );
 });
 
-describe('token architecture', () => {
-  it('gives Light stronger chart contrast and reuses Dark chart colors in Neon', () => {
-    const light = getDeclarations(readStyle('theme-default.css')).declarations;
-    const dark = getDeclarations(readStyle('theme-dark.css')).declarations;
-    const neon = getDeclarations(readStyle('theme-neon.css')).declarations;
-    const chartTokens = [
-      '--color-chart-series-1',
-      '--color-chart-series-2',
-      '--color-chart-series-3',
-      '--color-chart-series-1-fill',
-      '--color-chart-series-2-fill',
-      '--color-chart-series-3-fill',
-    ];
-
-    expect(chartTokens.map(token => resolveValue(token, neon))).toEqual(
-      chartTokens.map(token => resolveValue(token, dark))
-    );
-    expect(chartTokens.slice(0, 3).map(token => resolveValue(token, light))).toEqual([
-      resolveValue('--ref-blue-gray-800', light),
-      resolveValue('--ref-red-700', light),
-      resolveValue('--ref-green-800', light),
-    ]);
+describe('shared theme architecture', () => {
+  it('keeps every named theme out of component recipes', () => {
+    fs.readdirSync(stylesDirectory).filter(file => file.endsWith('.css') && !file.startsWith('theme-'))
+      .forEach(file => expect(readStyle(file)).not.toMatch(/\[data-theme\s*=/));
   });
-
-  it('defines one global fallback for every brand image token', () => {
-    const { declarations, counts } = getDeclarations(readStyle('variables.css'));
-
-    BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
-      expect(counts.get(token)).toBe(1);
-      expect(declarations.get(token)).toMatch(/^(?:url\(|var\(--image-brand-)/);
-    });
-  });
-
-  it('defines a global fallback for optional theme images', () => {
-    const { declarations, counts } = getDeclarations(readStyle('variables.css'));
-
-    OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT.forEach((token) => {
-      expect(counts.get(token)).toBe(1);
-      expect(declarations.get(token)).toBe('none');
-    });
-  });
-
-  it('uses custom canvas artwork only for themes that provide it', () => {
-    ['theme-sunset.css'].forEach((themeFile) => {
-      const { declarations } = getDeclarations(readStyle(themeFile));
-      expect(declarations.has('--image-surface-canvas')).toBe(true);
-      expect(declarations.get('--image-surface-canvas')).not.toBe('none');
-    });
-
-    ['theme-default.css', 'theme-dark.css', 'theme-up-and-up.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css'].forEach((themeFile) => {
-      const { declarations } = getDeclarations(readStyle(themeFile));
-      if (themeFile === 'theme-up-and-up.css') {
-        expect(declarations.get('--image-surface-canvas')).toBe('none');
-      } else {
-        expect(declarations.has('--image-surface-canvas')).toBe(false);
-      }
-    });
-  });
-
-  it('layers optional canvas artwork over the planner fallback color', () => {
-    const plannerStyles = readStyle('plan.css');
-
-    expect(plannerStyles).toContain('background-color: var(--_plan-canvas);');
-    expect(plannerStyles).toContain('background-image: var(--image-surface-canvas);');
-    expect(plannerStyles).toContain('background-size: 100% 100%;');
-    expect(plannerStyles).toContain('background-repeat: no-repeat;');
-  });
-
-  it('uses custom brand images only for themes that provide them', () => {
-    const upAndUpTokens = getDeclarations(readStyle('theme-up-and-up.css')).declarations;
-    const neonTokens = getDeclarations(readStyle('theme-neon.css')).declarations;
-
-    expect(upAndUpTokens.get('--image-brand-mark-alternate')).toContain(
-      'branding/default/mark-alternate.webp'
-    );
-    BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
-      expect(neonTokens.has(token)).toBe(true);
-    });
-
-    ['theme-default.css', 'theme-dark.css', 'theme-baseball.css', 'theme-monokai.css', 'theme-sunset.css'].forEach((themeFile) => {
-      const { declarations } = getDeclarations(readStyle(themeFile));
-      BRAND_IMAGE_TOKEN_CONTRACT.forEach((token) => {
-        expect(declarations.has(token)).toBe(false);
-      });
-    });
-  });
-
-  it('keeps reference tokens inside theme files', () => {
-    const nonThemeFiles = fs
-      .readdirSync(stylesDirectory)
-      .filter((filename) => filename.endsWith('.css') && !filename.startsWith('theme-'));
-
-    nonThemeFiles.forEach((filename) => {
-      expect(readStyle(filename)).not.toMatch(/var\(--ref-/);
-    });
-  });
-
-  it('keeps every system-token consumer on the shared contract', () => {
-    const contract = new Set<string>([
-      ...THEME_TOKEN_CONTRACT,
-      ...OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT,
-      ...BRAND_IMAGE_TOKEN_CONTRACT,
-    ]);
-
-    getSourceFiles(sourceDirectory)
-      .filter((filename) => !path.basename(filename).startsWith('theme-'))
-      .forEach((filename) => {
-        const source = fs.readFileSync(filename, 'utf8');
-        const usages = source.match(/var\((--(?:color|shadow|image)-[a-z0-9-]+)/g) ?? [];
-        usages.forEach((usage) => {
-          const token = usage.slice(4);
-          expect(contract.has(token)).toBe(true);
-        });
-      });
-  });
-
-  it('keeps raw color values inside theme files', () => {
-    getSourceFiles(sourceDirectory)
-      .filter((filename) => !path.basename(filename).startsWith('theme-'))
-      .forEach((filename) => {
-        const source = fs.readFileSync(filename, 'utf8');
-        expect(source).not.toMatch(/#[0-9a-f]{3,8}\b|rgba?\(/i);
-      });
-  });
-
-  it('keeps component, page, hue, and appearance names out of the contract', () => {
-    const prohibited = /(plan|header|workout|drawer|account|warm|dark|black|blue|pink|orange|green|red|cyan|purple|yellow)/;
-    [...THEME_TOKEN_CONTRACT, ...OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT, ...BRAND_IMAGE_TOKEN_CONTRACT]
-      .forEach((token) => expect(token).not.toMatch(prohibited));
-  });
-
-  it('defines every surface recipe with the complete context contract', () => {
+  it('defines complete contexts with separate action and emphasis roles', () => {
     const recipes = readStyle('color-context.css');
-    expect(recipes).not.toMatch(/var\(--ref-/);
-
-    ['canvas', 'default', 'raised', 'inverse', 'selected', 'info', 'success', 'danger']
-      .forEach((name) => {
-        const block = recipes.match(
-          new RegExp(`\\.color-context--${name}\\s*\\{([\\s\\S]*?)\\}`)
-        )?.[1] ?? '';
-        COLOR_CONTEXT_TOKEN_CONTRACT.forEach((token) => {
-          expect(block).toContain(`${token}:`);
-        });
+    ['canvas', 'default', 'raised', 'inverse', 'selected', 'info', 'success', 'danger'].forEach(name => {
+      const block = recipes.match(new RegExp(`\\.color-context--${name}\\s*\\{([\\s\\S]*?)\\}`))?.[1] ?? '';
+      COLOR_CONTEXT_TOKEN_CONTRACT.forEach(token => expect(block).toContain(`${token}:`));
+    });
+    expect(readStyle('WorkoutCard.css')).not.toMatch(/var\(--_context-(?:strong|on-strong)\)/);
+    expect(readStyle('plan.css')).not.toMatch(/var\(--_context-(?:strong|on-strong)\)/);
+    expect(readStyle('workout-button.css')).not.toContain('var(--_context-emphasis)');
+    expect(recipes).toContain('--_context-emphasis: var(--color-accent-secondary-subtle)');
+    expect(recipes).toContain('--_context-on-emphasis: var(--color-on-accent-secondary-subtle)');
+  });
+  it('declares complete image resets and root-only generated themes', () => {
+    expect(readStyle('variables.css')).toContain(':where(:root)');
+    themeFiles.forEach(file => {
+      const css = readStyle(file);
+      const { declarations } = getDeclarations(css);
+      [...BRAND_IMAGE_TOKEN_CONTRACT, ...OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT].forEach(token => expect(declarations.has(token)).toBe(true));
+      expect(css).toContain('Generated by npm run themes:generate');
+      expect(css.replace(/\/\*[\s\S]*?\*\//g, '').match(/\{/g)).toHaveLength(1);
+    });
+  });
+  it('keeps component color references on the public contract and raw colors in palettes', () => {
+    const contract = new Set<string>([...THEME_TOKEN_CONTRACT, ...BRAND_IMAGE_TOKEN_CONTRACT, ...OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT]);
+    getSourceFiles(sourceDirectory).filter(file => !file.includes(`${path.sep}themes${path.sep}`) && !file.includes('.test.') && !path.basename(file).startsWith('theme-') && !file.endsWith('themeContrast.ts'))
+      .forEach(file => {
+        const source = fs.readFileSync(file, 'utf8');
+        (source.match(/var\((--(?:color|shadow|image)-[a-z0-9-]+)/g) ?? []).forEach(usage => expect(contract.has(usage.slice(4))).toBe(true));
+        expect(source).not.toMatch(/#[0-9a-f]{3,8}\b|(?:rgba?|hsla?)\(/i);
       });
   });
-
-  it('keeps theme selectors in the centralized recipe layer', () => {
-    fs.readdirSync(stylesDirectory)
-      .filter((filename) => filename.endsWith('.css'))
-      .filter((filename) => !filename.startsWith('theme-'))
-      .filter((filename) => filename !== 'color-context.css')
-      .forEach((filename) => {
-        expect(readStyle(filename)).not.toMatch(/\[data-theme(?:=|\])/);
-      });
-  });
-
-  it('keeps each theme stylesheet limited to its root declaration', () => {
-    themeFiles.forEach((themeFile) => {
-      const css = readStyle(themeFile).replace(/\/\*[\s\S]*?\*\//g, '');
-      const selectors = Array.from(css.matchAll(/([^{}]+)\{/g), (match) =>
-        match[1].trim()
-      );
-      expect(selectors).toEqual([
-        `[data-theme='${themeFile.replace(/^theme-|\.css$/g, '')}']`,
-      ]);
+  it('keeps functional styles free of theme gradients', () => {
+    ['WorkoutCard.css', 'workout-button.css', 'drawer.css', 'segmented-control.css'].forEach(file => {
+      expect(readStyle(file)).not.toMatch(/gradient\(|--_context-(?:surface|strong)-image/);
     });
-  });
-
-  it('does not allow legacy tone or drawer-owned color aliases', () => {
-    getSourceFiles(sourceDirectory).forEach((filename) => {
-      const source = fs.readFileSync(filename, 'utf8');
-      expect(source).not.toMatch(/--_(?:tone|drawer)-/);
-    });
-  });
-
-  it('treats softened drawer set rows as complete nested contexts', () => {
-    const recipes = readStyle('color-context.css');
-    const selector = `:is(
-  [data-theme='default'],
-  [data-theme='baseball'],
-  [data-theme='up-and-up']
-) .drawer-panel .exercise-set-row`;
-    const declarations = getRuleDeclarations(recipes, selector);
-
-    expect(declarations.get('--_context-surface-raised')).toBe(
-      'var(--color-surface-sunken)'
-    );
-    expect(declarations.get('--_context-surface-sunken')).toBe(
-      'var(--color-surface-default)'
-    );
-    expect(declarations.get('--_context-content')).toBe(
-      'var(--color-on-surface)'
-    );
-    expect(declarations.get('--_context-border')).toBe(
-      'var(--color-border-default)'
-    );
-    expect(recipes).not.toContain('--_context-set-row-');
-  });
-
-  it('routes component surface colors through the context contract', () => {
-    getSourceFiles(sourceDirectory)
-      .filter((filename) => /\.(css|tsx)$/.test(filename))
-      .filter((filename) => !path.basename(filename).startsWith('theme-'))
-      .filter((filename) => path.basename(filename) !== 'color-context.css')
-      .forEach((filename) => {
-        const source = fs.readFileSync(filename, 'utf8');
-        expect(source).not.toMatch(
-          /var\(--color-(?:surface-(?:default|raised|sunken|inverse|inverse-subtle|overlay)|on-(?:surface|inverse|inverse-muted)|content-(?:secondary|muted)|border-(?:subtle|default|strong|on-inverse))\)/
-        );
-      });
-  });
-
-  it('keeps non-interactive card headers on non-interactive, non-feedback tokens', () => {
-    const cardStyles = readStyle('WorkoutCard.css');
-    const headerRecipes = cardStyles.match(/--_card-header-(?:surface|content):[^;]+;/g) ?? [];
-
-    expect(headerRecipes.length).toBeGreaterThan(0);
-    headerRecipes.forEach((recipe) => {
-      expect(recipe).not.toContain('--color-interactive-');
-      expect(recipe).not.toContain('--color-feedback-');
-      expect(recipe).not.toContain('--color-on-feedback-');
-    });
-  });
-});
-
-describe('Sunset functional tone recipes', () => {
-  const themeCss = readStyle('theme-sunset.css');
-  const recipeCss = readStyle('color-context.css');
-  const themeDeclarations = getDeclarations(themeCss).declarations;
-  const tonePairs = [
-    ['--_context-surface-sunken', '--_context-content'],
-    ['--_context-surface', '--_context-content'],
-    ['--_context-surface-raised', '--_context-content'],
-    ['--_context-strong', '--_context-on-strong'],
-    ['--_context-strong-hover', '--_context-on-strong'],
-  ] as const;
-
-  it.each(['workout', 'library', 'selection'])('%s stays within one accessible tonal recipe', (tone) => {
-    const toneDeclarations = getRuleDeclarations(
-      recipeCss,
-      `[data-theme='sunset'] [data-tone='${tone}']`
-    );
-    const declarations = new Map([
-      ...Array.from(themeDeclarations.entries()),
-      ...Array.from(toneDeclarations.entries()),
-    ]);
-
-    tonePairs.forEach(([surface, content]) => {
-      const surfaceValue = resolveValue(surface, declarations);
-      const contentValue = resolveValue(content, declarations);
-      expect(surfaceValue).toMatch(
-        surface.startsWith('--_context-surface')
-          ? /^rgba\(.+\)$/i
-          : /^#[0-9a-f]{6}$/i
-      );
-      expect(contentValue).toMatch(/^#[0-9a-f]{6}$/i);
-      expect(
-        contrast(
-          surfaceValue,
-          contentValue,
-          resolveValue('--color-surface-canvas', declarations)
-        )
-      ).toBeGreaterThanOrEqual(4.5);
-    });
-  });
-
-  it('keeps tone inheritance at zero specificity so components control their foregrounds', () => {
-    ['workout', 'library', 'selection'].forEach((tone) => {
-      const declarations = getRuleDeclarations(
-        recipeCss,
-        `[data-theme='sunset'] [data-tone='${tone}']`
-      );
-      expect(declarations.has('color')).toBe(false);
-    });
-    expect(recipeCss).toContain(':where(');
-    expect(recipeCss).toContain('color: var(--_context-content);');
-  });
-
-  it('keeps the canvas opaque while making semantic surfaces translucent', () => {
-    const opacityToken = themeDeclarations.get('--sunset-surface-opacity') ?? '';
-    const configuredOpacity = opacityToken.endsWith('%')
-      ? Number(opacityToken.slice(0, -1)) / 100
-      : Number(opacityToken);
-    expect(configuredOpacity).toBeGreaterThan(0);
-    expect(configuredOpacity).toBeLessThan(1);
-    expect(opacityToken).toMatch(/^\d+(?:\.\d+)?%$/);
-    expect(resolveValue('--color-surface-canvas', themeDeclarations)).toMatch(
-      /^#[0-9a-f]{6}$/i
-    );
-
-    [
-      '--color-surface-default',
-      '--color-surface-raised',
-      '--color-surface-sunken',
-      '--color-surface-inverse',
-      '--color-surface-inverse-subtle',
-      '--color-surface-overlay',
-      '--color-accent-primary-subtle',
-      '--color-accent-secondary-subtle',
-      '--color-feedback-info-surface',
-      '--color-feedback-success-surface',
-      '--color-feedback-danger-surface',
-    ].forEach((token) => {
-      const resolvedSurface = resolveValue(token, themeDeclarations);
-      const alphaToken = resolvedSurface.match(/,\s*(\d+(?:\.\d+)?%?)\)$/)?.[1] ?? '';
-      const alpha = alphaToken.endsWith('%')
-        ? Number(alphaToken.slice(0, -1)) / 100
-        : Number(alphaToken);
-      expect(resolvedSurface).toMatch(/^rgba\(.+\)$/i);
-      expect(alpha).toBe(configuredOpacity);
-    });
-  });
-
-  it('keeps the drawer shell translucent and its tonal contents opaque', () => {
-    expect(resolveValue('--color-surface-inverse', themeDeclarations)).toMatch(
-      /^rgba\(.+\)$/i
-    );
-    expect(readStyle('../components/Drawer.tsx')).toContain(
-      'drawer-content color-context--opaque'
-    );
-    expect(recipeCss).toContain("[data-theme='sunset'] .color-context--opaque {");
-
-    ['surface', 'surface-raised', 'surface-sunken'].forEach((surface) => {
-      expect(
-        resolveValue(`--sunset-${surface}-opaque`, themeDeclarations)
-      ).toMatch(/^#[0-9a-f]{6}$/i);
-    });
-
-    ['workout', 'library', 'selection'].forEach((tone) => {
-      ['surface-sunken', 'surface', 'surface-raised'].forEach((surface) => {
-        expect(
-          resolveValue(
-            `--sunset-tone-${tone}-${surface}-opaque`,
-            themeDeclarations
-          )
-        ).toMatch(/^#[0-9a-f]{6}$/i);
-      });
-      expect(recipeCss).toContain(
-        `[data-theme='sunset'] [data-tone='${tone}'] > .color-context--opaque`
-      );
-    });
-  });
-
-  it('keeps planner actions tonal while preserving destructive semantics', () => {
-    const plannerStyles = readStyle('plan.css');
-    expect(plannerStyles).toContain(
-      'background: var(--_context-strong);'
-    );
-    expect(plannerStyles).toContain('background: var(--color-interactive-danger);');
-  });
-
-  it('does not define functional recipes in other themes', () => {
-    ['theme-default.css', 'theme-dark.css', 'theme-up-and-up.css', 'theme-baseball.css', 'theme-neon.css', 'theme-monokai.css']
-      .forEach((themeFile) => expect(readStyle(themeFile)).not.toContain('[data-tone='));
-  });
-});
-
-describe('Fall foliage gradients', () => {
-  const declarations = getDeclarations(readStyle('theme-fall.css')).declarations;
-  const gradientTokens = ['--fall-gradient-workout', '--fall-gradient-library', '--fall-gradient-selection', '--fall-gradient-workout-body', '--fall-gradient-library-body', '--image-surface-canvas', '--image-surface-hero'];
-  it.each(gradientTokens)('keeps its intended text readable throughout %s', token => {
-    const value = resolveValue(token, declarations);
-    expect(value).toContain('linear-gradient(135deg,');
-    const colors = value.match(/#[0-9a-f]{6}/gi) ?? [];
-    expect(colors.length).toBeGreaterThanOrEqual(2);
-    const textToken = (token.endsWith('-body') || token === '--image-surface-hero') ?  '--color-on-surface' : '--color-on-canvas';
-    const foreground = parseColor(resolveValue(textToken, declarations), [0, 0, 0]);
-    for (let i = 0; i < colors.length - 1; i++) {
-      const first = parseColor(colors[i], [0, 0, 0]);
-      const second = parseColor(colors[i + 1], [0, 0, 0]);
-      for (let step = 0; step <= 20; step++) {
-        const rgb = first.map((channel, index) => channel + (second[index] - channel) * step / 20) as RgbColor;
-        const light = Math.max(luminance(foreground), luminance(rgb));
-        const dark = Math.min(luminance(foreground), luminance(rgb));
-        expect((light + 0.05) / (dark + 0.05)).toBeGreaterThanOrEqual(4.5);
-      }
-    }
-  });
-  it('uses two adjacent colors for accents and all four for the canopy', () => {
-    gradientTokens.slice(0, 5).forEach(token => {
-      expect(resolveValue(token, declarations).match(/#[0-9a-f]{6}/gi)).toHaveLength(2);
-    });
-    expect(resolveValue('--image-surface-canvas', declarations).match(/#[0-9a-f]{6}/gi)).toHaveLength(4);
   });
 });

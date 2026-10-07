@@ -27,11 +27,12 @@ const WorkoutRecap = lazy(() => import('./pages/workout'));
 const Login = lazy(() => import('./pages/login'));
 const Onboarding = lazy(() => import('./pages/onboarding'));
 const ThemeSandbox = lazy(() => import('./pages/theme-sandbox'));
+const ThemeSandboxPreview = lazy(() => import('./pages/theme-sandbox-preview'));
 
 function RouteAwareGlobalHeader() {
   const { pathname } = useLocation();
 
-  if (pathname === '/onboarding') return null;
+  if (pathname === '/onboarding' || pathname === '/theme-sandbox/preview') return null;
 
   return <GlobalHeader variant={getGlobalHeaderVariant(pathname)} />;
 }
@@ -45,7 +46,7 @@ export function LegacyRunnerRedirect() {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
+      <AuthProvider syncTheme={window.location.pathname !== '/theme-sandbox/preview'}>
         <SystemAlertProvider>
           <RouteAwareGlobalHeader />
 
@@ -53,6 +54,9 @@ function App() {
             <Suspense fallback={<div className="page-loading">Loading...</div>}>
               <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/theme-sandbox/preview" element={
+                <ProtectedRoute><ThemeSandboxRoute><ThemeSandboxPreview /></ThemeSandboxRoute></ProtectedRoute>
+              } />
               <Route path="/theme-sandbox" element={
                 <ProtectedRoute><ThemeSandboxRoute><ThemeSandbox /></ThemeSandboxRoute></ProtectedRoute>
               } />

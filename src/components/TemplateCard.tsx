@@ -45,6 +45,8 @@ interface Props {
   moveDownDisabled?: boolean;
   onMoveUp?: () => void;
   onMoveDown?: () => void;
+  onImport?: () => void;
+  onEdit?: () => void;
 }
 
 export function TemplateCard({
@@ -64,6 +66,8 @@ export function TemplateCard({
   moveDownDisabled = false,
   onMoveUp,
   onMoveDown,
+  onImport,
+  onEdit,
 }: Props) {
   const navigate = useNavigate();
   const isArchived = status === 'archived';
@@ -163,13 +167,13 @@ export function TemplateCard({
               label="Import"
               icon=""
               variant="primary"
-              onClick={() => navigate(`/plan?importTemplate=${template.id}`)}
+              onClick={onImport ?? (() => navigate(`/plan?importTemplate=${template.id}`))}
             />
             <WorkoutButton
               label="Edit"
               icon=""
               variant="secondary"
-              onClick={() => navigate(`/plan?editTemplate=${template.id}`)}
+              onClick={onEdit ?? (() => navigate(`/plan?editTemplate=${template.id}`))}
             />
             {onArchive && (
               <WorkoutButton

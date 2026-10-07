@@ -2,8 +2,8 @@
   --_card-surface: var(--_context-surface);
   --_card-content: var(--_context-content);
   --_card-border: var(--_context-border);
-  --_card-header-surface: var(--_context-strong);
-  --_card-header-content: var(--_context-on-strong);
+  --_card-header-surface: var(--_context-emphasis);
+  --_card-header-content: var(--_context-on-emphasis);
   font-family: var(--font-body);
   display: flex;
   flex-direction: column;
@@ -13,7 +13,6 @@
   overflow: hidden;
   min-height: 300px;
   background-color: var(--_card-surface);
-  background-image: var(--_context-surface-image, none);
   border: 1px solid var(--_card-border);
   color: var(--_card-content);
   box-shadow: 0 8px 18px var(--shadow-soft);
@@ -21,30 +20,29 @@
 
 .future-workout{
 	--_card-border: var(--_context-border);
-	--_card-header-surface: var(--_context-strong);
-	--_card-header-content: var(--_context-on-strong);
+	--_card-header-surface: var(--_context-emphasis);
+	--_card-header-content: var(--_context-on-emphasis);
 }
 .past-workout{
 	--_card-border: var(--_context-border);
-	--_card-header-surface: var(--_context-strong);
-	--_card-header-content: var(--_context-on-strong);
+	--_card-header-surface: var(--_context-emphasis);
+	--_card-header-content: var(--_context-on-emphasis);
 }
 .template-workout{
 	--_card-surface: var(--_context-surface);
 	--_card-content: var(--_context-content);
 	--_card-border: var(--_context-border);
-	--_card-header-surface: var(--_context-strong);
-	--_card-header-content: var(--_context-on-strong);
+	--_card-header-surface: var(--_context-emphasis);
+	--_card-header-content: var(--_context-on-emphasis);
 }
 .highlighted{
 	--_card-border: var(--_context-border);
-	--_card-header-surface: var(--_context-strong);
-	--_card-header-content: var(--_context-on-strong);
+	--_card-header-surface: var(--_context-emphasis);
+	--_card-header-content: var(--_context-on-emphasis);
 }
 
 .workout-head {
 	background-color: var(--_card-header-surface);
-  background-image: var(--_context-strong-image, none);
 	color: var(--_card-header-content);
 	border-bottom: 1px solid var(--_card-border);
 	font-weight:bold;

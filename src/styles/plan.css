@@ -32,7 +32,7 @@
   margin: 0;
   font-size: 2.2rem;
   font-family: var(--font-headline);
-  color: var(--color-on-accent-secondary-subtle)
+  color: var(--color-on-canvas)
 }
 
 .plan-title p {
@@ -67,9 +67,9 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem;
-	background: var(--_context-strong);
+	background: var(--_context-emphasis);
   border-bottom: 1px solid var(--_context-border);
-	color: var(--_context-on-strong);
+	color: var(--_context-on-emphasis);
 }
 
 .card-date {

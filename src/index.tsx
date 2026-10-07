@@ -3,19 +3,13 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import './styles/theme-default.css';
-import './styles/theme-dark.css';
-import './styles/theme-up-and-up.css';
-import './styles/theme-baseball.css';
-import './styles/theme-neon.css';
-import './styles/theme-monokai.css';
-import './styles/theme-sunset.css';
-import './styles/theme-fall.css';
+import './styles/themes.generated.css';
 import './styles/color-context.css';
 import './styles/page-hero.css';
 import { bootstrapTheme } from './utils/theme';
 
-bootstrapTheme();
+// The isolated preview initializes its own root without writing the app preference.
+if (window.location.pathname !== '/theme-sandbox/preview') bootstrapTheme();
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement

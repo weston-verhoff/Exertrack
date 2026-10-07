@@ -1,4 +1,8 @@
 export const THEME_TOKEN_CONTRACT = [
+  '--color-interactive-primary-pressed',
+  '--color-interactive-secondary-pressed',
+  '--color-interactive-positive-pressed',
+  '--color-interactive-danger-pressed',
   '--color-surface-canvas',
   '--color-surface-default',
   '--color-surface-raised',
@@ -91,6 +95,9 @@ export const OPTIONAL_THEME_IMAGE_TOKEN_CONTRACT = [
 ] as const;
 
 export const COLOR_CONTEXT_TOKEN_CONTRACT = [
+  '--_context-emphasis',
+  '--_context-on-emphasis',
+  '--_context-strong-pressed',
   '--_context-surface',
   '--_context-surface-raised',
   '--_context-surface-sunken',

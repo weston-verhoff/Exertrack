@@ -23,7 +23,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
+export function AuthProvider({ children, syncTheme = true }: { children: ReactNode; syncTheme?: boolean }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,13 +53,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
+    if (!syncTheme) return;
     const savedTheme = normalizeAppTheme(user?.user_metadata?.theme);
     if (savedTheme) {
       applyTheme(savedTheme);
     } else if (!loading && !user) {
       applyTheme('default');
     }
-  }, [loading, user]);
+  }, [loading, user, syncTheme]);
 
 	const handleSignIn = useCallback(async (email: string, password: string) => {
     const trimmedEmail = email.trim();

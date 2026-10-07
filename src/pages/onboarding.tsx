@@ -1,3 +1,4 @@
+import { THEME_OPTIONS as GENERATED_THEME_OPTIONS } from '../themes/registry.generated';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Check } from 'lucide-react';
@@ -14,16 +15,7 @@ import { supabase } from '../supabase/client';
 import { AppTheme, applyTheme } from '../utils/theme';
 import '../styles/onboarding.css';
 
-const THEMES: Array<{ value: AppTheme; label: string }> = [
-  { value: 'default', label: 'Light' },
-  { value: 'dark', label: 'Dark' },
-  { value: 'up-and-up', label: 'Up & Up' },
-  { value: 'baseball', label: 'Baseball' },
-  { value: 'neon', label: 'Neon' },
-  { value: 'monokai', label: 'Monokai' },
-  { value: 'sunset', label: 'Sunset' },
-  { value: 'fall', label: 'Fall' },
-];
+const THEMES = GENERATED_THEME_OPTIONS;
 
 const WEEKDAYS: Array<{ value: Weekday; label: string }> = [
   { value: 1, label: 'Mon' },
@@ -131,7 +123,7 @@ export default function Onboarding() {
                     onClick={() => update('theme', theme.value)}
                     type="button"
                   >
-                    <span className={`onboarding-theme-preview onboarding-theme-preview--${theme.value}`} />
+                    <span className="onboarding-theme-preview" data-theme={theme.value} aria-hidden="true" />
                     <span>{theme.label}</span>
                     {settings.theme === theme.value && <Check aria-hidden="true" size={16} />}
                   </button>

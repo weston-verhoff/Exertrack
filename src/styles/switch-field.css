@@ -50,6 +50,7 @@
 
 .toggle-field__input:checked + .toggle-field__control::after {
   transform: translateX(1.25rem);
+  background: var(--_context-on-strong);
 }
 
 .toggle-field__input:focus-visible + .toggle-field__control {

@@ -38,14 +38,7 @@
 .onboarding-theme-card { position: relative; display: grid; min-height: 44px; padding: 0.35rem; gap: 0.35rem; border: 1px solid var(--_context-border); border-radius: 10px; background: var(--_context-surface-raised); color: var(--_context-content); font: inherit; cursor: pointer; }
 .onboarding-theme-card[aria-pressed='true'] { outline: 3px solid var(--_context-border-strong); outline-offset: -2px; font-weight: 700; }
 .onboarding-theme-card > svg { position: absolute; top: 0.55rem; right: 0.55rem; padding: 0.15rem; border-radius: 50%; background: var(--_context-strong); color: var(--_context-on-strong); }
-.onboarding-theme-preview { display: block; height: 72px; border: 1px solid var(--_context-border-strong); border-radius: 8px; }
-.onboarding-theme-preview--default { background: linear-gradient(135deg, hsl(0 0% 100%) 55%, hsl(0 0% 87%) 55%); }
-.onboarding-theme-preview--dark { background: linear-gradient(135deg, hsl(0 0% 2%) 55%, hsl(0 0% 17%) 55%); }
-.onboarding-theme-preview--up-and-up { background: linear-gradient(135deg, hsl(207 76% 38%) 58%, hsl(29 91% 55%) 58%); }
-.onboarding-theme-preview--baseball { background: linear-gradient(135deg, hsl(0 0% 2%) 48%, hsl(0 0% 100%) 48% 85%, hsl(217 100% 54%) 85% 92%, hsl(348 100% 55%) 92%); }
-.onboarding-theme-preview--neon { background: linear-gradient(135deg, hsl(260 59% 15%), hsl(325 100% 62%) 55%, hsl(186 100% 50%)); }
-.onboarding-theme-preview--monokai { background: linear-gradient(135deg, hsl(75 11% 14%) 55%, hsl(337 41% 26%) 55%); }
-.onboarding-theme-preview--sunset { background: linear-gradient(135deg, hsl(298 37% 23%), hsl(12 100% 67%) 55%, hsl(43 100% 70%)); }
+.onboarding-theme-preview { background: linear-gradient(135deg, var(--color-surface-canvas) 55%, var(--color-accent-primary) 55% 78%, var(--color-accent-secondary) 78%); display: block; height: 72px; border: 1px solid var(--_context-border-strong); border-radius: 8px; }
 
 .onboarding-preferences { display: grid; gap: 0.4rem; }
 .onboarding-actions { display: flex; justify-content: flex-end; gap: 0.65rem; margin-top: 2rem; }
@@ -59,5 +52,3 @@
   .onboarding-theme-preview { height: 58px; }
   .onboarding-actions--three .workout-button:last-child { flex: 1 1 100%; }
 }
-
-.onboarding-theme-preview--fall { background: linear-gradient(135deg, hsl(8 87% 61%), hsl(33 100% 55%) 33%, hsl(48 90% 58%) 66%, hsl(86 59% 41%)); }

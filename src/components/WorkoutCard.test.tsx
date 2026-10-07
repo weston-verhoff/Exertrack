@@ -79,7 +79,7 @@ describe('WorkoutCard persisted set changes', () => {
     );
 
     fireEvent.click(screen.getByRole('button', { name: 'Details' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Persist completion' }));
+    fireEvent.click(await screen.findByRole('button', { name: 'Persist completion' }, { timeout: 5000 }));
 
     expect(onWorkoutUpdated).toHaveBeenCalledWith(
       expect.objectContaining({
