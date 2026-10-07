@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Dumbbell, Plus } from 'lucide-react';
 import { APP_THEMES, AppTheme, normalizeAppTheme } from '../utils/theme';
 import { COMPONENT_TONES } from '../utils/componentTone';
@@ -42,8 +42,10 @@ function Rating({ ratio }: { ratio: number | null }) {
 }
 
 export default function ThemeSandbox() {
-  const originalTheme = useRef(document.documentElement.dataset.theme);
-  const [theme, setTheme] = useState<AppTheme>(() => normalizeAppTheme(originalTheme.current) ?? 'default');
+  const [theme, setTheme] = useState<AppTheme>(() =>
+    normalizeAppTheme(sessionStorage.getItem('iwyn-sandbox-theme')) ??
+    normalizeAppTheme(document.documentElement.dataset.theme) ?? 'default'
+  );
   const [tokens, setTokens] = useState<Token[]>([]);
   const [query, setQuery] = useState('');
   const [foreground, setForeground] = useState('--color-on-surface');
@@ -55,13 +57,9 @@ export default function ThemeSandbox() {
   const root = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    document.documentElement.dataset.theme = theme;
+    sessionStorage.setItem('iwyn-sandbox-theme', theme);
     if (root.current) setTokens(readTokens(root.current));
   }, [theme]);
-  useEffect(() => () => {
-    if (originalTheme.current) document.documentElement.dataset.theme = originalTheme.current;
-    else delete document.documentElement.dataset.theme;
-  }, []);
 
   const colors = tokens.filter(token => token.name.startsWith('--color-'));
   const lookup = (name: string) => tokens.find(token => token.name === name)?.value ?? '';
@@ -69,7 +67,7 @@ export default function ThemeSandbox() {
   const foregrounds = colors.filter(token => /--color-on-|--color-content-|--color-chart-series-\d$/.test(token.name));
   const notify = () => setMessage('Demo action completed. No workout or account data was changed.');
 
-  return <div ref={root} className="theme-sandbox global-header-offset color-context--canvas">
+  return <div ref={root} data-theme={theme} className="theme-sandbox global-header-offset color-context--canvas">
     <header className="sandbox-intro color-context color-context--raised">
       <p>PRIVATE WORKSPACE · THEME INSPECTION</p>
       <h1>Theme sandbox</h1>
@@ -77,7 +75,7 @@ export default function ThemeSandbox() {
       <label>Preview theme <select value={theme} onChange={event => setTheme(event.target.value as AppTheme)}>
         {APP_THEMES.map(value => <option key={value} value={value}>{value}</option>)}
       </select></label>
-      <p>Previews are temporary. Your saved theme is restored when you leave.</p>
+      <p>Your preview is remembered in this tab. Your saved app theme stays unchanged.</p>
       <nav aria-label="Sandbox sections">{['Surfaces', 'Components', 'Contrast', 'Tokens'].map(label => <a key={label} href={`#sandbox-${label.toLowerCase()}`}>{label}</a>)}</nav>
     </header>
 
@@ -140,6 +138,6 @@ export default function ThemeSandbox() {
         <code>{token.name}</code><small>{token.value}</small>
       </article>)}</div>
     </section>
-    <Drawer isOpen={drawer} onClose={() => setDrawer(false)}><h2>Preview drawer</h2><p>Overlay, backdrop, close control, and opaque surface.</p><div className="auth-form"><label>Drawer input<input placeholder="Sample value" /></label></div><WorkoutButton label="Close preview" onClick={() => setDrawer(false)} /></Drawer>
+    <Drawer theme={theme} isOpen={drawer} onClose={() => setDrawer(false)}><h2>Preview drawer</h2><p>Overlay, backdrop, close control, and opaque surface.</p><div className="auth-form"><label>Drawer input<input placeholder="Sample value" /></label></div><WorkoutButton label="Close preview" onClick={() => setDrawer(false)} /></Drawer>
   </div>;
 }

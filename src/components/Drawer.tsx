@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import '../styles/drawer.css';
 import { ComponentTone } from '../utils/componentTone';
 import { X } from 'lucide-react';
+import { AppTheme } from '../utils/theme';
 
 interface DrawerProps {
   isOpen: boolean;
@@ -10,6 +11,7 @@ interface DrawerProps {
   width?: number | string;
   children: ReactNode;
   tone?: ComponentTone;
+  theme?: AppTheme;
 }
 
 export function Drawer({
@@ -18,6 +20,7 @@ export function Drawer({
   width = 420,
   children,
   tone,
+  theme,
 }: DrawerProps) {
   const [shouldRender, setShouldRender] = useState(isOpen);
 
@@ -62,7 +65,7 @@ export function Drawer({
   if (!shouldRender) return null;
 
   return createPortal(
-    <>
+    <div data-theme={theme} style={{ display: 'contents' }}>
       <div
         className="drawer-backdrop"
         onPointerDown={onClose}
@@ -80,7 +83,7 @@ export function Drawer({
         </button>
         <div className="drawer-content color-context--opaque">{children}</div>
       </aside>
-    </>,
+    </div>,
     document.body
   );
 }

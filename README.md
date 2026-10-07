@@ -8,7 +8,8 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 Visit `/theme-sandbox` or use the **Theme Sandbox** header link when signed in as
 `westonverhoff@gmail.com`. Other accounts are redirected to the dashboard. The
-page previews all eight themes without saving the selection, shows shared
+page previews all eight themes within the sandbox without changing the saved
+app theme. The preview selection is remembered for the browser tab. It shows shared
 controls and surface recipes, inventories the loaded theme tokens, and includes
 a semantic foreground/background contrast matrix. Translucent backgrounds and
 artwork require visual inspection; the contrast explorer does not guess their
