@@ -10,6 +10,7 @@ import {
 import { GlobalHeader } from './components/GlobalHeader';
 import { AuthProvider } from './context/AuthContext';
 import { ProtectedRoute } from './components/ProtectedRoute';
+import { ThemeSandboxRoute } from './components/ThemeSandboxRoute';
 import { getGlobalHeaderVariant } from './utils/header';
 import { SystemAlertProvider } from './context/SystemAlertContext';
 import { getLegacyRunnerRedirect } from './utils/routes';
@@ -25,6 +26,7 @@ const PastDetail = lazy(() => import('./pages/past_detail'));
 const WorkoutRecap = lazy(() => import('./pages/workout'));
 const Login = lazy(() => import('./pages/login'));
 const Onboarding = lazy(() => import('./pages/onboarding'));
+const ThemeSandbox = lazy(() => import('./pages/theme-sandbox'));
 
 function RouteAwareGlobalHeader() {
   const { pathname } = useLocation();
@@ -51,6 +53,9 @@ function App() {
             <Suspense fallback={<div className="page-loading">Loading...</div>}>
               <Routes>
               <Route path="/login" element={<Login />} />
+              <Route path="/theme-sandbox" element={
+                <ProtectedRoute><ThemeSandboxRoute><ThemeSandbox /></ThemeSandboxRoute></ProtectedRoute>
+              } />
               <Route
                 path="/onboarding"
                 element={

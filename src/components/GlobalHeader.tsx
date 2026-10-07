@@ -4,6 +4,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Home, Menu } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { WorkoutButton } from './WorkoutButton';
+import { canAccessThemeSandbox } from '../utils/themeSandboxAccess';
 
 export type GlobalHeaderVariant = 'default' | 'secondary';
 
@@ -30,6 +31,7 @@ export function GlobalHeader({ variant = 'default' }: GlobalHeaderProps) {
     { to: '/past', label: 'Workouts' },
     { to: '/templates', label: 'Templates' },
     { to: '/account', label: 'Account' },
+    ...(canAccessThemeSandbox(user) ? [{ to: '/theme-sandbox', label: 'Theme Sandbox' }] : []),
   ];
   const loggedOutLinks: Array<{ to: string; label: ReactNode }> = [];
 

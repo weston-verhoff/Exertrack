@@ -4,7 +4,7 @@ import { GlobalHeader } from './GlobalHeader';
 
 const mockNavigate = jest.fn();
 const mockSignOut = jest.fn();
-let mockUser: { id: string } | null = null;
+let mockUser: { id: string; email?: string } | null = null;
 
 jest.mock('react-router-dom', () => ({
   Link: ({ children, to, ...props }: PropsWithChildren<{ to: string }>) => (
@@ -19,6 +19,14 @@ jest.mock('../context/AuthContext', () => ({
 }));
 
 describe('GlobalHeader', () => {
+  it('shows the sandbox link only for the owner', () => {
+    mockUser = { id: 'owner', email: 'westonverhoff@gmail.com' };
+    const { rerender } = render(<GlobalHeader />);
+    expect(screen.getByRole('link', { name: 'Theme Sandbox' })).toHaveAttribute('href', '/theme-sandbox');
+    mockUser = { id: 'other', email: 'other@example.com' };
+    rerender(<GlobalHeader />);
+    expect(screen.queryByRole('link', { name: 'Theme Sandbox' })).not.toBeInTheDocument();
+  });
   beforeEach(() => {
     mockNavigate.mockReset();
     mockSignOut.mockReset();

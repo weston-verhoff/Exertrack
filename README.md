@@ -4,6 +4,17 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 ## Available Scripts
 
+### Private theme sandbox
+
+Visit `/theme-sandbox` or use the **Theme Sandbox** header link when signed in as
+`westonverhoff@gmail.com`. Other accounts are redirected to the dashboard. The
+page previews all eight themes without saving the selection, shows shared
+controls and surface recipes, inventories the loaded theme tokens, and includes
+a semantic foreground/background contrast matrix. Translucent backgrounds and
+artwork require visual inspection; the contrast explorer does not guess their
+backdrop. This is a client-side inspection page using sample data, with no
+privileged backend endpoints or account/workout writes.
+
 In the project directory, you can run:
 
 ### Environment variables
