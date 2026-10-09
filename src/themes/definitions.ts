@@ -3,7 +3,7 @@ import { ThemeDefinition } from './types';
 // The only hand-authored palette source. Eight anchors per theme; no overrides needed.
 export const THEME_DEFINITIONS: ThemeDefinition[] = [
   { id: 'default', name: 'Light', mode: 'light', generatorVersion: 1,
-    seeds: { canvas: '#f4f4f2', surface: '#ffffff', text: '#242423', primary: '#40586c', secondary: '#557360', info: '#40586c', success: '#367346', danger: '#ac3434' } },
+    seeds: { canvas: '#f4f4f2', surface: '#ffffff', text: '#242423', primary: '#40586c', secondary: '#000000', info: '#40586c', success: '#367346', danger: '#ac3434' } },
   { id: 'dark', name: 'Dark', mode: 'dark', generatorVersion: 1,
     seeds: { canvas: '#121212', surface: '#252524', text: '#f1f1ef', primary: '#b7c9d9', secondary: '#b9d8c1', info: '#9ab8d2', success: '#86c997', danger: '#f0a0a0' } },
   { id: 'up-and-up', name: 'Up & Up', mode: 'light', generatorVersion: 1,
