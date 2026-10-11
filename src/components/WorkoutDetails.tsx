@@ -1,5 +1,4 @@
 import { useNavigate } from 'react-router-dom';
-import '../styles/drawer.css';
 import '../styles/metric-fields.css';
 import { WorkoutButton } from './WorkoutButton';
 import { supabase } from '../supabase/client'

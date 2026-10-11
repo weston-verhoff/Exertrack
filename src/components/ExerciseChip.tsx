@@ -1,6 +1,5 @@
 import { ReactNode } from 'react';
 import { ComponentTone } from '../utils/componentTone';
-import '../styles/exercise-chip.css';
 
 interface ExerciseChipProps {
   name: string;

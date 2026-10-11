@@ -1,6 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
-import '../styles/drawer.css';
 import { ComponentTone } from '../utils/componentTone';
 import { X } from 'lucide-react';
 import { AppTheme } from '../utils/theme';

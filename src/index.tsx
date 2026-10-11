@@ -6,6 +6,10 @@ import reportWebVitals from './reportWebVitals';
 import './styles/themes.generated.css';
 import './styles/color-context.css';
 import './styles/page-hero.css';
+// Shared component styles load once, in a fixed order across lazy routes.
+import './styles/drawer.css';
+import './styles/exercise-chip.css';
+import './styles/segmented-control.css';
 import { bootstrapTheme } from './utils/theme';
 
 // The isolated preview initializes its own root without writing the app preference.

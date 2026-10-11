@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import '../styles/segmented-control.css';
 
 export interface SegmentedControlOption<T extends string | number> {
   value: T;
