@@ -19,7 +19,7 @@
   box-shadow: none;
   border: none;
   margin: 0;
-  padding: 0;
+  padding: clamp(1rem, 2vw, 1.5rem);
 }
 
 .plan-hero {
@@ -32,12 +32,12 @@
   margin: 0;
   font-size: 2.2rem;
   font-family: var(--font-headline);
-  color: var(--color-on-canvas)
+  color: var(--_context-content);
 }
 
 .plan-title p {
   margin: 0.25rem 0 0;
-  color: var(--color-on-canvas);
+  color: var(--_context-content);
 }
 
 .plan-grid {
