@@ -20,12 +20,22 @@
 
 .color-context { background-color: var(--_context-surface); color: var(--_context-content); border-color: var(--_context-border); }
 
+/* Optional Mixed surface artwork. Controls and semantic fills keep solid backgrounds. */
+:is(.workout-card, .plan-workout-card, .global-header, .drawer-panel,
+  .color-context--default, .color-context--raised, .color-context--inverse):not(button):not(input):not(select):not(textarea):not(.workout-head):not(.workout-button) {
+  background-image: var(--image-surface-default, none);
+  background-color: var(--color-surface-artwork, var(--_context-surface));
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+
 .color-context--canvas {
   --_context-surface: var(--color-surface-canvas);
   --_context-surface-raised: var(--color-surface-raised);
   --_context-surface-sunken: var(--color-surface-sunken);
   --_context-content: var(--color-on-canvas);
-  --_context-content-muted: var(--color-content-muted);
+  --_context-content-muted: var(--color-on-canvas-muted, var(--color-content-muted));
   --_context-border: var(--color-border-default);
   --_context-border-subtle: var(--color-border-subtle);
   --_context-border-strong: var(--color-border-strong);

@@ -40,7 +40,7 @@
               "RelativeDocumentMoniker": "src\\themes\\definitions.ts",
               "ToolTip": "E:\\Users\\Default\\web_dev\\workout-tracker\\workout-tracker\\src\\themes\\definitions.ts",
               "RelativeToolTip": "src\\themes\\definitions.ts",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAABsAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAwAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003213|",
               "WhenOpened": "2026-10-09T00:58:44.131Z",
               "EditorCaption": ""
@@ -55,8 +55,7 @@
               "RelativeToolTip": "src\\styles\\themes.generated.css",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-10-09T00:58:25.095Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-10-09T00:58:25.095Z"
             },
             {
               "$type": "Document",
@@ -68,8 +67,7 @@
               "RelativeToolTip": "src\\styles\\drawer.css",
               "ViewState": "AgIAAKIAAAAAAAAAAAAAALoAAAALAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003000|",
-              "WhenOpened": "2026-09-29T19:21:49.627Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-09-29T19:21:49.627Z"
             }
           ]
         }

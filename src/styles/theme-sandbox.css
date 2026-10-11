@@ -27,3 +27,22 @@
 .theme-sandbox [aria-label='Theme authoring'] label { display: flex; flex-direction: column; gap: 8px; }
 .theme-sandbox [aria-label='Theme authoring'] input { width: 100%; min-width: 0; padding: 10px; color: var(--_context-content); background: var(--_context-surface-sunken); border: 1px solid var(--_context-border-strong); }
 .theme-sandbox pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.sandbox-hero-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.sandbox-hero-heading h3 { margin: 0; }
+.sandbox-hero-logo-control { width: min(100%, 440px); }
+
+/* Draft-only overrides are scoped to the sandbox document, including portals. */
+html[data-sandbox-gradient-mode='mixed'] body,
+html[data-sandbox-gradient-mode='mixed'] .theme-sandbox {
+  background-image: var(--sandbox-canvas-gradient, none);
+}
+html[data-sandbox-gradient-mode='mixed'] :is(
+  .sandbox-panel, .sandbox-intro, .workout-card, .plan-workout-card,
+  .page-hero-surface, .global-header, .drawer-panel,
+  .color-context--default, .color-context--raised, .color-context--inverse
+):not(button):not(input):not(select):not(textarea):not(.workout-head):not(.workout-button) {
+  background-image: var(--sandbox-surface-gradient, none);
+  background-color: var(--sandbox-surface-color, var(--_context-surface));
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}

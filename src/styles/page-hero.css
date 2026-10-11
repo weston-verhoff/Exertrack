@@ -6,7 +6,7 @@
   --_page-hero-wordmark: var(--image-brand-wordmark);
 
   margin-inline: var(--global-header-content-gap);
-  background-color: var(--_context-surface);
+  background-color: var(--color-surface-artwork, var(--_context-surface));
   background-image: var(--image-surface-hero);
   background-position: center;
   background-repeat: no-repeat;

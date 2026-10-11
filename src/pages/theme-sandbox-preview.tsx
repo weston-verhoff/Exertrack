@@ -15,6 +15,18 @@ import { SwitchField } from '../components/SwitchField';
 import { SandboxWorkoutEditor, ThemeSandboxScreens } from '../components/ThemeSandboxScreens';
 import '../styles/account.css';
 import '../styles/theme-sandbox.css';
+import lightWordmark from '../assets/branding/default/wordmark.webp';
+import darkWordmark from '../assets/branding/default/wordmark-alternate.webp';
+import neonWordmark from '../assets/branding/neon/wordmark.png';
+
+const heroLogoOptions = [
+  { value: 'theme', label: 'Theme logo' },
+  { value: 'light', label: 'Light logo' },
+  { value: 'dark', label: 'Dark logo' },
+  { value: 'neon', label: 'Neon logo' },
+] as const;
+type HeroLogo = typeof heroLogoOptions[number]['value'];
+const heroLogoAssets = { light: lightWordmark, dark: darkWordmark, neon: neonWordmark };
 
 const contexts = ['canvas', 'default', 'raised', 'inverse', 'selected', 'info', 'success', 'danger'];
 const variants: WorkoutButtonVariant[] = ['primary', 'secondary', 'quiet'];
@@ -56,6 +68,7 @@ export default function ThemeSandboxPreview() {
   const [background, setBackground] = useState('--color-surface-default');
   const [checked, setChecked] = useState(true);
   const [segment, setSegment] = useState('week');
+  const [heroLogo, setHeroLogo] = useState<HeroLogo>('theme');
   const [drawer, setDrawer] = useState(false);
   const [message, setMessage] = useState('Interact with the controls to inspect hover, focus, and active states.');
   const root = useRef<HTMLDivElement>(null);
@@ -91,7 +104,17 @@ export default function ThemeSandboxPreview() {
         <a href="#sandbox-contrast">Inspect color contrast</a><hr />
         <WorkoutButton label="Action" onClick={notify} /><WorkoutButton label="Secondary" variant="secondary" onClick={notify} />
       </article>)}</div>
-      <div className="page-hero-surface sandbox-panel"><h3>Hero & theme artwork</h3><div className="page-hero-wordmark" role="img" aria-label="IWYN Fitness" /><p>Hero text, brand artwork, and decorative background.</p></div>
+      <div className="page-hero-surface sandbox-panel">
+        <div className="sandbox-hero-heading">
+          <h3>Hero & theme artwork</h3>
+          <div className="sandbox-hero-logo-control" role="group" aria-label="Hero logo selection">
+            <ResponsiveSegmentedControl<HeroLogo> options={heroLogoOptions} value={heroLogo} onChange={setHeroLogo} />
+          </div>
+        </div>
+        <div className="page-hero-wordmark" role="img" aria-label="IWYN Fitness" data-logo-variant={heroLogo}
+          style={heroLogo === 'theme' ? undefined : { backgroundImage: `url("${heroLogoAssets[heroLogo]}")` }} />
+        <p>Hero text, brand artwork, and decorative background.</p>
+      </div>
     </section>
 
     <section id="sandbox-components"><h2>Components & states</h2><p role="status">{message}</p>

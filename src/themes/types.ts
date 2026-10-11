@@ -4,11 +4,13 @@ export type FamilyName = 'primary' | 'secondary' | 'info' | 'success' | 'danger'
 export interface ThemeDefinition {
   id: string;
   name: string;
-  mode: 'light' | 'dark';
+  mode: 'light' | 'dark' | 'mixed';
   generatorVersion: 1;
-  seeds: Record<SeedName, string>;
+  seeds: Record<SeedName, string> & { onSurface?: string; onCanvas?: string };
   decoration?: 'none' | 'atmosphere';
   brand?: 'default' | 'neon';
+  gradients?: Partial<Record<'canvas' | 'surface', string>>;
+  surfaceBackground?: string;
   /** Family anchors regenerate foregrounds, states, borders and all aliases. */
   overrides?: Partial<Record<FamilyName, { color: string; reason: string }>>;
 }

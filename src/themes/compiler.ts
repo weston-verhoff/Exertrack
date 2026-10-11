@@ -2,6 +2,7 @@ import { THEME_TOKEN_CONTRACT, BRAND_IMAGE_TOKEN_CONTRACT, OPTIONAL_THEME_IMAGE_
 import { contrastRatio } from '../utils/themeContrast';
 import { fromLch, rgba, toLch, tone } from './colorMath';
 import { CompiledTheme, FamilyName, SEED_NAMES, ThemeDefinition } from './types';
+import { gradientSyntaxError, surfaceBackground, surfaceBackgroundSyntaxError, isSolidSurfaceBackground } from './sandboxGradients';
 
 const families: FamilyName[] = ['primary', 'secondary', 'info', 'success', 'danger'];
 const hex = /^#[\da-f]{6}$/i;
@@ -14,8 +15,17 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
   const error = (message: string, token?: string) => diagnostics.push({ severity: 'error', message, token });
   if (!definition || !/^[a-z][a-z0-9-]*$/.test(definition.id) || typeof definition.name !== 'string' || !definition.name.trim()) error('Theme requires a safe ID and a display name.');
   if (definition?.generatorVersion !== 1) error('Unsupported generator version.');
-  if (!['light', 'dark'].includes(definition?.mode)) error('Mode must be light or dark.');
+  if (!['light', 'dark', 'mixed'].includes(definition?.mode)) error('Mode must be light, dark or mixed.');
   for (const name of SEED_NAMES) if (!hex.test(definition?.seeds?.[name] ?? '')) error(`${name} must be a six-digit hex color.`);
+  if (definition?.mode === 'mixed') {
+    for (const name of ['onSurface', 'onCanvas'] as const) {
+      if (definition.seeds?.[name] !== undefined && !hex.test(definition.seeds[name]!)) error(`${name} must be a six-digit hex color.`);
+    }
+    const canvasProblem = gradientSyntaxError(definition.gradients?.canvas);
+    if (canvasProblem) error(`canvas gradient: ${canvasProblem}`);
+    const surfaceProblem = surfaceBackgroundSyntaxError(surfaceBackground(definition));
+    if (surfaceProblem) error(`surface background: ${surfaceProblem}`);
+  }
   if (definition?.decoration && !['none', 'atmosphere'].includes(definition.decoration)) error('Unknown decoration.');
   if (definition?.brand && !['default', 'neon'].includes(definition.brand)) error('Unknown brand asset family.');
   for (const [name, override] of Object.entries(definition?.overrides ?? {})) {
@@ -23,9 +33,10 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
   }
   if (diagnostics.length) return result;
   const { seeds, mode } = definition;
-  const dark = mode === 'dark';
-  if ([seeds.canvas, seeds.surface].some(bg => ratio(seeds.text, bg) < 4.5)) error('Text anchor must contrast with canvas and surface anchors at 4.5:1.');
-  if ([seeds.canvas, seeds.surface].some(bg => dark ? toLch(bg)[0] > 0.45 : toLch(bg)[0] < 0.85)) error('Surface anchors must be dark (L ≤ 0.45) or light (L ≥ 0.85) for the chosen mode.');
+  const mixed = mode === 'mixed';
+  const dark = mixed ? toLch(seeds.surface)[0] < 0.6 : mode === 'dark';
+  if (!mixed && [seeds.canvas, seeds.surface].some(bg => ratio(seeds.text, bg) < 4.5)) error('Text anchor must contrast with canvas and surface anchors at 4.5:1.');
+  if (!mixed && [seeds.canvas, seeds.surface].some(bg => dark ? toLch(bg)[0] > 0.45 : toLch(bg)[0] < 0.85)) error('Surface anchors must be dark (L ≤ 0.45) or light (L ≥ 0.85) for the chosen mode.');
   if (diagnostics.length) return result;
   const source = (family: FamilyName) => definition.overrides?.[family]?.color ?? seeds[family];
   const put = (name: string, value: string, seed: string, rule: string) => {
@@ -44,7 +55,7 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
     const [L, C, H] = toLch(seed);
     const candidates = Array.from({ length: 1001 }, (_, i) => i / 1000).sort((a, b) => Math.abs(a - L) - Math.abs(b - L));
     for (const lightness of candidates) {
-      if (Math.abs(lightness - L) > 0.48) continue;
+      if (!mixed && Math.abs(lightness - L) > 0.48) continue;
       const candidate = fromLch([lightness, C, H]);
       if (passes(candidate, 0.03)) {
         if (Math.abs(lightness - L) > 0.15) diagnostics.push({ severity: 'warning', message: `${label}: lightness adjusted by ${Math.abs(lightness - L).toFixed(2)} to satisfy contrast.` });
@@ -62,6 +73,9 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
     'surface-inverse': tone(seeds.surface, dark ? Math.max(0.12, surfaceL - 0.06) : 0.98, 0.035),
   };
   Object.entries(base).forEach(([name, value]) => color(name, value, name === 'surface-canvas' ? 'canvas' : 'surface', 'Mode surface hierarchy'));
+  // Mixed canvas is a separate text context, not a backdrop for surface controls.
+  const surfaceNames = Object.keys(base).filter(name => !mixed || name !== 'surface-canvas');
+  const surfaceBackdrops = surfaceNames.map(name => base[name]);
   alias('surface-inverse-subtle', 'surface-raised');
   alias('surface-overlay', 'surface-inverse');
   const familyData = Object.fromEntries(families.map(name => {
@@ -70,11 +84,20 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
     const subtleHover = tone(seed, dark ? Math.min(0.42, surfaceL + 0.055) : 0.92, 0.055);
     return [name, { seed, subtle, subtleHover }];
   })) as Record<FamilyName, { seed: string; subtle: string; subtleHover: string }>;
-  const backdrops = [...Object.values(base), ...Object.values(familyData).flatMap(f => [f.subtle, f.subtleHover])];
-  const text = fit(seeds.text, backdrops, 4.5, 'Body text');
-  const muted = fit(tone(seeds.text, dark ? 0.72 : 0.48, 0.025), backdrops, 4.5, 'Muted text');
-  ['on-canvas', 'on-surface', 'on-inverse'].forEach(name => color(name, text, 'text', 'Foreground across supported surfaces'));
-  ['content-secondary', 'content-muted', 'on-inverse-muted'].forEach(name => color(name, muted, 'text', 'Muted foreground across supported surfaces'));
+  const backdrops = [...surfaceBackdrops, ...Object.values(familyData).flatMap(f => [f.subtle, f.subtleHover])];
+  const surfaceText = mixed ? seeds.onSurface ?? seeds.text : seeds.text;
+  const canvasText = mixed ? seeds.onCanvas ?? seeds.text : seeds.text;
+  const surfaceTextSource = mixed && seeds.onSurface !== undefined ? 'onSurface' : 'text';
+  const canvasTextSource = mixed && seeds.onCanvas !== undefined ? 'onCanvas' : 'text';
+  const text = fit(surfaceText, backdrops, 4.5, 'Body text');
+  const muted = fit(tone(surfaceText, dark ? 0.72 : 0.48, 0.025), backdrops, 4.5, 'Muted text');
+  ['on-canvas', 'on-surface', 'on-inverse'].forEach(name => color(name, text, surfaceTextSource, 'Foreground across supported surfaces'));
+  if (mixed) {
+    color('on-canvas', fit(canvasText, [seeds.canvas], 4.5, 'Canvas text'), canvasTextSource, 'Independent canvas foreground');
+    color('on-canvas-muted', fit(tone(canvasText, toLch(seeds.canvas)[0] < 0.6 ? 0.72 : 0.48, 0.025), [seeds.canvas], 4.5, 'Muted canvas text'), canvasTextSource, 'Independent muted canvas foreground');
+    need('surface-canvas', 'on-canvas-muted');
+  }
+  ['content-secondary', 'content-muted', 'on-inverse-muted'].forEach(name => color(name, muted, surfaceTextSource, 'Muted foreground across supported surfaces'));
   color('border-subtle', tone(seeds.surface, dark ? surfaceL + 0.1 : surfaceL - 0.13, 0.025), 'surface', 'Decorative separator');
   const border = fit(tone(seeds.surface, dark ? 0.62 : 0.55, 0.025), backdrops, 3, 'Control boundary');
   ['border-default', 'border-strong', 'border-on-inverse'].forEach(name => color(name, border, 'surface', 'Essential boundary'));
@@ -82,13 +105,13 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
   const subtleBase = base['surface-sunken'];
   color('interactive-subtle', subtleBase, 'surface');
   color('interactive-subtle-hover', base['surface-raised'], 'surface');
-  color('on-interactive-subtle', text, 'text');
+  color('on-interactive-subtle', text, surfaceTextSource);
   color('hover-on-inverse', base['surface-raised'], 'surface');
 
   for (const name of families) {
     const { seed, subtle, subtleHover } = familyData[name];
     const origin = definition.overrides?.[name] ? `override.${name}: ${definition.overrides[name]!.reason}` : name;
-    const foreground = dark ? tone(seeds.canvas, 0.12, 0.02) : '#ffffff';
+    const foreground = dark ? tone(mixed ? seeds.surface : seeds.canvas, 0.12, 0.02) : '#ffffff';
     const solid = fit(seed, [foreground], 4.5, `${name} solid`, backdrops);
     const hover = fit(tone(solid, toLch(solid)[0] + (dark ? 0.045 : -0.045)), [foreground], 4.5, `${name} hover`, backdrops);
     const pressed = fit(tone(solid, toLch(solid)[0] + (dark ? 0.075 : -0.075)), [foreground], 4.5, `${name} pressed`, backdrops);
@@ -109,7 +132,7 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
         color(`on-interactive-${role}-subtle`, onSubtle, origin); color(`border-${role}`, familyBorder, origin);
       }
       need(`interactive-${role}-pressed`, `on-interactive-${role}`);
-      Object.keys(base).forEach(bg => ['','-hover','-pressed'].forEach(state => need(bg, `interactive-${role}${state}`, 3, 'Filled control boundary')));
+      surfaceNames.forEach(bg => ['','-hover','-pressed'].forEach(state => need(bg, `interactive-${role}${state}`, 3, 'Filled control boundary')));
     }
     if (['info', 'success', 'danger'].includes(name)) {
       color(`feedback-${name}-surface`, subtle, origin); color(`on-feedback-${name}`, onSubtle, origin); color(`feedback-${name}-border`, familyBorder, origin);
@@ -120,20 +143,31 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
   color('transparent', 'rgba(0, 0, 0, 0)', 'surface');
   color('overlay-backdrop', rgba(seeds.canvas, dark ? 0.76 : 0.65), 'canvas');
   ['primary', 'secondary', 'success'].forEach((name, i) => {
-    const chart = fit(source(name as FamilyName), Object.values(base), 3, `Chart ${i + 1}`);
+    const chart = fit(source(name as FamilyName), surfaceBackdrops, 3, `Chart ${i + 1}`);
     color(`chart-series-${i + 1}`, chart, name, 'Chart stroke contrast');
     color(`chart-series-${i + 1}-fill`, rgba(chart, 0.12), name, 'Decorative chart fill');
-    Object.keys(base).forEach(bg => need(bg, `chart-series-${i + 1}`, 3, 'Chart stroke'));
+    surfaceNames.forEach(bg => need(bg, `chart-series-${i + 1}`, 3, 'Chart stroke'));
   });
   const shadowLevels = { subtle: 0.08, soft: 0.14, medium: 0.18, strong: 0.28, 'button-inset': 0.06, 'button-hover-inset': 0.1, 'button-pressed': 0.16, 'control-inset': 0.06 };
   Object.entries(shadowLevels).forEach(([name, alpha]) => put(`--shadow-${name}`, rgba('#000000', dark ? alpha * 1.4 : alpha), 'canvas', 'Shared shadow scale'));
-  const decorative = definition.decoration === 'atmosphere';
+  const decorative = !mixed && definition.decoration === 'atmosphere';
   const tint1 = tone(source('primary'), toLch(seeds.canvas)[0] + 0.025, 0.035);
   const tint2 = tone(source('secondary'), toLch(seeds.canvas)[0] + 0.015, 0.035);
   put('--image-surface-canvas', decorative ? `linear-gradient(135deg, ${tint1}, ${seeds.canvas}, ${tint2})` : 'none', 'primary, secondary, canvas', 'Decorative atmosphere');
   // Opaque hero backing keeps foreground constraints independent of artwork.
   put('--image-surface-hero', decorative ? `linear-gradient(135deg, ${familyData.primary.subtle}, ${base['surface-inverse']}, ${familyData.secondary.subtle})` : 'none', 'primary, secondary, surface', 'Decorative hero');
   put('--image-surface-accent', 'none', 'surface', 'Functional surfaces stay solid');
+  if (mixed) {
+    if (definition.gradients?.canvas?.trim()) put('--image-surface-canvas', definition.gradients.canvas.trim(), 'gradients.canvas', 'Explicit Mixed canvas gradient; contrast uses solid seed');
+    const surface = surfaceBackground(definition)?.trim();
+    if (surface) {
+      const solid = isSolidSurfaceBackground(surface);
+      put('--image-surface-default', solid ? 'none' : surface, 'surfaceBackground', 'Mixed surface background');
+      put('--image-surface-hero', solid ? 'none' : surface, 'surfaceBackground', 'Mixed surface background');
+      if (solid) color('surface-artwork', surface, 'surfaceBackground', 'Visual override; palette uses surface seed');
+    }
+    if (surface || definition.gradients?.canvas?.trim()) diagnostics.push({ severity: 'warning', message: 'Background override readability requires visual review; contrast checks use solid seed colors.' });
+  }
   const brand = definition.brand === 'neon' ? 'neon' : 'default';
   const suffix = brand === 'default' && !dark ? '-alternate' : '';
   const extension = brand === 'neon' ? 'png' : 'webp';
@@ -141,7 +175,7 @@ export function compileTheme(definition: ThemeDefinition): CompiledTheme {
     put(`--image-brand-${token}`, `url('../assets/branding/${brand}/${asset}${suffix}.${extension}')`, 'brand, mode', 'Brand asset on mode surfaces');
   }
   THEME_CONTRAST_PAIRS.forEach(([bg, fg]) => pairings.push({ background: bg, foreground: fg, minimum: 4.5, purpose: 'Text' }));
-  const supported = [...Object.keys(base), 'surface-inverse-subtle', 'surface-overlay', 'accent-primary-subtle', 'accent-secondary-subtle', 'interactive-positive-subtle', 'interactive-positive-subtle-hover', 'interactive-danger-subtle', 'interactive-danger-subtle-hover', 'feedback-info-surface', 'feedback-success-surface', 'feedback-danger-surface'];
+  const supported = [...surfaceNames, 'surface-inverse-subtle', 'surface-overlay', 'accent-primary-subtle', 'accent-secondary-subtle', 'interactive-positive-subtle', 'interactive-positive-subtle-hover', 'interactive-danger-subtle', 'interactive-danger-subtle-hover', 'feedback-info-surface', 'feedback-success-surface', 'feedback-danger-surface'];
   supported.forEach(bg => {
     ['on-surface', 'content-muted', 'content-secondary', 'on-interactive-positive-subtle', 'on-interactive-danger-subtle'].forEach(fg => need(bg, fg));
     ['border-strong', 'border-focus', 'border-positive', 'border-danger'].forEach(fg => need(bg, fg, 3, 'Essential boundary / focus'));
