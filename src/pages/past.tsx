@@ -1,7 +1,7 @@
 // src/pages/past.tsx
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Download, Plus } from 'lucide-react'
+import { Download, Plus, Upload } from 'lucide-react'
 import { Layout } from '../components/Layout'
 import { WorkoutCard } from '../components/WorkoutCard'
 import { WorkoutButton } from '../components/WorkoutButton'
@@ -26,6 +26,7 @@ import {
 import { getWeekStartDateKey } from '../utils/accountMetrics'
 import { WorkoutCalendar } from '../components/WorkoutCalendar'
 import { WorkoutExportDrawer } from '../components/WorkoutExportDrawer'
+import { WorkoutImportDrawer } from '../components/WorkoutImportDrawer'
 
 const EXPORT_MESSAGES: Record<WorkoutExportScope, { exporting: string; exported: string }> = {
   all: {
@@ -67,6 +68,7 @@ export default function PastWorkouts() {
   const [completedTotalCount, setCompletedTotalCount] = useState<number>(0)
   const [exportingScope, setExportingScope] = useState<WorkoutExportScope | null>(null)
   const [exportDrawerOpen, setExportDrawerOpen] = useState(false)
+  const [importDrawerOpen, setImportDrawerOpen] = useState(false)
 	const { user, userId, loading: authLoading } = useAuth()
 	const { showAlert } = useSystemAlerts()
 	const handleStatusChange = (id: string, status: string) => {
@@ -263,6 +265,7 @@ export default function PastWorkouts() {
 		<div className="past-workouts-page">
 			<div className="past-workouts-page__actions">
 				<WorkoutButton label="Plan a Workout" icon={<Plus size={18} />} onClick={() => navigate('/plan')} />
+				<WorkoutButton label="Import" icon={<Upload size={18} />} variant="secondary" disabled={!userId} onClick={() => setImportDrawerOpen(true)} />
 				<WorkoutButton label="Export" icon={<Download size={18} />} variant="secondary" onClick={() => setExportDrawerOpen(true)} />
 			</div>
 			<WorkoutCalendar
@@ -357,6 +360,7 @@ export default function PastWorkouts() {
 					)}
 				</>
       )}
+			{userId && <WorkoutImportDrawer isOpen={importDrawerOpen} onClose={() => setImportDrawerOpen(false)} userId={userId} onSaved={workout => setWorkouts(prev => [...prev, workout])} />}
 			<WorkoutExportDrawer
 				isOpen={exportDrawerOpen}
 				onClose={() => setExportDrawerOpen(false)}

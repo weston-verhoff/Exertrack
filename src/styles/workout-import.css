@@ -1,0 +1,16 @@
+.workout-import { display: grid; gap: 1rem; }
+.workout-import h2, .workout-import p { margin: 0; }
+.workout-import-drop { display: grid; width: 100%; gap: .75rem; padding: 1.5rem; border: 2px dashed var(--_context-border); border-radius: 12px; text-align: center; background: transparent; color: inherit; font: inherit; cursor: pointer; }
+.workout-import-drop:hover:not(:disabled), .workout-import-drop:focus-visible { background: var(--_context-hover); }
+.workout-import-drop:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.workout-import-drop:disabled { cursor: wait; opacity: .65; }
+.workout-import-drop > svg { margin: auto; }
+.workout-import-drop.dragging { background: var(--_context-hover); }
+.workout-import label { display: grid; gap: .5rem; font-weight: 600; }
+.workout-import input { max-width: 100%; min-height: 44px; font: inherit; }
+.workout-import-card { display: grid; gap: 1rem; padding: 1rem; border: 1px solid var(--_context-border); background: var(--_context-surface-raised); border-radius: 12px; }
+.workout-import-actions { display: flex; justify-content: flex-end; gap: .75rem; }
+.workout-import-loading { display: flex; align-items: center; gap: .5rem; }
+.workout-import-spinner { animation: workout-import-spin 1s linear infinite; }
+@keyframes workout-import-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .workout-import-spinner { animation-duration: 3s; } }

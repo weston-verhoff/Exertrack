@@ -26,3 +26,20 @@ test('mode segments preserve seeds and reflect the current draft', () => {
   rerender(<ThemeDraftEditor draft={mixed} compilation={compileTheme(mixed)} update={update} reset={reset} />);
   expect(group.getByRole('button', { name: 'Mixed' })).toHaveAttribute('aria-pressed', 'true');
 });
+
+test('diagnostics show seed, final color and derived input without inventing a failed result', () => {
+  const draft = THEME_DEFINITIONS[0];
+  const compilation = compileTheme(draft);
+  compilation.diagnostics = [
+    { severity: 'warning', message: 'Muted text adjusted.', seed: 'onSurface', colorChange: { from: '#ffffff', input: '#aaaaaa', to: '#bbbbbb' } },
+    { severity: 'error', message: 'No color meets contrast.', seed: 'primary', colorChange: { from: '#ffeeaa' } },
+  ];
+  render(<ThemeDraftEditor draft={draft} compilation={compilation} update={jest.fn()} reset={jest.fn()} />);
+  const warning = screen.getByText('Muted text adjusted.', { exact: false }).closest('li')!;
+  expect(warning).toHaveTextContent('Seed to adjust: onSurface');
+  expect(warning).toHaveTextContent('Color change: #ffffff → #bbbbbb');
+  expect(warning).toHaveTextContent('derived input: #aaaaaa');
+  const failure = screen.getByText('No color meets contrast.', { exact: false }).closest('li')!;
+  expect(failure).toHaveTextContent('Seed to adjust: primary');
+  expect(failure).toHaveTextContent('Color change: #ffeeaa → No valid adjustment found.');
+});

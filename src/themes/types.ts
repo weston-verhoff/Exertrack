@@ -14,7 +14,11 @@ export interface ThemeDefinition {
   /** Family anchors regenerate foregrounds, states, borders and all aliases. */
   overrides?: Partial<Record<FamilyName, { color: string; reason: string }>>;
 }
-export interface Diagnostic { severity: 'error' | 'warning'; message: string; token?: string }
+export interface Diagnostic {
+  severity: 'error' | 'warning'; message: string; token?: string;
+  seed?: string;
+  colorChange?: { from: string; to?: string; input?: string };
+}
 export interface Pairing { background: string; foreground: string; minimum: number; purpose: string }
 export interface CompiledTheme {
   tokens: Record<string, string>;

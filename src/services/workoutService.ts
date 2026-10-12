@@ -1051,6 +1051,7 @@ export async function createWorkoutFromBuilder({
   date: string;
   exercises: BuilderExerciseConfig[];
 }): Promise<ServiceResult<{ id: string }>> {
+  let createdWorkoutId: string | undefined;
   try {
     const normalizedExercises = normalizeBuilderExercises(exercises);
 
@@ -1067,9 +1068,17 @@ export async function createWorkoutFromBuilder({
       };
     }
 
+    createdWorkoutId = workoutData.id;
     await insertWorkoutExercisesAndSets(workoutData.id, normalizedExercises);
     return { data: { id: workoutData.id }, error: null };
   } catch (error) {
+    if (createdWorkoutId) {
+      const { error: cleanupError } = await supabase.from('workouts').delete()
+        .eq('id', createdWorkoutId).eq('user_id', userId);
+      if (cleanupError) {
+        return { data: null, error: 'Workout was only partially saved and cleanup failed. Refresh and remove the incomplete workout before retrying.' };
+      }
+    }
     return {
       data: null,
       error: logAndReturnError('Failed to save workout.', error),

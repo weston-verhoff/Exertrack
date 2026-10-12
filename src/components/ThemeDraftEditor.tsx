@@ -54,7 +54,13 @@ export function ThemeDraftEditor({ draft, compilation, update, reset }: {
     <div className="sandbox-row"><WorkoutButton label="Reset draft" variant="secondary" onClick={reset} /><WorkoutButton label="Export theme definition" onClick={download} disabled={!compilation.valid || Boolean(gradientErrors.canvas || gradientErrors.surface)} /></div>
     <p role={compilation.valid ? 'status' : 'alert'}>{compilation.valid ? 'Draft compiled successfully.' : 'Invalid draft — showing the last valid palette for this theme.'}</p>
     <details open={!compilation.valid}><summary>Generation diagnostics ({compilation.diagnostics.length})</summary>
-      <ul>{compilation.diagnostics.map((d, i) => <li key={i}><strong>{d.severity}:</strong> {d.message}</li>)}</ul>
+      <ul>{compilation.diagnostics.map((d, i) => <li key={i}>
+        <strong>{d.severity}:</strong> {d.message}
+        {d.seed && <div>Seed to adjust: <code>{d.seed}</code></div>}
+        {d.colorChange && <div>Color change: <code>{d.colorChange.from}</code> → {d.colorChange.to ? <code>{d.colorChange.to}</code> : 'No valid adjustment found.'}
+          {d.colorChange.input && <> (derived input: <code>{d.colorChange.input}</code>)</>}
+        </div>}
+      </li>)}</ul>
     </details>
     <details><summary>Family overrides ({Object.keys(draft.overrides ?? {}).length})</summary><pre>{JSON.stringify(draft.overrides ?? {}, null, 2)}</pre><p>Overrides replace a family anchor and regenerate every dependent role. Each override requires a reason and must pass the same checks.</p></details>
   </section>;

@@ -21,6 +21,8 @@ export const THEME_DEFINITIONS: ThemeDefinition[] = [
       canvas: 'linear-gradient(180deg, #00152D 0%, #ACD3FF 20%, #FFEF97 40%, #DE9000 100%)',
     },
     surfaceBackground: 'linear-gradient(180deg, #C70000 0%, #FF9841 100%)' },
-  { id: 'fall', name: 'Fall', mode: 'dark', generatorVersion: 1, decoration: 'atmosphere',
-    seeds: { canvas: '#141d16', surface: '#243025', text: '#fff3dc', primary: '#eeaa64', secondary: '#d4ad48', info: '#d4ad48', success: '#b2ce81', danger: '#ef8a75' } },
+  { id: 'fall', name: 'Fall', mode: 'mixed', generatorVersion: 1, decoration: 'atmosphere',
+    seeds: { canvas: '#E4FFBE', surface: '#FFF9E6', text: '#000000', primary: '#740040', secondary: '#b27229', info: '#a7671a', success: '#667e33', danger: '#b95a47' },
+    gradients: { canvas: 'linear-gradient(180deg, #D37867 0%, #F6DE87 49.52%, #E4FFBE 100%)' },
+    surfaceBackground: '#FFF9E6' },
 ];

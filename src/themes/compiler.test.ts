@@ -49,6 +49,21 @@ test('family overrides regenerate aliases and dependent pairings with provenance
   expect(compileTheme({ ...original, overrides: { primary: { color: '#8238bd', reason: '' } } }).valid).toBe(false);
 });
 
+test('adjustment diagnostics identify effective seeds and final colors', () => {
+  const original = THEME_DEFINITIONS[0];
+  const result = compileTheme({ ...original, seeds: { ...original.seeds, primary: '#ffffcc' } });
+  const warning = result.diagnostics.find(d => d.message.startsWith('primary solid:'))!;
+  expect(warning.seed).toBe('primary');
+  expect(warning.colorChange?.from).toBe('#ffffcc');
+  expect(warning.colorChange?.to).toBe(result.tokens['--color-interactive-primary']);
+  const overridden = compileTheme({ ...original, overrides: { primary: { color: '#ffffcc', reason: 'Test alternate anchor' } } });
+  const overrideWarning = overridden.diagnostics.find(d => d.message.startsWith('Focus ring:'))!;
+  expect(overrideWarning.seed).toBe('override.primary');
+  expect(overrideWarning.colorChange?.from).toBe('#ffffcc');
+  expect(overrideWarning.colorChange?.to).toBe(overridden.tokens['--color-border-focus']);
+  expect(compileTheme({ ...original, seeds: { ...original.seeds, primary: 'red' } }).diagnostics[0].seed).toBe('primary');
+});
+
 test('mixed text seeds are independent, validated and ignored by light/dark generation', () => {
   const original = THEME_DEFINITIONS[0];
   const mixed = { ...original, mode: 'mixed' as const, seeds: { ...original.seeds, canvas: '#c2ddff', surface: '#272039', onCanvas: '#102a43', onSurface: '#fff4df' } };
